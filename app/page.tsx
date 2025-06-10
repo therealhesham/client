@@ -162,9 +162,10 @@ function CandidateCard({ candidate }: CandidateCardProps) {
           ))} */}
         </div>
         <motion.button
+          onClick={() => window.location.href = `/homemaid/${candidate.id}`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="mt-6 w-full bg-teal-500 text-white py-3 rounded-full font-['Tajawal'] font-semibold hover:bg-teal-600 transition duration-300"
+          className="mt-6 w-full bg-teal-500 cursor-pointer text-white py-3 rounded-full font-['Tajawal'] font-semibold hover:bg-teal-600 transition duration-300"
         >
           عرض الملف الشخصي
         </motion.button>
