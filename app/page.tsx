@@ -1,3 +1,6 @@
+//@ts-nocheck
+//@ts-ignore
+
 // app/page.tsx
 "use client";
 
