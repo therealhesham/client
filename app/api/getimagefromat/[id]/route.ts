@@ -1,3 +1,5 @@
+//@ts-nocheck
+//@ts-ignore
 import Airtable, { Table } from "airtable";
 import { NextResponse } from "next/server";
 
@@ -8,9 +10,9 @@ var base = new Airtable({
 
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-    
+
   try {
-    const {id} = await params;
+    const { id } = await params;
     const result = await new Promise<any[]>((resolve, reject) => {
       const results = base("السير الذاتية")
         .select({
@@ -25,20 +27,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     // console.log(/);
     // Send the filtered and paginated data as the response
-      return NextResponse.json(
-            {result: result[0].fields.Picture[0].url  },
-            { status: 200 }
-          );
-       
-    
-    
+    return NextResponse.json(
+      { result: result[0].fields.Picture[0].url },
+      { status: 200 }
+    );
+
+
+
   } catch (error) {
     console.error("Error fetching data:", error);
 
     return NextResponse.json(
-        {error: "Error fetching data" },
-        { status: 500 }
-      );
-   
+      { error: "Error fetching data" },
+      { status: 500 }
+    );
+
   }
 }
