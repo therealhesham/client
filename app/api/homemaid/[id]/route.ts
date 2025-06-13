@@ -12,7 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'sss';
 async function getUserOffice(request: Request): Promise<string | null> {
   try {
     const cookieStore = await cookies()
-      const token =cookieStore.get('token')
+    const token = cookieStore.get('token')
     console.log(token?.value)
     // Extract JWT from Authorization header (format: Bearer <token>)
     // const authHeader = request.headers.get('Authorization');
@@ -21,7 +21,7 @@ async function getUserOffice(request: Request): Promise<string | null> {
     // }
 
     // Decode JWT (replace with your actual JWT verification logic)
-    if (!token ) {
+    if (!token) {
       throw new Error('Invalid or missing token');
     }
     const decoded = jwt.verify(token?.value, "sss") as { office: string };

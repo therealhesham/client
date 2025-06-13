@@ -141,7 +141,7 @@ function CandidateCard({ candidate }: CandidateCardProps) {
         className="w-full h-56 object-cover"
       />
       <div className="p-6 text-right">
-        <h3 className="text-2xl font-semibold text-gray-900 font-['Tajawal']">
+        <h3 className="text-2xl font-semibold text-nowrap text-gray-900 font-['Tajawal']">
           {candidate.Name}
         </h3>
         <p className="text-gray-700 font-['Tajawal']">{candidate?.Nationalitycopy}</p>
