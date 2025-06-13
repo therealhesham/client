@@ -11,6 +11,7 @@ export async function GET(req: NextRequest) {
   const id = url.searchParams.get("id");
   const Nationality = url.searchParams.get("Nationality");
   const page = url.searchParams.get("page");
+  const Religion = url.searchParams.get("religion");
 
   const pageSize = 12;
   const pageNumber = parseInt(page as string, 10) || 1;
@@ -21,21 +22,32 @@ export async function GET(req: NextRequest) {
     filters.id = {
       equals: Number(id),
     };
-  if (Name) filters.Name = { contains: Name.toLowerCase(), mode: "insensitive" };
+  if (Name) filters.Name = { contains: Name.toLowerCase() };
   if (age) filters.age = { equals: parseInt(age, 10) };
   if (Passportnumber)
     filters.Passportnumber = {
       contains: Passportnumber.toLowerCase(),
-      mode: "insensitive",
     };
   if (Nationality)
     filters.Nationalitycopy = {
       contains: Nationality.toLowerCase(),
-      mode: "insensitive",
     };
 
+  if (Religion) {
+    if (Religion == "Islam - الإسلام")
+      filters.Religion = {
+        contains: "Islam - الإسلام",
+      }
+
+    else {
+      filters.Religion = {
+        not: { equals: "Islam - الإسلام" }
+      }
+
+    }
+    ;
+  }
   try {
-    // Fetch data with the filters and pagination
     const homemaids = await prisma.homemaid.findMany({
       where: { NewOrder: { every: { HomemaidId: null } }, ...filters },
       skip: (pageNumber - 1) * pageSize,
