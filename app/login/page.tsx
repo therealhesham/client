@@ -3,22 +3,25 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-
+    const router = useRouter()
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Handle login logic here
         console.log('Login attempted with:', { email, password });
 
         localStorage.setItem("item", "code")
+        router.push("/myorders/42")
     };
 
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#ECC383]">
+        <div className="min-h-screen flex items-center justify-center bg-wheat">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
