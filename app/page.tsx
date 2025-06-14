@@ -254,13 +254,13 @@ export default function Home() {
   }
   useEffect(() => { homeData() }, [])
 
-  const handleSplashComplete = () => {
-    setShowSplash(false);
-  };
+  // const handleSplashComplete = () => {
+  //   setShowSplash(false);
+  // };
 
-  if (showSplash) {
-    return <SplashScreen onComplete={handleSplashComplete} />;
-  }
+  // if (showSplash) {
+  //   return <SplashScreen onComplete={handleSplashComplete} />;
+  // }
   return (
     <div dir="rtl" className="min-h-screen bg-gray-100 font-['Tajawal']">
       <Navbar />

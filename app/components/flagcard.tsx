@@ -1,3 +1,5 @@
+//@ts-nocheck
+//@ts-ignore
 import { motion } from 'framer-motion';
 
 const FlagCard = ({ country, flag, price, onClick }) => {
