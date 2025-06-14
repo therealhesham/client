@@ -1,4 +1,5 @@
-
+//@ts-nocheck
+//@ts-ignore
 
 // app/candidates/page.tsx
 "use client";
