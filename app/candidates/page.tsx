@@ -158,7 +158,7 @@ export default function CandidatesPage() {
       setLoading(false);
     }
   };
-  const params = useSearchParams()
+  // const params = useSearchParams()
   // Fetch candidates when filters or page change
   useEffect(() => {
     // console.log(useSearchParams().get("country"))
