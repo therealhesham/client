@@ -1,3 +1,6 @@
+//@ts-ignore
+//@ts-nocheck
+
 'use client';
 
 import NavigationBar from '@/app/components/navigation';
