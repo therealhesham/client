@@ -12,13 +12,75 @@ const myFont = localFont({
 
 export default function LoginPage() {
     const [phone, setPhone] = useState('+966');
+    const [code, setCode] = useState(['', '', '', '', '', '']);
+    const [showOTP, setShowOTP] = useState(false); // State to control OTP input visibility
+    const [error, setError] = useState(''); // State for error messages
     const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const checkPhoneInDatabase = async (phoneNumber) => {
+
+        // Placeholder for database check logic
+        // Replace with actual API call
+        try {
+            const response = await fetch(`/api/checkPhone?number=${phoneNumber}`, { body: JSON.stringify({ phone }) });
+            return response.ok;
+        } catch (error) {
+            console.error('Error checking phone:', error);
+            return false;
+        }
+    };
+
+    const handleCodeChange = (index, value) => {
+        if (/^\d?$/.test(value)) {
+            const newCode = [...code];
+            newCode[index] = value;
+            setCode(newCode);
+            if (value && index < 5) {
+                document.getElementById(`code-${index + 1}`).focus();
+            }
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Login attempted with:', { phone });
-        localStorage.setItem('item', 'code');
-        router.push('/myorders/42');
+        setError(''); // Clear previous errors
+
+        // Check if phone exists in database
+        const isPhoneValid = await checkPhoneInDatabase(phone);
+
+        if (isPhoneValid) {
+            // Send SMS
+            const phonenumber = phone.slice(4);
+            const message = "Your verification code";
+            const url = `https://www.brcitco-api.com/api/sendsms/?user=966555544961&pass=Rwes1484&to=966${phonenumber}&message=${message}&sender=روائس للاستقدام`;
+
+            try {
+                const response = await fetch(url, { method: 'GET' });
+                if (response.ok) {
+                    console.log('SMS sent successfully');
+                    setShowOTP(true); // Show OTP input after successful SMS send
+                } else {
+                    setError('Failed to send SMS. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error sending SMS:', error);
+                setError('Error sending SMS. Please try again.');
+            }
+        } else {
+            setError('Phone number not found in database.');
+        }
+    };
+
+    const handleVerifyCode = (e) => {
+        e.preventDefault();
+        const verificationCode = code.join('');
+        if (verificationCode.length === 6 && /^\d{6}$/.test(verificationCode)) {
+            console.log('Verification code submitted:', verificationCode);
+            localStorage.setItem('item', 'code');
+            router.push('/myorders/42');
+        } else {
+            setError('Invalid verification code. Please enter a 6-digit code.');
+        }
     };
 
     return (
@@ -35,7 +97,7 @@ export default function LoginPage() {
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.4 }}
-                        className="text-center  mb-6"
+                        className="text-center mb-6"
                     >
                         <svg
                             className="w-48 h-48 mb-4"
@@ -59,7 +121,7 @@ export default function LoginPage() {
                                 <path d="M78.07 122.95c8.44 4.39 17.4 5.79 26.83 4.95 8.15-.73 15.58-3.18 22.28-8.01 3.31-2.39 7.17-2.92 11.28-2.21 5.9 1.02 11.26 3.46 16.66 5.83 9.83 5.9 17.68 13.77 23.5 23.66-2.85 5.98-7.06 11-11.54 15.76-14.92 15.87-33.23 25.82-54.82 28.21-38.3 4.23-68.44-10.1-90.12-42.06-.34-.5-.55-1.1-.82-1.65.34-.51.7-1.01 1-1.54C31.4 130.26 45 121.07 62.6 117.51c3.35-.68 6.3-.17 9.08 1.82 1.99 1.42 4.01 2.85 6.38 3.63Z" fill="#ffffff"></path>
                                 <path d="M124.2 26.58c2.38 1.77 4.97 3.31 7.1 5.34 13.43 12.87 18.54 28.65 13.92 46.6-4.71 18.3-17.09 29.63-35.51 34.06-7.21 1.74-14.47 1.12-21.67-.39-1.06-.33-2.13-.64-3.18-1-17.04-5.88-31.37-21.46-31.64-43.57-.21-16.55 6.81-29.96 20.51-39.39 10.15-6.99 21.48-9.63 33.8-7.54 5.92 1.01 11.3 3.42 16.67 5.89" fill="#ffffff"></path>
                                 <path d="M124.2 26.58c-5.38-2.47-10.76-4.89-16.67-5.89-12.32-2.09-23.65.55-33.8 7.54-13.7 9.43-20.72 22.84-20.51 39.39.27 22.11 14.6 37.69 31.64 43.57 1.05.36 2.12.67 3.18 1-1.44 2.8-4.04 4.57-6.1 6.83-1.24 1.36-2.57 2.63-3.87 3.94-2.37-.79-4.39-2.21-6.38-3.63-2.78-1.99-5.73-2.49-9.08-1.82-17.59 3.57-31.19 12.75-40.28 28.38-.31.53-.67 1.03-1 1.54-6.48-10.57-10.56-22-12.19-34.28-3.18-23.92 1.78-45.98 15.72-65.74C39.43 26.75 59.35 14.25 84.21 9.63c12.19-2.27 24.31-1.75 36.38.9 3.65.8 3.7.83 3.72 4.56.02 3.83-.07 7.66-.11 11.49" fill="#003749"></path>
-                                <path d="M178.61 147.17c-5.82-9.89-13.67-17.76-23.5-23.66 9.95-16.03 17.39-33.16 22.45-51.33 1.28-4.59 2.33-9.24 3.49-13.89 1.26.08 1.33 1.14 1.65 1.82 4.31 9.21 7.2 18.81 8.43 28.96 2.21 18.28-.89 35.59-8.92 52.08-1.02 2.1-2.06 4.21-3.6 6.01Z" fill="#003749"></path>
+                                <path d="M178.61 147.17c-5.82-9.89-13.67-17.76-23.5-23.66 9.95-16.03 17.39-33.16 22.45-51.33 1.28-4.59 2.33-9.24 3.49-13.89 1.26.08 1.33 1.14 1.65 1.82 4.31 9.21 7.2 18.81 8.43 28.96 2.21 18.28 Dot 18.28-.89 35.59-8.92 8.92-52.08-1.02 2.57-3.91 3.6-6.01Z" fill="#003749"></path>
                             </g>
                         </svg>
                         <h1 className="text-2xl font-bold text-gray-800">تتبع الطلب</h1>
@@ -74,21 +136,31 @@ export default function LoginPage() {
                                 <input
                                     type="text"
                                     id="phone"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none"
+                                    value="+966"
+                                    className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100"
                                     readOnly
                                 />
                                 <input
-                                    type="text"
+                                    type="tel"
                                     value={phone.slice(4)}
-                                    onChange={(e) => setPhone('+966' + e.target.value)}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
+                                            setPhone('+966' + input);
+                                        }
+                                    }}
                                     className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none"
                                     placeholder="5XXXXXXXX"
+                                    pattern="[5-9][0-9]{8}"
+                                    maxLength={9}
                                     required
                                 />
                             </div>
                         </div>
+
+                        {error && (
+                            <p className="text-red-600 text-center">{error}</p>
+                        )}
 
                         <motion.button
                             whileHover={{ scale: 1.02 }}
@@ -96,9 +168,44 @@ export default function LoginPage() {
                             type="submit"
                             className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center"
                         >
-                            الدخول
+                            إرسال رمز التحقق
                         </motion.button>
                     </form>
+
+                    {showOTP && (
+                        <form onSubmit={handleVerifyCode} className="w-full space-y-4 mt-6">
+                            <label className="block text-lg font-medium text-gray-700 text-center">
+                                ادخل رمز التحقق
+                            </label>
+                            <div className="flex justify-center space-x-2">
+                                {code.map((digit, index) => (
+                                    <input
+                                        key={index}
+                                        id={`code-${index}`}
+                                        type="text"
+                                        value={digit}
+                                        onChange={(e) => handleCodeChange(index, e.target.value)}
+                                        className="w-12 h-12 text-center text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E5BC7E]"
+                                        maxLength={1}
+                                        required
+                                    />
+                                ))}
+                            </div>
+
+                            {error && (
+                                <p className="text-red-600 text-center">{error}</p>
+                            )}
+
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                type="submit"
+                                className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center"
+                            >
+                                تحقق
+                            </motion.button>
+                        </form>
+                    )}
                 </motion.div>
             </div>
         </div>

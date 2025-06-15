@@ -1,10 +1,9 @@
 //@ts-nocheck
 //@ts-ignore
 
-// app/candidates/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { UserIcon, HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -26,7 +25,6 @@ interface Candidate {
   Picture?: { url: string };
 }
 
-// قائمة الأعلام مع روابط الصور من CDN
 const flags = [
   { nationality: "Philippines", flagUrl: "https://flagcdn.com/w1280/ph.png" },
   { nationality: "Indonesia", flagUrl: "https://flagcdn.com/w1280/id.png" },
@@ -115,7 +113,6 @@ async function fetchImageDateAirtable(name: string) {
 }
 
 const religions = ["غير مسلم", "مسلم"];
-
 // Main Candidates Page
 export default function CandidatesPage() {
   const [search, setSearch] = useState("");
@@ -129,6 +126,13 @@ export default function CandidatesPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+
+// // Set isMounted to true only on the client side
+// const [isMounted, setIsMounted] = useState(false);
+//   useEffect(() => {
+//     setIsMounted(true);
+//   }, []);
+// const searchParams = isMounted ? useSearchParams() : null;
 
   // Fetch candidates from API
   const fetchCandidates = async () => {
@@ -163,7 +167,6 @@ export default function CandidatesPage() {
   // Sync nationalityFilter with country query param
   useEffect(() => {
     const country = searchParams.get("country");
-   alert(country && nationalities.includes(country))
     if (country && nationalities.includes(country)) {
       setNationalityFilter(country);
     } else {
@@ -183,7 +186,7 @@ export default function CandidatesPage() {
     if (nationality !== country) {
       newParams.set("country", nationality);
     }
-    router.push(`/candidates?country=`+nationality);
+    router.push(`/candidates?country=` + nationality);
   };
 
   // Unique filter options
@@ -292,9 +295,8 @@ export default function CandidatesPage() {
                 whileHover={{ scale: 1.1, boxShadow: "0 4px 8px rgba(0,0,0,0.1)" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleFlagClick(flag.nationality)}
-                className={`p-2 border-2 cursor-pointer ${
-                  nationalityFilter === flag.nationality ? "border-[var(--teal)]" : "border-transparent"
-                } bg-white shadow-sm`}
+                className={`p-2 border-2 cursor-pointer ${nationalityFilter === flag.nationality ? "border-[var(--teal)]" : "border-transparent"
+                  } bg-white shadow-sm`}
                 aria-label={`تصفية حسب ${flag.nationality}`}
               >
                 <img
@@ -352,9 +354,8 @@ export default function CandidatesPage() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               disabled={page === 1}
-              className={`px-4 py-2 rounded-full font-semibold ${
-                page === 1 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
-              } transition duration-300`}
+              className={`px-4 py-2 rounded-full font-semibold ${page === 1 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
+                } transition duration-300`}
             >
               السابق
             </motion.button>
@@ -363,9 +364,8 @@ export default function CandidatesPage() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setPage((prev) => prev + 1)}
               disabled={candidates.length < 10}
-              className={`px-4 py-2 rounded-full font-semibold ${
-                candidates.length < 10 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
-              } transition duration-300`}
+              className={`px-4 py-2 rounded-full font-semibold ${candidates.length < 10 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
+                } transition duration-300`}
             >
               التالي
             </motion.button>
