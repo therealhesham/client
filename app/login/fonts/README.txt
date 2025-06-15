@@ -1,21 +1,21 @@
-Markazi Text Variable Font
-==========================
+Reem Kufi Fun Variable Font
+===========================
 
-This download contains Markazi Text as both a variable font and static fonts.
+This download contains Reem Kufi Fun as both a variable font and static fonts.
 
-Markazi Text is a variable font with this axis:
+Reem Kufi Fun is a variable font with this axis:
   wght
 
 This means all the styles are contained in a single file:
-  MarkaziText-VariableFont_wght.ttf
+  Reem_Kufi_Fun/ReemKufiFun-VariableFont_wght.ttf
 
 If your app fully supports variable fonts, you can now pick intermediate styles
 that aren’t available as static fonts. Not all apps support variable fonts, and
-in those cases you can use the static font files for Markazi Text:
-  static/MarkaziText-Regular.ttf
-  static/MarkaziText-Medium.ttf
-  static/MarkaziText-SemiBold.ttf
-  static/MarkaziText-Bold.ttf
+in those cases you can use the static font files for Reem Kufi Fun:
+  Reem_Kufi_Fun/static/ReemKufiFun-Regular.ttf
+  Reem_Kufi_Fun/static/ReemKufiFun-Medium.ttf
+  Reem_Kufi_Fun/static/ReemKufiFun-SemiBold.ttf
+  Reem_Kufi_Fun/static/ReemKufiFun-Bold.ttf
 
 Get started
 -----------
