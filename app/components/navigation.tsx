@@ -3,6 +3,14 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import localFont from 'next/font/local';
+
+
+
+const myFont = localFont({
+    src: '../fonts/ReadexPro-Bold.ttf',
+    weight: '700',
+});
 
 const navVariants = {
     hidden: { opacity: 0, x: 20 },
@@ -25,8 +33,8 @@ export default function NavigationBar() {
     }, [])
 
     return (
-        <header className="bg-white shadow-md fixed w-full z-10">
-            <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <header className={`bg-white shadow-md fixed w-full  z-10 ${myFont.className}`} dir='rtl' >
+            <div className="container mx-auto px-4 py-4 flex justify-between  items-center">
                 {/* Logo */}
                 <div className="text-2xl font-bold">
                     <Image

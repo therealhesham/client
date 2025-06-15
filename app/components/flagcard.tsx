@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const FlagCard = ({ country, flag, price, onClick }) => {
     return (
         <motion.div
-            className="bg-white rounded-lg h-[150px] w-[300px] shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition-shadow duration-300"
+            className="bg-white rounded-lg h-[150px] w-[300px] shadow-md p-4 flex  justify-between cursor-pointer hover:shadow-lg transition-shadow duration-300"
             whileHover={{ scale: 1.10 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClick}
@@ -22,12 +22,17 @@ const FlagCard = ({ country, flag, price, onClick }) => {
                 </div>
             </div>
             <motion.button
-                className="w-8 h-8 bg-[#FBBF24] rounded-full flex items-center justify-center"
-                whileHover={{ backgroundColor: '#F59E0B' }}
+                className=" bg-[white] rounded-full flex items-center justify-center"
+                // whileHover={{ backgroundColor: '#F59E0B' }}
                 whileTap={{ scale: 0.9 }}
             >
-                <span className="text-gray-700">→</span>
-            </motion.button>
+                <svg fill='white' data-bbox="20 20 160 160" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" width="52" height="52" data-type="shape">
+                    <g>
+                        <path fill='#E5BC7E' d="M100 20c-44.184 0-80 35.817-80 80.001C20 144.183 55.817 180 100 180s80-35.817 80-79.999S144.183 20 100 20zm30.819 87.148l-31.791 31.79a10.075 10.075 0 0 1-7.148 2.961c-2.587 0-5.174-.987-7.148-2.961-3.948-3.948-3.948-10.348 0-14.296L109.373 100 84.732 75.359c-3.948-3.948-3.948-10.348 0-14.297 3.948-3.948 10.348-3.948 14.296 0l31.791 31.79c3.948 3.948 3.948 10.348 0 14.296z">
+
+                        </path>
+                    </g>
+                </svg>            </motion.button>
         </motion.div>
     );
 };
@@ -47,7 +52,7 @@ const FlagGrid = () => {
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">استعرض العاملات حسب الجنسية</h2>
             {/* <div className="flex flex-wrap justify-center gap-4"> */}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center ">
 
                 {flags.map((flag, index) => (
                     <FlagCard

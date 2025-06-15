@@ -206,7 +206,7 @@ const CVDetailsPage = () => {
               transition={{ duration: 0.5 }}
             >
               {/* Header Section */}
-              <div className="bg-teal-800 text-white p-8">
+              <div className="bg-[#003749] text-white p-8">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-6">
                     {image ? (
