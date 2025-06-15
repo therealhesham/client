@@ -1,14 +1,17 @@
 //@ts-nocheck
 //@ts-ignore
+import { count } from 'console';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
-const FlagCard = ({ country, flag, price, onClick }) => {
+const FlagCard = ({ country, flag, price, onClick,englishCountry }) => {
+    const router =useRouter()
     return (
         <motion.div
             className="bg-white rounded-lg h-[150px] w-[300px] shadow-md p-4 flex  justify-between cursor-pointer hover:shadow-lg transition-shadow duration-300"
             whileHover={{ scale: 1.10 }}
             whileTap={{ scale: 0.95 }}
-            onClick={onClick}
+            onClick={()=>router.push("/candidates?country="+englishCountry)}
         >
             <div className="flex items-center space-x-4">
                 <img
@@ -39,13 +42,12 @@ const FlagCard = ({ country, flag, price, onClick }) => {
 
 const FlagGrid = () => {
     const flags = [
-        { country: 'الفلبين', flag: '/philippines-flag.png', price: '14500' },
-        { country: 'باكستان', flag: '/pakistan-flag.png', price: '7000' },
-        { country: 'بنغلاديش', flag: '/bangladesh-flag.png', price: '7750' },
-        { country: 'أوغندا', flag: '/uganda-flag.png', price: '5700' },
-        { country: 'كينيا', flag: '/kenya-flag.png', price: '6700' },
-        { country: 'إثيوبيا', flag: '/ethiopia-flag.png', price: '4550' },
-    ];
+        { country: 'الفلبين', englishCountry: 'Philippines', flag: '/philippines-flag.png', price: '14500' },
+        { country: 'باكستان', englishCountry: 'Pakistan', flag: '/pakistan-flag.png', price: '7000' },
+        { country: 'بنغلاديش', englishCountry: 'Bangladesh', flag: '/bangladesh-flag.png', price: '7750' },
+        { country: 'أوغندا', englishCountry: 'Uganda', flag: '/uganda-flag.png', price: '5700' },
+        { country: 'كينيا', englishCountry: 'Kenya', flag: '/kenya-flag.png', price: '6700' },
+        { country: 'إثيوبيا', englishCountry: 'Ethiopia', flag: '/ethiopia-flag.png', price: '4550' },];
 
     return (
         <div className="container mx-auto p-4">
@@ -58,9 +60,10 @@ const FlagGrid = () => {
                     <FlagCard
                         key={index}
                         country={flag.country}
+                        englishCountry={flag.englishCountry}
                         flag={flag.flag}
                         price={flag.price}
-                        onClick={() => alert(`${flag.country} selected!`)}
+                        // onClick={() => alert(`${flag.country} selected!`)}
                     />
                 ))}
             </div>

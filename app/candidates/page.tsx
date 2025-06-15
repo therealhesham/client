@@ -8,9 +8,9 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserIcon, HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/navbar";
 import NavigationBar from "../components/navigation";
-import { useParams, useSearchParams } from "next/navigation";
 
 // Types
 interface Candidate {
@@ -26,7 +26,7 @@ interface Candidate {
   Picture?: { url: string };
 }
 
-// قائمة الأعلام مع روابط الصور من CDN (يمكنك تغييرها إلى صور محلية إذا لزم الأمر)
+// قائمة الأعلام مع روابط الصور من CDN
 const flags = [
   { nationality: "Philippines", flagUrl: "https://flagcdn.com/w1280/ph.png" },
   { nationality: "Indonesia", flagUrl: "https://flagcdn.com/w1280/id.png" },
@@ -36,11 +36,9 @@ const flags = [
   { nationality: "Sri Lanka", flagUrl: "https://flagcdn.com/w1280/lk.png" },
 ];
 
-// ... (باقي الكود كما هو في CandidateCard وfetchImageDateAirtable)
-
 function CandidateCard({ candidate }: { candidate: Candidate }) {
   const role = candidate.Nationalitycopy === "Philippines" ? "مدبرة منزل" : "مربية أطفال";
-  const experience = candidate.age > 30 ? "٥ سنوات" : "٣ سنوات";
+  const experience = candidate.ExperienceYears;
   const skills = ["التنظيف", "التنظيم", "رعاية الأطفال"];
   const location = candidate.Nationalitycopy === "Philippines" ? "دبي، الإمارات" : "الرياض، السعودية";
   const fallbackImage = "";
@@ -51,7 +49,6 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
       setImageSrc(result);
     });
   }, [candidate.Name]);
-  // console.log(useSearchParams().get("color"))
 
   return (
     <motion.div
@@ -108,6 +105,7 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
     </motion.div>
   );
 }
+
 async function fetchImageDateAirtable(name: string) {
   const fetchData = await fetch("/api/getimagefromat/" + name, {
     method: "GET",
@@ -115,18 +113,22 @@ async function fetchImageDateAirtable(name: string) {
   const parser = await fetchData.json();
   return parser.result;
 }
-const religions = ["غير مسلم", "مسلم"]
+
+const religions = ["غير مسلم", "مسلم"];
+
 // Main Candidates Page
 export default function CandidatesPage() {
   const [search, setSearch] = useState("");
   const [nationalityFilter, setNationalityFilter] = useState("");
   const [ageFilter, setAgeFilter] = useState("");
-  const [religionFilter, setReligionFilter] = useState("")
-
+  const [religionFilter, setReligionFilter] = useState("");
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Fetch candidates from API
   const fetchCandidates = async () => {
@@ -138,8 +140,7 @@ export default function CandidatesPage() {
       if (search) queryParams.append("Name", search);
       if (nationalityFilter) queryParams.append("Nationality", nationalityFilter);
       if (ageFilter) queryParams.append("age", ageFilter);
-
-      if (religionFilter) queryParams.append("religion", religionFilter)
+      if (religionFilter) queryParams.append("religion", religionFilter);
       queryParams.append("page", page.toString());
 
       const response = await fetch(`/api/candidates?${queryParams.toString()}`);
@@ -158,13 +159,32 @@ export default function CandidatesPage() {
       setLoading(false);
     }
   };
-  // const params = useSearchParams()
+
+  // Sync nationalityFilter with country query param
+  useEffect(() => {
+    const country = searchParams.get("country");
+   alert(country && nationalities.includes(country))
+    if (country && nationalities.includes(country)) {
+      setNationalityFilter(country);
+    } else {
+      setNationalityFilter("");
+    }
+  }, [searchParams]);
+
   // Fetch candidates when filters or page change
   useEffect(() => {
-    // console.log(useSearchParams().get("country"))
-
     fetchCandidates();
   }, [search, nationalityFilter, ageFilter, page, religionFilter]);
+
+  // Handle flag click to update URL
+  const handleFlagClick = (nationality: string) => {
+    const country = searchParams.get("country");
+    const newParams = new URLSearchParams(searchParams.toString());
+    if (nationality !== country) {
+      newParams.set("country", nationality);
+    }
+    router.push(`/candidates?country=`+nationality);
+  };
 
   // Unique filter options
   const nationalities = ["Philippines", "Indonesia", "India", "Pakistan", "Bangladesh", "Sri Lanka"];
@@ -224,14 +244,15 @@ export default function CandidatesPage() {
             transition={{ duration: 0.8 }}
             className="flex flex-col md:flex-row gap-4 items-center justify-center mb-8"
           >
-            {/* Search Bar */}
-
             {/* Filters */}
             <div className="flex flex-wrap gap-4 w-full md:w-1/2 justify-center">
               <select
                 value={nationalityFilter}
-                onChange={(e) => setNationalityFilter(e.target.value)}
-                className="px-4 py-3 rounded-full bg-white border border-gray-300  w-33 focus:outline-none focus:ring-2 focus:ring-[var(--teal)] text-gray-800"
+                onChange={(e) => {
+                  setNationalityFilter(e.target.value);
+                  handleFlagClick(e.target.value);
+                }}
+                className="px-4 py-3 rounded-full bg-white border border-gray-300 w-33 focus:outline-none focus:ring-2 focus:ring-[var(--teal)] text-gray-800"
                 aria-label="تصفية حسب الجنسية"
               >
                 <option value="">جميع الجنسيات</option>
@@ -241,33 +262,15 @@ export default function CandidatesPage() {
                   </option>
                 ))}
               </select>
-              {/* <select
-                value={ageFilter}
-                onChange={(e) => setAgeFilter(e.target.value)}
-                className="px-4 py-3 rounded-full border p-10 bg-white border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--teal)] text-gray-800"
-                aria-label="تصفية حسب العمر"
-              >
-                <option value="">جميع الأعمار</option>
-                {ages.map((age) => (
-                  <option key={age} value={age}>
-                    {age}
-                  </option>
-                ))}
-              </select> */}
               <select
                 value={religionFilter}
                 onChange={(e) => setReligionFilter(e.target.value)}
-                className="px-4 py-3 rounded-full bg-white border border-gray-300  focus:outline-none focus:ring-2 focus:ring-[var(--teal)] text-gray-800"
-                aria-label="تصفية حسب العمر"
+                className="px-4 py-3 rounded-full bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--teal)] text-gray-800"
+                aria-label="تصفية حسب الديانة"
               >
                 <option value="">جميع الديانات</option>
-                {/* {religions.map((age) => ( */}
-                <option key={1} value="Islam - الإسلام">
-                  مسلم
-                </option>
-                <option key={2} value="غير مسلم">
-                  غير مسلم
-                </option>
+                <option value="Islam - الإسلام">مسلم</option>
+                <option value="غير مسلم">غير مسلم</option>
               </select>
             </div>
           </motion.div>
@@ -279,35 +282,29 @@ export default function CandidatesPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex justify-center gap-4 flex-wrap mt-6"
           >
+
             {flags.map((flag, index) => (
               <motion.button
-
                 key={flag.nationality}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ scale: 1.1, boxShadow: "0 4px 8px rgba(0,0,0,0.1)" }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() =>
-                  setNationalityFilter(
-                    flag.nationality === nationalityFilter ? "" : flag.nationality
-                  )
-                }
-                className={`p-2 border-2 cursor-pointer ${nationalityFilter === flag.nationality
-                  ? "border-[var(--teal)]"
-                  : "border-transparent"
-                  } bg-white shadow-sm`}
+                onClick={() => handleFlagClick(flag.nationality)}
+                className={`p-2 border-2 cursor-pointer ${
+                  nationalityFilter === flag.nationality ? "border-[var(--teal)]" : "border-transparent"
+                } bg-white shadow-sm`}
                 aria-label={`تصفية حسب ${flag.nationality}`}
               >
                 <img
                   src={flag.flagUrl}
                   alt={`علم ${flag.nationality}`}
-                  className="w-30 h-20 object-cover" // تم تكبير الحجم وإزالة الشكل الدائري
+                  className="w-30 h-20 object-cover"
                 />
               </motion.button>
             ))}
           </motion.div>
-
         </div>
       </section>
 
@@ -355,7 +352,9 @@ export default function CandidatesPage() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               disabled={page === 1}
-              className={`px-4 py-2 rounded-full font-semibold ${page === 1 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"} transition duration-300`}
+              className={`px-4 py-2 rounded-full font-semibold ${
+                page === 1 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
+              } transition duration-300`}
             >
               السابق
             </motion.button>
@@ -364,7 +363,9 @@ export default function CandidatesPage() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setPage((prev) => prev + 1)}
               disabled={candidates.length < 10}
-              className={`px-4 py-2 rounded-full font-semibold ${candidates.length < 10 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"} transition duration-300`}
+              className={`px-4 py-2 rounded-full font-semibold ${
+                candidates.length < 10 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
+              } transition duration-300`}
             >
               التالي
             </motion.button>
