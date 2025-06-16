@@ -134,6 +134,11 @@ const CVDetailsPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+
+const verifyPhone = ()=>{ // verify phone number by sending otp 
+
+}
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

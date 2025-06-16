@@ -13,17 +13,27 @@ const myFont = localFont({
 export default function LoginPage() {
     const [phone, setPhone] = useState('+966');
     const [code, setCode] = useState(['', '', '', '', '', '']);
-    const [showOTP, setShowOTP] = useState(false); // State to control OTP input visibility
-    const [error, setError] = useState(''); // State for error messages
+    const [showOTP, setShowOTP] = useState(false);
+    const [error, setError] = useState('');
+    const [generatedOTP, setGeneratedOTP] = useState(''); // Store generated OTP
     const router = useRouter();
 
-    const checkPhoneInDatabase = async (phoneNumber) => {
+    // Function to generate a random 6-digit OTP
+    const generateOTP = () => {
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        return otp;
+    };
 
-        // Placeholder for database check logic
-        // Replace with actual API call
+    const checkPhoneInDatabase = async (phoneNumber) => {
         try {
-            const response = await fetch(`/api/checkPhone?number=${phoneNumber}`, { body: JSON.stringify({ phone }) });
-            return response.ok;
+            const response = await fetch(`/api/checkPhone`, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone:phoneNumber}) 
+            });
+            if(response.status == 201 ) return true
         } catch (error) {
             console.error('Error checking phone:', error);
             return false;
@@ -43,22 +53,24 @@ export default function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear previous errors
+        setError('');
 
-        // Check if phone exists in database
         const isPhoneValid = await checkPhoneInDatabase(phone);
 
         if (isPhoneValid) {
-            // Send SMS
+            const newOTP = generateOTP(); // Generate new OTP
+        
+            setGeneratedOTP(newOTP); // Store the generated OTP
             const phonenumber = phone.slice(4);
-            const message = "Your verification code";
-            const url = `https://www.brcitco-api.com/api/sendsms/?user=966555544961&pass=Rwes1484&to=966${phonenumber}&message=${message}&sender=روائس للاستقدام`;
+            const message = `Your verification code is ${newOTP}`;
+            // alert(message)
+            const url = `https://www.brcitco-api.com/api/sendsms/?user=966555544961&pass=Rwes1484&to=966${phonenumber}&message=${encodeURIComponent(message)}&sender=روائس للاستقدام`;
 
             try {
                 const response = await fetch(url, { method: 'GET' });
                 if (response.ok) {
-                    console.log('SMS sent successfully');
-                    setShowOTP(true); // Show OTP input after successful SMS send
+                    console.log('SMS sent successfully with OTP:', newOTP);
+                    setShowOTP(true);
                 } else {
                     setError('Failed to send SMS. Please try again.');
                 }
@@ -70,16 +82,20 @@ export default function LoginPage() {
             setError('Phone number not found in database.');
         }
     };
-
+const [verifyError,setVerifyError]=useState("")
     const handleVerifyCode = (e) => {
         e.preventDefault();
         const verificationCode = code.join('');
         if (verificationCode.length === 6 && /^\d{6}$/.test(verificationCode)) {
-            console.log('Verification code submitted:', verificationCode);
-            localStorage.setItem('item', 'code');
-            router.push('/myorders/42');
+            if (verificationCode === generatedOTP) {
+                // console.log('Verification successful');
+                localStorage.setItem('item', 'code');
+                router.push('/myorders/'+phone.slice(4));
+            } else {
+                setVerifyError('خطأ في رمز التحقق');
+            }
         } else {
-            setError('Invalid verification code. Please enter a 6-digit code.');
+            setVerifyError('خطأ في رمز التحقق');
         }
     };
 
@@ -132,11 +148,12 @@ export default function LoginPage() {
                             <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center">
                                 ادخل رقم جوال الحجز
                             </label>
-                            <div className="flex justify-center mt-2">
-                                <input
+                            <div className="flex justify-center mt-2">                              
+                            
+                            <input
                                     type="text"
-                                    id="phone"
-                                    value="+966"
+                                    id="phone-966"
+                                    value={"+966"}
                                     className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100"
                                     readOnly
                                 />
@@ -192,8 +209,8 @@ export default function LoginPage() {
                                 ))}
                             </div>
 
-                            {error && (
-                                <p className="text-red-600 text-center">{error}</p>
+                            {verifyError && (
+                                <p className="text-red-600 text-center">{verifyError}</p>
                             )}
 
                             <motion.button

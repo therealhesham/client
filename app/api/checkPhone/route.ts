@@ -2,6 +2,7 @@
 import { PrismaClient } from '@prisma/client';
 import jwt from "jsonwebtoken"
 import { headers } from 'next/headers';
+import { throws } from 'node:assert';
 const prisma = new PrismaClient();
 export async function POST(req: Request) {
     try {
@@ -15,14 +16,14 @@ export async function POST(req: Request) {
         } = await req.json();
         // Validate required fields, or handle with default/fallback values
         // const header = await headers();
-
         // const token = header.get("authorization")?.split(' ')[1];
         // const verify = jwt.decode(token)
         // console.log(verify.office)
         // Insert into the database
-        const newHomemaid = await prisma.client.findUnique({where:{phonenumber:phone}})
+        const newHomemaid = await prisma.client.findUnique({where:{phonenumber:phone.slice(4)}})
+        if(!newHomemaid?.phonenumber)throw new Error("الرقم غير مسجل")
 
-        return new Response(JSON.stringify(newHomemaid), { status: 201 });
+            return new Response(JSON.stringify(newHomemaid), { status: 201 });
     } catch (error) {
         console.error('Error creating new homemaid:', error);
         return new Response(JSON.stringify({ error: 'Something went wrong' }), {
