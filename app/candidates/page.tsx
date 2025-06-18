@@ -286,7 +286,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="flex flex-col md:flex-row gap-4 items-center justify-center mb-8"
+            className="flex flex-col pt-20 px-20 md:flex-row gap-4 items-center justify-center mb-8"
           >
             {/* Filters */}
             <div className="flex flex-wrap gap-4 w-full md:w-1/2 justify-center">
