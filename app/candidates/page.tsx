@@ -10,8 +10,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/navbar";
 import NavigationBar from "../components/navigation";
+import axios from "axios";
 
-// Types
+
 interface Candidate {
   id: number;
   Name: string;
@@ -28,9 +29,12 @@ interface Candidate {
 const flags = [
   { nationality: "Philippines", flagUrl: "https://flagcdn.com/w1280/ph.png" },
   { nationality: "Indonesia", flagUrl: "https://flagcdn.com/w1280/id.png" },
-  { nationality: "India", flagUrl: "https://flagcdn.com/w1280/in.png" },
+  { nationality: "Ethiopia", flagUrl: "https://flagcdn.com/w1280/et.png" },
   { nationality: "Pakistan", flagUrl: "https://flagcdn.com/w1280/pk.png" },
-  { nationality: "Bangladesh", flagUrl: "https://flagcdn.com/w1280/bd.png" },
+  { nationality: "Bengladesh", flagUrl: "https://flagcdn.com/w1280/bd.png" },
+  
+  { nationality: "Kenya", flagUrl: "https://flagcdn.com/w1280/ke.png" },
+
   { nationality: "Sri Lanka", flagUrl: "https://flagcdn.com/w1280/lk.png" },
 ];
 
@@ -115,6 +119,14 @@ async function fetchImageDateAirtable(name: string) {
 const religions = ["غير مسلم", "مسلم"];
 // Main Candidates Page
 export default function CandidatesPage() {
+
+  const SendEmail = async ()=>{
+    const response = await axios.post('/api/sendEmail', {formData});
+
+console.log(response)
+
+
+  }
   const [search, setSearch] = useState("");
   const [nationalityFilter, setNationalityFilter] = useState("");
   const [ageFilter, setAgeFilter] = useState("");
@@ -179,6 +191,35 @@ export default function CandidatesPage() {
     fetchCandidates();
   }, [search, nationalityFilter, ageFilter, page, religionFilter]);
 
+  // أضف هذه الحالة في بداية المكون
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [formData, setFormData] = useState({
+  name: "",
+  phone: "",
+  email: "",
+  message: "",
+});
+
+// دالة لفتح وإغلاق المودال
+const toggleModal = () => {
+  setIsModalOpen(!isModalOpen);
+};
+
+// دالة للتعامل مع تغيير حقول النموذج
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+
+// دالة لإرسال النموذج (يمكنك تخصيصها لإرسال البيانات إلى API)
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  
+  SendEmail()
+  // إعادة تعيين النموذج وإغلاق المودال
+  // setFormData({ name: "", phone: "", email: "", message: "" });
+  // setIsModalOpen(false);
+};
   // Handle flag click to update URL
   const handleFlagClick = (nationality: string) => {
     const country = searchParams.get("country");
@@ -204,7 +245,7 @@ export default function CandidatesPage() {
   return (
     <div className="min-h-screen bg-[var(--cream)]" dir="rtl">
       <NavigationBar />
-      <motion.section
+      {/* <motion.section
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -236,7 +277,7 @@ export default function CandidatesPage() {
             ابحث عن مدبرات المنازل، مقدمي الرعاية، ومربيات الأطفال الموثوقين لتلبية احتياجات منزلك
           </motion.p>
         </div>
-      </motion.section>
+      </motion.section> */}
 
       {/* Search and Filters */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[var(--cream)]">
@@ -372,14 +413,114 @@ export default function CandidatesPage() {
           </div>
         </div>
       </section>
-
+{/* Modal */}
+{isModalOpen && (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.3 }}
+    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+    dir="rtl"
+  >
+    <motion.div
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.8, opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl"
+    >
+      <h2 className="text-2xl font-bold text-[#013749] mb-6">تواصل معنا</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            الاسم
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+            placeholder="أدخل اسمك"
+          />
+        </div>
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+            رقم الهاتف
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+            placeholder="أدخل رقم هاتفك"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            البريد الإلكتروني
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+            placeholder="أدخل بريدك الإلكتروني"
+          />
+        </div>
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+            الرسالة
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            value={formData.message}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+            placeholder="أدخل رسالتك"
+            rows={4}
+          />
+        </div>
+        <div className="flex justify-end gap-4">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="button"
+            onClick={toggleModal}
+            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg font-medium"
+          >
+            إلغاء
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            className="px-4 py-2 bg-[#013749] text-white rounded-lg font-medium"
+          >
+            إرسال
+          </motion.button>
+        </div>
+      </form>
+    </motion.div>
+  </motion.div>
+)}
       {/* CTA Footer */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="bg-gradient-to-br from-[var(--coral)] to-[var(--sunflower)] text-[var(--cream)] py-16"
+        className="bg-gradient-to-br from-[#c39e6a] to-[#c39e6a] text-[var(--cream)] py-16"
       >
         <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -409,19 +550,18 @@ export default function CandidatesPage() {
           >
             تواصل معنا اليوم للعثور على أفضل مدبرات المنازل ومقدمي الرعاية
           </motion.p>
-          <Link href="/contact">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-block bg-[var(--teal)] text-[var(--cream)] px-8 py-3 rounded-full font-semibold text-lg hover:bg-[#3EE4CF] transition duration-300 shadow-lg"
-              animate={{
-                scale: [1, 1.03, 1],
-                transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-              }}
-            >
-              تواصل معنا
-            </motion.button>
-          </Link>
+          <motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  onClick={toggleModal}
+  className="inline-block bg-teal-800 text-[var(--cream)] px-8 py-3 rounded-full font-semibold text-lg transition duration-300 shadow-lg"
+  animate={{
+    scale: [1, 1.03, 1],
+    transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+  }}
+>
+  تواصل معنا
+</motion.button>
         </div>
       </motion.section>
     </div>
