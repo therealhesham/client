@@ -217,8 +217,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   
   SendEmail()
   // إعادة تعيين النموذج وإغلاق المودال
-  // setFormData({ name: "", phone: "", email: "", message: "" });
-  // setIsModalOpen(false);
+  setFormData({ name: "", phone: "", email: "", message: "" });
+  setIsModalOpen(false);
 };
   // Handle flag click to update URL
   const handleFlagClick = (nationality: string) => {
