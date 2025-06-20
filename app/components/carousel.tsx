@@ -1,158 +1,124 @@
-'use client'; // Required for Next.js 15 client-side component
+import React, { useCallback, useEffect, useState } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-
-interface CarouselItem {
-    id: number;
-    imageUrl: string;
-    alt: string;
-    title?: string;
-    description?: string;
-}
-
-const carouselItems: CarouselItem[] = [
-    {
-        id: 1,
-        imageUrl: 'https://uploadcarimages.sgp1.digitaloceanspaces.com/recruitment/artboard.jpg',
-        alt: 'Nature Landscape 1',
-        title: 'Explore Nature',
-        description: 'Discover the beauty of serene landscapes.',
-    },
-    {
-        id: 2,
-        imageUrl: 'https://uploadcarimages.sgp1.digitaloceanspaces.com/recruitment/artboard.jpg',
-        alt: 'Beach Sunset',
-        title: 'Beach Sunset',
-        description: 'Relax with stunning sunset views.',
-    },
-    {
-        id: 3,
-        imageUrl: 'https://uploadcarimages.sgp1.digitaloceanspaces.com/recruitment/artboard.jpg',
-        alt: 'Mountain Peaks',
-        title: 'Mountain Adventure',
-        description: 'Embark on a thrilling mountain journey.',
-    },
+const slides = [
+  {
+    image: 'https://uploadcarimages.sgp1.digitaloceanspaces.com/recruitment/artboard.jpg',
+    // title: 'Beautiful Beach',
+    // description: 'Discover the serene beauty of tropical beaches.',
+  } 
 ];
 
-const Carousel: React.FC = () => {
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
+const Carousel = () => {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    slidesToScroll: 1,
+    startIndex: 0,
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
 
-    // Autoplay logic
-    useEffect(() => {
-        if (isPaused) return;
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev === carouselItems.length - 1 ? 0 : prev + 1));
-        }, 5000); // Change slide every 5 seconds
-        return () => clearInterval(interval);
-    }, [isPaused]);
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
 
-    const goToSlide = (index: number) => {
-        setCurrentSlide(index);
-    };
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
 
-    const goToPrev = () => {
-        setCurrentSlide((prev) => (prev === 0 ? carouselItems.length - 1 : prev - 1));
-    };
+  const scrollTo = useCallback(
+    (index) => {
+      if (emblaApi) emblaApi.scrollTo(index);
+    },
+    [emblaApi]
+  );
 
-    const goToNext = () => {
-        setCurrentSlide((prev) => (prev === carouselItems.length - 1 ? 0 : prev + 1));
-    };
+  useEffect(() => {
+    slides.forEach((slide, index) => {
+      const img = new Image();
+      img.src = slide.image;
+      img.onload = () => console.log(`Image ${index} loaded: ${slide.image}`);
+      img.onerror = () => console.log(`Image ${index} failed: ${slide.image}`);
+    });
+  }, []);
 
-    return (
-        <div
-            className="relative w-full max-w-7xl mx-auto overflow-hidden rounded-xl shadow-2xl"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            role="region"
-            aria-label="Image carousel"
-        >
-            {/* Slides */}
-            <div
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-                {carouselItems.map((item) => (
-                    <div
-                        key={item.id}
-                        className="min-w-full h-[500px] relative flex items-center justify-center"
-                    >
-                        <img
-                            src={item.imageUrl}
-                            alt={item.alt}
-                            className="object-cover w-full h-full"
-                        // loading={item.id === 1 ? "eager" : "lazy"}
-                        />
-                        {/* 
-                        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white p-6">
-                            {item.title && (
-                                <h2 className="text-4xl font-bold mb-2">{item.title}</h2>
-                            )}
-                            {item.description && (
-                                <p className="text-lg text-center max-w-md">{item.description}</p>
-                            )}
-                        </div> */}
-                    </div>
-                ))}
-            </div>
+  useEffect(() => {
+    if (emblaApi) {
+      emblaApi.reInit();
+      setScrollSnaps(emblaApi.scrollSnapList());
+      emblaApi.on('select', () => {
+        setSelectedIndex(emblaApi.selectedScrollSnap());
+      });
 
-            {/* Navigation Arrows */}
-            <button
-                onClick={goToPrev}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-800 p-3 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Previous slide"
-            >
-                <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http:// SVG namespace"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                    />
-                </svg>
-            </button>
-            <button
-                onClick={goToNext}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-gray-800 p-3 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Next slide"
-            >
-                <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http:// SVG namespace"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                    />
-                </svg>
-            </button>
+      // Preload all slides
+      const slides = document.querySelectorAll('.embla .flex > div');
+      slides.forEach((_, index) => {
+        emblaApi.scrollTo(index, true);
+      });
+      emblaApi.scrollTo(0, true);
+    }
+  }, [emblaApi]);
 
-            {/* Navigation Dots */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {carouselItems.map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => goToSlide(index)}
-                        className={`w-3 h-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${currentSlide === index ? 'bg-blue-500' : 'bg-white bg-opacity-50'
-                            }`}
-                        aria-label={`Go to slide ${index + 1}`}
-                    />
-                ))}
-            </div>
+  return (
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="overflow-hidden embla" ref={emblaRef}>
+        <div className="flex">
+          {slides.map((slide, index) => {
+            console.log(`Rendering slide ${index}: ${slide.image}`);
+            return (
+              <div
+                key={index}
+                className="flex-[0_0_100%] min-w-0 relative "
+              >
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  loading="lazy"
+                  className="w-full h-[500px] object-cover rounded-lg"
+                  onError={(e) => {
+                    console.log(`Failed to load image: ${slide.image}`);
+                    e.target.src = 'https://via.placeholder.com/1200x500';
+                  }}
+                />
+                <div className="absolute inset-0  flex items-end p-6">
+                  <div className="text-white">
+                    <h2 className="text-3xl font-bold mb-2">{slide.title}</h2>
+                    <p className="text-lg">{slide.description}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
-    );
+      </div>
+
+      <button
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all"
+        onClick={scrollPrev}
+      >
+        <ChevronLeft className="w-6 h-6 text-gray-800" />
+      </button>
+      <button
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-all"
+        onClick={scrollNext}
+      >
+        <ChevronRight className="w-6 h-6 text-gray-800" />
+      </button>
+
+      <div className="flex justify-center mt-4 space-x-2">
+        {scrollSnaps.map((_, index) => (
+          <button
+            key={index}
+            className={`w-3 h-3 rounded-full transition-all ${
+              index === selectedIndex ? 'bg-blue-600' : 'bg-gray-300'
+            }`}
+            onClick={() => scrollTo(index)}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Carousel;
