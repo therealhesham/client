@@ -127,7 +127,7 @@ export default function Home() {
                                 </g>
                             </svg>
                         {/* </div> */}
-<h2 >إجراءات قانونية</h2>
+<h2 className='text-xl' >إجراءات قانونية</h2>
                     </motion.div>
                     <motion.div 
                     
@@ -276,7 +276,7 @@ export default function Home() {
     </g>
 </svg>                                
 
-<h2>إستقدام عمالة مخصصة</h2>
+<h2 className='text-xl'>إستقدام عمالة مخصصة</h2>
 
   </motion.div>
   <motion.div 
@@ -410,7 +410,7 @@ export default function Home() {
         </g>
     </g>
 </svg>  
-<h2> خدمات المتابعة خلال فترة العقد</h2>
+<h2 className='text-xl'> خدمات المتابعة خلال فترة العقد</h2>
                   </motion.div>
                   <motion.div 
                     
@@ -515,7 +515,7 @@ export default function Home() {
     </g>
 </svg>                  
 
-<h2> خدمات ما بعد الاستقدام</h2>
+<h2 className='text-xl'> خدمات ما بعد الاستقدام</h2>
 
  </motion.div>
                     <div className="bg-white bg-opacity- flex-col p-4 flex items-center justify-center rounded-lg shadow-lg">
@@ -631,7 +631,7 @@ export default function Home() {
         </g>
     </g>
 </svg>             
-<h2> البحث و التوظيف</h2>
+<h2 className='text-xl'> البحث و التوظيف</h2>
 
 
        </div>  <motion.div 
@@ -788,7 +788,7 @@ export default function Home() {
         </g>
     </g>
 </svg>             
-<h2> استشارة مخصصة</h2>
+<h2 className='text-xl'> استشارة مخصصة</h2>
        </motion.div>
                 </div>
             </div>
@@ -802,9 +802,9 @@ export default function Home() {
                 <div className="grid grid-cols-3 gap-6 p-6 max-w-6xl mx-auto h-full   ">
                    
                     <motion.div         
-                      whileHover={{ scale: 1.10 }}
-                      whileTap={{ scale: 0.95 }}
-                    className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
+                      whileHover={{ scale: 1.05  }}
+                      whileTap={{ scale: 0.5 }}
+                    className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 w-75 h-75 items-center justify-center rounded-lg shadow-lg">
 
                         {/* <div> */}
                          
@@ -930,7 +930,7 @@ export default function Home() {
                     
                     whileHover={{ scale: 1.10 }}
                     whileTap={{ scale: 0.95 }}
-                  className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
+                  className="bg-white bg-opacity-80  w-75 h-75 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
 
                        
 
@@ -956,7 +956,7 @@ export default function Home() {
                     
                     whileHover={{ scale: 1.10 }}
                     whileTap={{ scale: 0.95 }}
-                  className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
+                  className="bg-white bg-opacity-80 p-4  w-75 h-75 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
 
 <svg preserveAspectRatio="xMidYMid meet" data-bbox="23.22 7.83 465.56 475.29" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" data-type="ugc" role="presentation" aria-hidden="true" aria-label="">
     <g>
@@ -1069,7 +1069,7 @@ export default function Home() {
                     
                     whileHover={{ scale: 1.10 }}
                     whileTap={{ scale: 0.95 }}
-                  className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
+                  className="bg-white bg-opacity-80  w-75 h-75 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
 
 <svg preserveAspectRatio="xMidYMid meet" data-bbox="123.09 8.23 459.6 681.24" viewBox="123.09 8.23 459.6 681.24" xmlns="http://www.w3.org/2000/svg" data-type="color" role="presentation" aria-hidden="true" aria-label="">
     <g>
@@ -1093,7 +1093,7 @@ export default function Home() {
                     
                     whileHover={{ scale: 1.10 }}
                     whileTap={{ scale: 0.95 }}
-                  className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
+                  className="bg-white bg-opacity-80  w-75 h-75 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
              <svg preserveAspectRatio="xMidYMid meet" data-bbox="27.12 22.3 470.9 432.66" viewBox="27.12 22.3 470.9 432.66" xmlns="http://www.w3.org/2000/svg" data-type="color" role="presentation" aria-hidden="true" aria-label="">
     <g>
         <path d="M38.78 408.62h.37c2.04.19 3.71-1.3 3.89-3.15v-.37c0-2.22-1.85-3.89-3.89-3.89-2.22 0-3.89 1.85-3.89 3.89 0 1.85 1.67 3.52 3.52 3.52Z" fill="#158285" data-color="1"></path>
@@ -1146,7 +1146,7 @@ export default function Home() {
                     
                     whileHover={{ scale: 1.10 }}
                     whileTap={{ scale: 0.95 }}
-                  className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
+                  className="bg-white bg-opacity-80 p-4   w-75 h-75 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
 
 <svg preserveAspectRatio="xMidYMid meet" data-bbox="2.03 0.01 995.94 608.83" viewBox="0 0 1000 623.74" xmlns="http://www.w3.org/2000/svg" data-type="ugc" role="presentation" aria-hidden="true" aria-label="">
     <g>
@@ -1240,15 +1240,32 @@ export default function Home() {
             </div>
 
 
-            <footer className="bg-gray-800 text-white py-8">
-                <div className="container mx-auto px-4 text-center">
-                    <p>جميع الحقوق محفوظة © 2025 روائس للاستقدام</p>
-                    <p className="mt-2">
-                        <a href="mailto:admin@rawaes.com" className="hover:underline">
-                            admin@rawaes.com
-                        </a>
-                    </p>
-                </div>
+            <footer className="grid grid-cols-3 gap-8 p-10 bg-orange-200 text-black-200 text-center lg:grid-cols-3 md:grid-cols-1">            <div className="space-y-4">
+      <h3 className="text-xl font-semibold text-white">About Us</h3>
+      <p className="text-sm leading-relaxed">We are a passionate team dedicated to delivering innovative solutions and exceptional experiences.</p>
+    </div>
+    <div className="space-y-4">
+      <h3 className="text-xl font-semibold text-white">خارطة الموقع</h3>
+      <ul className="space-y-2 text-sm">
+        <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">الرئييسية</a></li>
+        {/* <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">Services</a></li> */}
+        <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">نبذة عنا </a></li>
+        <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">للتواصل</a></li>
+      </ul>
+    </div>
+    <div className="space-y-4">
+      <h3 className="text-xl font-semibold text-white">Contact Us</h3>
+      <p className="text-sm">Email: <a href="mailto:admin@rawaes.com" className="hover:text-indigo-400 transition-colors duration-200">admin@rawaes.com</a></p>
+      <p className="text-sm">Phone: (123) 456-7890</p>
+      <div className="flex justify-center space-x-4 mt-4">
+        <a href="#" className="text-gray-200 hover:text-indigo-400 transition-colors duration-200">
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.56v14.88A4.56 4.56 0 0 1 19.44 24H4.56A4.56 4.56 0 0 1 0 19.44V4.56A4.56 4.56 0 0 1 4.56 0h14.88A4.56 4.56 0 0 1 24 4.56zM8.9 19.44h3.88v-7.2l-3.88 2.4zm3.88-10.8a2.4 2.4 0 1 0-2.4-2.4 2.4 2.4 0 0 0 2.4 2.4zm2.4 10.8h3.88l-3.88-6.48 3.88-4.32v10.8z"/></svg>
+        </a>
+        <a href="#" className="text-gray-200 hover:text-indigo-400 transition-colors duration-200">
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 0H2C.9 0 0 .9 0 2v20c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zm-5.5 20h-9V8h9v12zm-4.5-14.5c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm9 14.5h-5v-6c0-1.1-.9-2-2-2h-1v-4h8v12z"/></svg>
+        </a>
+      </div>
+    </div>
             </footer>
         </div>
     );

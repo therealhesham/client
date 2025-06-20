@@ -34,7 +34,7 @@ export default function NavigationBar() {
 
     return (
         <header className={`bg-white shadow-md fixed w-full  z-10 ${myFont.className}`} dir='rtl' >
-            <div className="container mx-auto px-4 py-4 flex justify-between  items-center">
+            <div className="container mx-auto px-4 py-4 flex justify-around  items-center">
                 {/* Logo */}
                 <div className="text-2xl font-bold">
                     <Image
@@ -46,7 +46,7 @@ export default function NavigationBar() {
                 </div>
                 {/* Navigation */}
                 <div className="flex items-center gap-6">
-                    <nav className="flex space-x-6 space-x-reverse gap-10">
+                    <nav className="flex space-x-6 space-x-reverse gap-30">
                         {list.map((item, index) => (
                             <motion.div
                                 key={item.name}

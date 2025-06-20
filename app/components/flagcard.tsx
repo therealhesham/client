@@ -50,7 +50,7 @@ const FlagGrid = () => {
         { country: 'إثيوبيا', englishCountry: 'Ethiopia', flag: '/ethiopia-flag.png', price: '4550' },];
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto w-[1000px] p-4">
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">استعرض العاملات حسب الجنسية</h2>
             {/* <div className="flex flex-wrap justify-center gap-4"> */}
 
