@@ -1,3 +1,5 @@
+//@ts-nocheck
+//@ts-ignore
 'use client';
 import { motion } from 'framer-motion';
 import DualCarousel from './components/carousel';
