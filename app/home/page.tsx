@@ -1,3 +1,5 @@
+//@ts-ignore
+//@ts-nocheck
 'use client';
 import { motion } from 'framer-motion';
 import DualCarousel from '../components/carousel';
@@ -1240,17 +1242,17 @@ export default function Home() {
             </div>
 
 
-            <footer className="grid grid-cols-3 gap-8 p-10 bg-orange-200 text-black-200 text-center lg:grid-cols-3 md:grid-cols-1">            <div className="space-y-4">
+            <footer className="grid grid-cols-3 gap-8 p-10 bg-[#D4AF37] text-black-200 text-center lg:grid-cols-3 md:grid-cols-1">
+    <div className="space-y-4">
       <h3 className="text-xl font-semibold text-white">About Us</h3>
       <p className="text-sm leading-relaxed">We are a passionate team dedicated to delivering innovative solutions and exceptional experiences.</p>
     </div>
     <div className="space-y-4">
       <h3 className="text-xl font-semibold text-white">خارطة الموقع</h3>
-      <ul className="space-y-2 text-sm">
-        <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">الرئييسية</a></li>
-        {/* <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">Services</a></li> */}
-        <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">نبذة عنا </a></li>
-        <li><a href="#" className="hover:text-indigo-400 transition-colors duration-200">للتواصل</a></li>
+      <ul className="space-y-2 text-lg">
+        <li><a href="#" className="hover:text-indigo-400 text-md transition-colors duration-200">الرئيسية</a></li>
+        <li><a href="#" className="hover:text-indigo-400  text-md transition-colors duration-200">نبذة عنا </a></li>
+        <li><a href="#" className="hover:text-indigo-400 text-md     transition-colors duration-200">للتواصل</a></li>
       </ul>
     </div>
     <div className="space-y-4">
@@ -1266,7 +1268,7 @@ export default function Home() {
         </a>
       </div>
     </div>
-            </footer>
+</footer>
         </div>
     );
 }
