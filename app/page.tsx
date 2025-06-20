@@ -10,14 +10,14 @@ import localFont from 'next/font/local';
 
 
 const myFont = localFont({
-    src: '../fonts/ReadexPro-Bold.ttf',
+    src: './fonts/ReadexPro-Bold.ttf',
     weight: '700',
 });
 
 
 
 const sectionFonts = localFont({
-    src: '../fonts/MarkaziText-VariableFont_wght.ttf',
+    src: './fonts/MarkaziText-VariableFont_wght.ttf',
     weight: '700',
 });
 export default function Home() {
