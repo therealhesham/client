@@ -2,9 +2,9 @@
 //@ts-nocheck
 'use client';
 import { motion } from 'framer-motion';
-import DualCarousel from '../components/carousel';
-import FlagGrid from '../components/flagcard';
-import NavigationBar from '../components/navigation';
+import DualCarousel from './components/carousel';
+import FlagGrid from './components/flagcard';
+import NavigationBar from './components/navigation';
 import localFont from 'next/font/local';
 
 
