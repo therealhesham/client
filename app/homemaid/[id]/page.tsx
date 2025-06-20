@@ -411,7 +411,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
                         name="clientName"
                         value={formData.clientName}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="mt-1 block w-full  h-8  rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                         required
                       />
                     </div>
@@ -421,11 +421,12 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
                       </label>
                       <input
                         type="tel"
+                   placeholder="5XXXXXXXX"
                         id="phoneNumber"
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                         required
                       />
                     </div>
@@ -439,7 +440,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
                         name="residence"
                         value={formData.residence}
                         onChange={handleInputChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        className="mt-1 block w-full  rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                         required
                       />
                     </div>

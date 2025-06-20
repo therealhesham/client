@@ -115,8 +115,8 @@ async function fetchImageDateAirtable(name: string) {
 const religions = ["غير مسلم", "مسلم"];
 
 export default function CandidatesPage() {
-  const SendEmail = async () => {
-    const response = await axios.post('/api/sendEmail', { formData });
+  const SendEmail = async (data: { name: string; phone: string; email: string; message: string }) => {
+    const response = await axios.post('/api/sendEmail', data);
     console.log(response);
   };
 
@@ -131,7 +131,7 @@ export default function CandidatesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    phone: "+966",
+    phone: "",
     email: "",
     message: "",
   });
@@ -192,8 +192,9 @@ export default function CandidatesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await SendEmail();
-    setFormData({ name: "", phone: "+966", email: "", message: "" });
+    // Send only the phone number without +966 to the API
+    await SendEmail({ ...formData, phone: formData.phone });
+    setFormData({ name: "", phone: "", email: "", message: "" });
     setIsModalOpen(false);
   };
 
@@ -367,23 +368,19 @@ export default function CandidatesPage() {
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                   رقم الهاتف
                 </label>
-                <div className="flex justify-center mt-2">
-                  <input
-                    type="text"
-                    id="phone-966"
-                    value={"+966"}
-                    className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100"
-                    readOnly
-                  />
+                <div className="flex justify-center flex-row-reverse mt-2">
+                  <span className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-100 flex items-center justify-center">
+                    +966
+                  </span>
                   <input
                     type="tel"
                     id="phone"
                     name="phone"
-                    value={formData.phone.slice(4)}
+                    value={formData.phone}
                     onChange={(e) => {
                       const input = e.target.value;
                       if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
-                        setFormData((prev) => ({ ...prev, phone: '+966' + input }));
+                        setFormData((prev) => ({ ...prev, phone: input }));
                       }
                     }}
                     className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
@@ -485,7 +482,7 @@ export default function CandidatesPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleModal}
-            className="inline-block bg-teal-800 text-[var(--cream)] px-8 py-3 rounded-full font-semibold text-lg transition duration-300 shadow-lg"
+            className="inline-block cursor-pointer bg-teal-800 text-[var(--cream)] px-8 py-3 rounded-full font-semibold text-lg transition duration-300 shadow-lg"
             animate={{
               scale: [1, 1.03, 1],
               transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
