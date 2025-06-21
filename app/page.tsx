@@ -6,7 +6,7 @@ import DualCarousel from './components/carousel';
 import FlagGrid from './components/flagcard';
 import NavigationBar from './components/navigation';
 import localFont from 'next/font/local';
-import { Mail, Map, MapPin, Phone } from 'lucide-react';
+import { FacebookIcon, Instagram, Mail, Map, MapPin, Phone, TwitterIcon, X } from 'lucide-react';
 import { MapIcon } from '@heroicons/react/24/solid';
 
 
@@ -1248,9 +1248,19 @@ export default function Home() {
 
 
             <footer className={`${myFontJanna.className} grid grid-cols-3 gap-8 p-10 bg-gradient-to-r from-[#ecc383] to-[#8d6c49] text-[#003749] text-center lg:grid-cols-3 md:grid-cols-1`}>
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-[#003749]">About Us</h3>
-        <p className="text-sm leading-relaxed">We are a passionate team dedicated to delivering innovative solutions and exceptional experiences.</p>
+      <div className="space flex flex-col">
+
+<img src='/icon.png' className='h-20 w-20 ' style={{alignSelf:"center"}}/>
+        <h3 className="text-xl font-semibold text-[#003749]"> تابعنا </h3>
+     
+        <div className="flex justify-center space-x-4 mt-4">
+
+<Instagram/>
+<TwitterIcon/>
+
+<FacebookIcon/>
+        </div>
+        
       </div>
       <div className="space-y-4">
         <h3 className={`text-xl font-semibold text-[#003749] ${myFontJanna.className}`}>خارطة الموقع</h3>
@@ -1274,14 +1284,7 @@ export default function Home() {
           <Phone className="w-5 h-5 text-[#003749]" />
           <p>Phone: <a href="tel:+1234567890" className="hover:text-indigo-400 transition-colors duration-200">(123) 456-7890</a></p>
         </div>
-        <div className="flex justify-center space-x-4 mt-4">
-          <a href="#" className="text-gray-200 hover:text-indigo-400 transition-colors duration-200">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.56v14.88A4.56 4.56 0 0 1 19.44 24H4.56A4.56 4.56 0 0 1 0 19.44V4.56A4.56 4.56 0 0 1 4.56 0h14.88A4.56 4.56 0 0 1 24 4.56zM8.9 19.44h3.88v-7.2l-3.88 2.4zm3.88-10.8a2.4 2.4 0 1 0-2.4-2.4 2.4 2.4 0 0 0 2.4 2.4zm2.4 10.8h3.88l-3.88-6.48 3.88-4.32v10.8z"/></svg>
-          </a>
-          <a href="#" className="text-gray-200 hover:text-indigo-400 transition-colors duration-200">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 0H2C.9 0 0 .9 0 2v20c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zm-5.5 20h-9V8h9v12zm-4.5-14.5c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm9 14.5h-5v-6c0-1.1-.9-2-2-2h-1v-4h8v12z"/></svg>
-          </a>
-        </div>
+     
       </div>
     </footer>
         </div>
