@@ -22,13 +22,23 @@ const navVariants = {
 };
 
 const list = [
+
     { link: '/home', name: 'الرئيسية' },
+    { link: '/aboutus', name: 'نبذة عنا' },
+
+    { link: '/howtostart', name: 'كيفية الاستقدام' },
+
     { link: '/candidates', name: 'المرشحون' },
 ];
+
 export default function NavigationBar() {
+    const [phone,setphone]=useState("")
     const [isSigned, setIsSigned] = useState(false)
     useEffect(() => {
         const item = localStorage.getItem("item")
+
+        const Phone = localStorage.getItem("phone_number")
+setphone(Phone)
         if (item) setIsSigned(true)
     }, [])
 
@@ -64,30 +74,30 @@ export default function NavigationBar() {
                                 </Link>
                             </motion.div>
                         ))}
-                    </nav>
-                    {/* زر تسجيل الدخول */}
-                    <motion.div
-                        custom={list.length}
-                        initial="hidden"
-                        animate="visible"
-                        variants={navVariants}
-                    >
-                        {isSigned ?
+                         {isSigned ?
                             <Link
-                                href="/login"
-                                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
+
+                            href={'/myorders/'+phone}
+                                className="relative text-gray-700 hover:text-gray-600 transition-colors duration-300 group"
+
+                                // className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
                             >
-                                تسجيل الخروج
+                                تتبع الطلب 
                             </Link>
 
                             :
                             <Link
-                                href="/login"
-                                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
+                                href={'/login'}
+                                
+                                className="relative text-gray-700 hover:text-gray-600 transition-colors duration-300 group"
+                                
+                                // className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
                             >
-                                تسجيل الدخول
+تتبع الطلب
+
                             </Link>}
-                    </motion.div>
+                    </nav>
+                 
                 </div>
             </div>
         </header>
