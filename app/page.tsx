@@ -26,7 +26,6 @@ const sectionFonts = localFont({
     weight: '700',
 });
 export default function Home() {
-    // Animation variants for hero section
     const heroVariants = {
         hidden: { opacity: 0, y: 50 },
         visible: {
@@ -59,6 +58,7 @@ export default function Home() {
                 <div className="grid grid-cols-3 gap-6 p-6 max-w-6xl mx-auto h-full   ">
                    
                     <motion.div         
+                    variants={heroVariants}
                       whileHover={{ scale: 1.10 }}
                       whileTap={{ scale: 0.95 }}
                     className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">

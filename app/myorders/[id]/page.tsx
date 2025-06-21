@@ -8,10 +8,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ArrowLeftCircle } from 'lucide-react';
 import Link from 'next/link';
 import Navbar from '@/app/components/navbar';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import NavigationBar from '@/app/components/navigation';
-
 export default function MyOrdersPage() {
+const router = useRouter()
     const params = useParams();
     const [orders, setOrders] = useState<{
         HomeMaid: any;
@@ -170,8 +170,10 @@ export default function MyOrdersPage() {
 
                                             <td className="px-6 py-4 text-sm text-gray-900">{order.HomeMaid.office.office}</td>
                                             <td className="px-6 py-4">
-                                                <Link href="/">
+                                                {/* <Link href="/"> */}
                                                     <motion.button
+                                                    disabled={order?.arrivals[0]?.id?false:true}
+                                                    onClick={()=>router.push("/timeline/"+order.arrivals[0].id)}
                                                         whileHover={{ scale: 1.05 }}
                                                         whileTap={{ scale: 0.95 }}
                                                         className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
@@ -179,7 +181,7 @@ export default function MyOrdersPage() {
                                                         <ArrowLeftCircle size={16} />
                                                         متابعة
                                                     </motion.button>
-                                                </Link>
+                                                {/* </Link> */}
                                             </td>
                                         </motion.tr>
                                     ))

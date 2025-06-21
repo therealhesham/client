@@ -93,6 +93,8 @@ const [verifyError,setVerifyError]=useState("")
             if (verificationCode === generatedOTP) {
                 // console.log('Verification successful');
                 localStorage.setItem('item', 'code');
+                localStorage.setItem('phone_number', phone.slice(4));
+
                 router.push('/myorders/'+phone.slice(4));
             } else {
                 setVerifyError('خطأ في رمز التحقق');

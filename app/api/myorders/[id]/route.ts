@@ -13,7 +13,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         //   const tokenGetter = cookieStore.get("token")
         // console.log(request.query)
         const { id } = await params;
-        const findClient = await prisma.neworder.findMany({ where: { clientphonenumber: id as string }, include: { arrivals: true, HomeMaid: { include: { office: true } }, client: true } })
+        const findClient = await prisma.neworder.findMany({ where: { clientphonenumber: id as string }, include: { arrivals: {select:{id:true}}, HomeMaid: { include: { office: true } }, client: true } })
 
 
         return NextResponse.json(findClient, { status: 201 });
