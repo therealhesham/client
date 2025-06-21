@@ -53,7 +53,16 @@ export default function LoginPage() {
             }
         }
     };
+const testlogin=()=>{
+                localStorage.setItem('item', 'code');
+                localStorage.setItem('phone_number', phone.slice(4));
 
+                router.push('/myorders/'+phone.slice(4));
+
+
+
+    
+}
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -148,7 +157,7 @@ const [verifyError,setVerifyError]=useState("")
                         <h1 className="text-2xl font-bold text-gray-800">تتبع الطلب</h1>
                     </motion.div>
 
-                    <form onSubmit={handleSubmit} className="w-full space-y-4">
+                    <form onSubmit={testlogin} className="w-full space-y-4">
                         <div>
                             <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center">
                                 ادخل رقم جوال الحجز
