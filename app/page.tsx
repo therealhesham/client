@@ -1,14 +1,17 @@
-//@ts-ignore
 //@ts-nocheck
+//@ts-ignore
+
 'use client';
 import { motion } from 'framer-motion';
 import DualCarousel from './components/carousel';
 import FlagGrid from './components/flagcard';
 import NavigationBar from './components/navigation';
 import localFont from 'next/font/local';
-import { FacebookIcon, Instagram, Mail, Map, MapPin, Phone, TwitterIcon, X } from 'lucide-react';
+import { FacebookIcon, HomeIcon, Instagram, Mail, Map, MapPin, Phone, TwitterIcon, X } from 'lucide-react';
 import { MapIcon } from '@heroicons/react/24/solid';
-
+import axios from 'axios';
+import { useState } from 'react';
+import Footer from './components/footer';
 
 const myFont = localFont({
     src: './fonts/ReadexPro-Bold.ttf',
@@ -34,7 +37,43 @@ export default function Home() {
             transition: { duration: 0.8, ease: 'easeOut' },
         },
     };
+    const SendEmail = async (data: { name: string; phone: string; email: string; message: string }) => {
+      const response = await axios.post('/api/sendEmail', data);
+      console.log(response);
+    };
+ 
+    const [search, setSearch] = useState("");
+    const [nationalityFilter, setNationalityFilter] = useState("");
+    const [ageFilter, setAgeFilter] = useState("");
+    const [religionFilter, setReligionFilter] = useState("");
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+      name: "",
+      phone: "",
+      email: "",
+      message: "",
+    });
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+  
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      // Send only the phone number without +966 to the API
+      await SendEmail({ ...formData, phone: formData.phone });
+      setFormData({ name: "", phone: "", email: "", message: "" });
+      setIsModalOpen(false);
+    };
+
+    const toggleModal = () => {
+      setIsModalOpen(!isModalOpen);
+    };
+    
     return (
         <div dir="rtl" className={`min-h-screen bg-gray-50 `}>
             {/* Header */}
@@ -1247,46 +1286,171 @@ export default function Home() {
             </div>
 
 
-            <footer className={`${myFontJanna.className} grid grid-cols-3 gap-8 p-10 bg-gradient-to-r from-[#ecc383] to-[#8d6c49] text-[#003749] text-center lg:grid-cols-3 md:grid-cols-1`}>
-      <div className="space flex flex-col">
+          
 
-<img src='/icon.png' className='h-20 w-20 ' style={{alignSelf:"center"}}/>
-        <h3 className="text-xl font-semibold text-[#003749]"> تابعنا </h3>
-     
-        <div className="flex justify-center space-x-4 mt-4">
-
-<Instagram/>
-<TwitterIcon/>
-
-<FacebookIcon/>
-        </div>
+         {isModalOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          dir="rtl"
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl"
+          >
+            <h2 className="text-2xl font-bold text-[#013749] mb-6">تواصل معنا</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  الاسم
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+                  placeholder="أدخل اسمك"
+                />
+              </div>
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  رقم الهاتف
+                </label>
+                <div className="flex justify-center flex-row-reverse mt-2">
+                  <span className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-100 flex items-center justify-center">
+                    +966
+                  </span>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
+                        setFormData((prev) => ({ ...prev, phone: input }));
+                      }
+                    }}
+                    className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+                    placeholder="5XXXXXXXX"
+                    pattern="[5-9][0-9]{8}"
+                    maxLength={9}
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  البريد الإلكتروني
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+                  placeholder="أدخل بريدك الإلكتروني"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                  الرسالة
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
+                  placeholder="أدخل رسالتك"
+                  rows={4}
+                />
+              </div>
+              <div className="flex justify-end gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  onClick={toggleModal}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg font-medium"
+                >
+                  إلغاء
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  className="px-4 py-2 bg-[#013749] text-white rounded-lg font-medium"
+                >
+                  إرسال
+                </motion.button>
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      )} 
         
-      </div>
-      <div className="space-y-4">
-        <h3 className={`text-xl font-semibold text-[#003749] ${myFontJanna.className}`}>خارطة الموقع</h3>
-        <ul className="space-y-2 text-lg">
-          <li><a href="#" className="hover:text-indigo-400 text-md transition-colors duration-200">الرئيسية</a></li>
-          <li><a href="#" className="hover:text-indigo-400 text-md transition-colors duration-200">نبذة عنا</a></li>
-          <li><a href="#" className="hover:text-indigo-400 text-md transition-colors duration-200">للتواصل</a></li>
-        </ul>
-      </div>
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-[#003749]">معلومات التواصل</h3>
-        <div className="text-sm flex items-center justify-center space-x-2">
-          <MapPin className="w-5 h-5 text-[#003749]" />
-          <p>1234 شارع المثال، المدينة، الدولة</p>
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className=" text-[rgb(1,55,73)] py-16"
+      >
+        <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex justify-center mb-6"
+          >
+            <HomeIcon className="h-12 w-12 text-[var(--cream)]" />
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-3xl md:text-4xl font-bold mb-4"
+          >
+            هل أنت جاهز لتوظيف المحترف المثالي؟
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="text-lg text-[var(--cream)]/80 mb-8 max-w-xl mx-auto"
+          >
+            تواصل معنا اليوم للعثور على أفضل مدبرات المنازل ومقدمي الرعاية
+          </motion.p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleModal}
+            className="inline-block cursor-pointer bg-teal-800 text-[var(--cream)] px-8 py-3 rounded-full font-semibold text-lg transition duration-300 shadow-lg"
+            animate={{
+              scale: [1, 1.03, 1],
+              transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+            }}
+          >
+            تواصل معنا
+          </motion.button>
         </div>
-        <div className="text-sm flex items-center justify-center space-x-2">
-          <Mail className="w-5 h-5 text-[#003749]" />
-          <p>Email: <a href="mailto:admin@rawaes.com" className="hover:text-indigo-400 transition-colors duration-200">admin@rawaes.com</a></p>
-        </div>
-        <div className="text-sm flex items-center justify-center space-x-2">
-          <Phone className="w-5 h-5 text-[#003749]" />
-          <p>Phone: <a href="tel:+1234567890" className="hover:text-indigo-400 transition-colors duration-200">(123) 456-7890</a></p>
-        </div>
-     
-      </div>
-    </footer>
+      </motion.section> 
+      <Footer/>
         </div>
     );
 }
