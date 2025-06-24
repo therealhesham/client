@@ -66,27 +66,31 @@ setphone(Phone)
                                 variants={navVariants}
                             >
                                 <Link
+                                style={{color:"RGB(196, 158, 106)"}}
                                     href={item.link}
-                                    className="relative text-gray-700 hover:text-gray-600 transition-colors duration-300 group"
+                                    className="relative  hover:text-gray-600 transition-colors duration-300 group"
                                 >
                                     {item.name}
-                                    <span className="absolute top-11 left-0 w-0 h-[4px] bg-yellow-500 transition-all duration-500 group-hover:w-full"></span>
+                                    <span className="absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
                                 </Link>
                             </motion.div>
                         ))}
                          {isSigned ?
                             <Link
-
+                            style={{color:"RGB(196, 158, 106)"}}
                             href={'/myorders/'+phone}
                                 className="relative text-gray-700 hover:text-gray-600 transition-colors duration-300 group"
 
                                 // className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
                             >
                                 تتبع الطلب 
+                                <span className="absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
+
                             </Link>
 
                             :
                             <Link
+                            style={{color:"RGB(196, 158, 106)"}}
                                 href={'/login'}
                                 
                                 className="relative text-gray-700 hover:text-gray-600 transition-colors duration-300 group"
@@ -94,6 +98,7 @@ setphone(Phone)
                                 // className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
                             >
 تتبع الطلب
+<span className="absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
 
                             </Link>}
                     </nav>

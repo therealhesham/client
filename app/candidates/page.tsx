@@ -331,7 +331,7 @@ export default function CandidatesPage() {
           </div>
         </div>
       </section>
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -442,13 +442,13 @@ export default function CandidatesPage() {
             </form>
           </motion.div>
         </motion.div>
-      )}
-      <motion.section
+      )} */}
+      {/* <motion.section
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className="bg-gradient-to-br from-[#c39e6a] to-[#c39e6a] text-[var(--cream)] py-16"
+        className="bg-[#cfc3b2] text-[var(--cream)] py-16"
       >
         <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -491,7 +491,7 @@ export default function CandidatesPage() {
             تواصل معنا
           </motion.button>
         </div>
-      </motion.section>
+      </motion.section> */}
     </div>
   );
 }
