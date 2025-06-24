@@ -3,6 +3,10 @@
 
 'use client';
 import { motion } from 'framer-motion';
+// pages/_app.tsx or _app.js
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import DualCarousel from './components/carousel';
 import FlagGrid from './components/flagcard';
 import NavigationBar from './components/navigation';

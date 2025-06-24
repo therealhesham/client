@@ -10,6 +10,23 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/navbar";
 import NavigationBar from "../components/navigation";
 import axios from "axios";
+import localFont from 'next/font/local';
+
+const myFont = localFont({
+    src: '../fonts/ReadexPro-Bold.ttf',
+    weight: '400',
+});
+
+const myFontJanna = localFont({
+    src: '../fonts/janna.woff2',
+    weight: '400',
+});
+
+
+const sectionFonts = localFont({
+    src: '../fonts/MarkaziText-VariableFont_wght.ttf',
+    weight: '700',
+});
 
 interface Candidate {
   id: number;
@@ -72,7 +89,7 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
           <h3 className="text-xl font-semibold text-[#c39e6a] font-[Tajawal, sans-serif] leading-tight">{candidate.id}</h3>
           <p className="text-gray-600 text-base font-[Tajawal, sans-serif]">{role}</p>
         </div>
-        <div className="text-sm text-gray-500 space-y-1">
+        <div className={`${myFontJanna.className} space-y-1`}>
           <p>الخبرة: {experience}</p>
           <p>الموقع: {location}</p>
         </div>
@@ -93,7 +110,7 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
-            className="mt-4 w-full bg-[#013749] text-white py-2.5 rounded-lg font-medium text-sm cursor-pointer transition-colors duration-200 font-[Tajawal, sans-serif]"
+            className={`mt-4 w-full ${myFont.className} bg-[#013749] text-white py-2.5 rounded-lg font-medium text-sm cursor-pointer transition-colors duration-200 font-[Tajawal, sans-serif]`}
             aria-label={`عرض ملف ${candidate.Name}`}
           >
             عرض الملف الشخصي
