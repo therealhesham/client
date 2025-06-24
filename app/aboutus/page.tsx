@@ -28,7 +28,7 @@ const myFontJanna = localFont({
 
 const sectionFonts = localFont({
     src: '../fonts/MarkaziText-VariableFont_wght.ttf',
-    weight: '700',
+    weight: '600',
 });
 
 export default function HOWTOSTART() {
@@ -51,16 +51,20 @@ const router = useRouter()
       <main className="w-full max-w-4xl mt-3 p-4">
      
       <div className="flex flex-row p-3 rounded-2xl max-h-[180px]">
-      <img src='./icon.png' className='h-30 w-30 ' style={{alignSelf:"center"}}/>
+      <img src='./icon.png' className='h-30 w-35 ' style={{alignSelf:"center"}}/>
 
-        <div className="flex flex-col ">
-        <h3 className={`${sectionFonts.className}  text-3xl`} style={{color:"rgb(1, 55, 73)", direction: 'ltr', textAlign: 'right' }}>
+        <div className="flex flex-col min-w-[810px] w-4xl">
+        <h3 className={`${sectionFonts.className}  text-3xl`} style={{color:"rgb(1, 55, 73)", direction: 'rtl', textAlign: 'right' }}>
         نبذة عنا</h3>
 <div >
 
-    <h3 className={`${sectionFonts.className} m-[9px] text-xl`} style={{color:"rgb(1, 55, 73)", direction: 'ltr', textAlign: 'right' }}>
+    <h3 className={`${sectionFonts.className} m-[9px]  text-2xl`} style={{color:"rgb(1, 55, 73)", direction: 'rtl', textAlign: 'right' }}>
 
-    روائس للاستقدام هو قطاع يخدم جميع مناطق المملكة العربية السعودية في استقدام العمالة المنزلية من جنسيات مختلفة. يتميز القطاع بخبرته الطويلة في هذا المجال وبفريق عمل محترف يسعى دائمًا لتلبية احتياجات العملاء بطريقة فعالة وسريعة. يوفر القطاع خدمات استقدام موثقة وموثوقة، مع الالتزام بأعلى معايير الجودة والشفافية في العملية.
+    روائس للاستقدام هو قطاع يخدم جميع مناطق المملكة العربية السعودية في استقدام العمالة المنزلية من جنسيات مختلفة. يتميز القطاع بخبرته الطويلة في هذا المجال وبفريق عمل محترف يسعى دائمًا لتلبية احتياجات العملاء بطريقة فعالة وسريعة. يوفر القطاع خدمات استقدام موثقة وموثوقة، مع الالتزام بأعلى معايير الجودة والشفافية في العملية
+    
+    
+    
+    <span>.</span>
 </h3>
 </div>
 
