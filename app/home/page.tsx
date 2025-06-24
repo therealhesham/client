@@ -6,11 +6,11 @@ import { motion } from 'framer-motion';
 import DualCarousel from '../components/carousel';
 import FlagGrid from '../components/flagcard';
 import NavigationBar from '../components/navigation';
-import localFont from 'next/font/local';
 import { FacebookIcon, HomeIcon, Instagram, Mail, Map, MapPin, Phone, TwitterIcon, X } from 'lucide-react';
 import { MapIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useState } from 'react';
+import localFont from 'next/font/local';
 
 const myFont = localFont({
     src: '../fonts/ReadexPro-Bold.ttf',
