@@ -73,10 +73,10 @@ const ProfileCard = ({ title, value }: { title: string; value: string | number |
   <div className="flex flex-col p-4 ">
     <p 
        style={{color:"RGB(196, 158, 106)"}}
-    className={` text-lg  text-right ${myFontJanna.className}`}>{title}</p>
+    className={` text-lg  ${myFontJanna.className}`}>{title}</p>
     <h1
     
-    className="text-md font-semibold text-right text-nowrap text-[rgb(1,55,73)] ">{value ?? 'غير متوفر'}</h1>
+    className="text-md font-semibold  text-nowrap text-[rgb(1,55,73)] ">{value ?? 'غير متوفر'}</h1>
   </div>
 );
 
@@ -299,16 +299,16 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
             </div>
             <div>
             {/* Personal Info Card */}
-            <div className="bg-white  rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-              <ProfileCard title="اسم العاملة" value={homemaid.Name} />
-              <ProfileCard title="رقم السيرة الذاتية" value={homemaid.id} />
-              <ProfileCard title="الجنسية" value={homemaid.Nationalitycopy} />
+            <div className="bg-white text-right  rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
               <ProfileCard title="العمر" value={homemaid.age} />
+              <ProfileCard title="الجنسية" value={homemaid.Nationalitycopy} />
+              <ProfileCard title="رقم السيرة الذاتية" value={homemaid.id} />
+              <ProfileCard title="اسم العاملة" value={homemaid.Name} />
             </div>
             </div>
             
             {/* Additional Info Card */}
-            <div className="bg-white rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="bg-white rounded-2xl text-right shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
               <ProfileCard title="الراتب" value={homemaid.Salary} />
               <ProfileCard title="الديانة" value={homemaid.Religion} />
               <ProfileCard title="الحالة الإجتماعية" value={homemaid.maritalstatus} />
