@@ -36,6 +36,21 @@ const Timeline: React.FC = () => {
     fetchTimelineData();
   }, []);
 
+  const stages = [
+    "الربط مع مساند",
+
+    "الربط مع مساند الخارجي",
+    "الربط مع المكتب الخارجي",
+
+    "الفحص الطبي",
+    "الربط مع الوكالة",
+    "التختيم في السفارة",
+    ,
+    "حجز التذكرة",
+    "الاستلام",
+
+    // "المتابعة",
+  ];
   // Define the timeline events in order
   const events = [
     {
@@ -62,7 +77,21 @@ const Timeline: React.FC = () => {
     {
       id: 4,
       date: timeline?.externalOfficeApproval,
-      title: 'موافقة المكتب الخارجي',
+      title: 'الربط مع المكتب الخارجي',
+      description: '',
+      icon: <MessageCircleIcon />,
+    },
+    {
+      id: 10,
+      date: timeline?.medicalCheckFile,
+     title:"الفحص الطبي",
+      description: '',
+      icon: <MessageCircleIcon />,
+    },,
+    {
+      id: 10,
+      date: timeline?.AgencyDate,
+     title:"الربط مع الوكالة",
       description: '',
       icon: <MessageCircleIcon />,
     },
@@ -73,6 +102,24 @@ const Timeline: React.FC = () => {
       description: '',
       icon: <MessageCircleIcon />,
     },
+    
+    {
+      id: 90,
+      date: timeline?.KingdomentryDate,
+      title: 'حجز التذكرة',
+      description: '',
+      icon: <MessageCircleIcon />,
+    },
+  
+  
+    {
+      id: 91,
+      date: timeline?.DeliveryDate,
+      title: 'الاستلام',
+      description: '',
+      icon: <MessageCircleIcon />,
+    },
+  
   ];
 
   // Determine which events are active

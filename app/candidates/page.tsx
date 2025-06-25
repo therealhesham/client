@@ -106,7 +106,7 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
             </motion.span>
           ))}
         </div>
-        <Link href={`/homemaid/${candidate.id}`}>
+        <Link href={`/cv/${candidate.id}`}>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
