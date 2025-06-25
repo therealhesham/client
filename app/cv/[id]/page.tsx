@@ -1,4 +1,4 @@
-  'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import NavigationBar from '@/app/components/navigation';
 import { PencilIcon, ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
 import localFont from 'next/font/local';
 import axios from 'axios';
+import { PersonStanding } from 'lucide-react';
 
 const myFont = localFont({
     src: '../../fonts/ReadexPro-Bold.ttf',
@@ -67,13 +68,13 @@ interface Homemaid {
 
 // Reusable component for profile card sections
 const ProfileCard = ({ title, value }: { title: string; value: string | number | null }) => (
-  <div className="flex flex-col p-4">
+  <div className="flex flex-col p-4 ">
     <p 
        style={{color:"RGB(196, 158, 106)"}}
-    className={` text-lg  ${myFontJanna.className}`}>{title}</p>
+    className={` text-lg  text-right ${myFontJanna.className}`}>{title}</p>
     <h1
     
-    className="text-md font-semibold text-nowrap text-[rgb(1,55,73)] ">{value ?? 'غير متوفر'}</h1>
+    className="text-md font-semibold text-right text-nowrap text-[rgb(1,55,73)] ">{value ?? 'غير متوفر'}</h1>
   </div>
 );
 
@@ -84,8 +85,8 @@ const SkillCard = ({ title, level }: { title: string; level: string | null }) =>
     <p 
        style={{color:"RGB(196, 158, 106)"}}
 
-    className={` text-lg  ${myFontJanna.className}`}>{title}</p>
-    <h1 className="text-md font-semibold text-nowrap text-[rgb(1,55,73)] ">{level ?? 'غير متوفر'}</h1>
+    className={` text-lg text-right  ${myFontJanna.className}`}>{title}</p>
+    <h1 className="text-md  text-right font-semibold text-nowrap text-[rgb(1,55,73)] ">{level ?? 'غير متوفر'}</h1>
   </div>
 );
 
@@ -111,6 +112,22 @@ export default function Profile() {
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [isButton, setButton] = useState(true)
+  const handlePreviousHomemaid = () => {
+    // alert("params")
+    const no = parseInt(params.id, 10) - 1
+
+    router.push("/cv/" + no.toString())
+    // params.id = 1 + parseInt(params.id)
+  };
+
+  const handleNextHomemaid = () => {
+    // alert("params")
+    const no = parseInt(params.id, 10) + 1
+
+    router.push("/cv/" + no.toString())
+    // params.id = 1 + parseInt(params.id)
+
+  };
 
   // Fetch homemaid data
   useEffect(() => {
@@ -255,19 +272,39 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="container mx-auto pt-30 py-8  "
-      >
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+        className="container mx-auto  pt-30 py-8   "
+      ><h3  className={`grid gap-6 md:grid-cols-2  lg:grid-cols-2`}><span></span><span className={`text-2xl ${myFont.className} text-center text-[rgb(1,55,73)] `}>السيرة الذاتية للعاملة</span></h3>
+        <div className="grid gap-6 md:grid-cols-2  lg:grid-cols-2">
           {/* Left Column: Profile Details */}
-          <div className="space-y-6">
+          <div className="space-y-6 ">
+            <div className='flex flex-row-reverse justify-between'>
+            <h3 className={`text-2xl  ${myFont.className} text-right text-[rgb(1,55,73)] `}>معلومات العاملة</h3>
+            <div className='flex flex-row-reverse justify-between gap-20'>
+
+              <button onClick={handleNextHomemaid}
+      className={`        ${myFontJanna.className}          p-2 w-30 mr-3 rounded-lg transition cursor-pointer bg-[#C49E6A] text-white
+      `}
+      >التالي</button>
+              <button  
+              onClick={handlePreviousHomemaid}
+              className={`
+        ${myFontJanna.className} 
+        p-2 w-30  rounded-lg transition cursor-pointer
+      bg-[#C49E6A] text-white 
+      `}>السابق</button>
+
+            </div>
+            </div>
+            <div>
             {/* Personal Info Card */}
-            <div className="bg-white rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div className="bg-white  rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
               <ProfileCard title="اسم العاملة" value={homemaid.Name} />
               <ProfileCard title="رقم السيرة الذاتية" value={homemaid.id} />
               <ProfileCard title="الجنسية" value={homemaid.Nationalitycopy} />
               <ProfileCard title="العمر" value={homemaid.age} />
             </div>
-
+            </div>
+            
             {/* Additional Info Card */}
             <div className="bg-white rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
               <ProfileCard title="الراتب" value={homemaid.Salary} />
@@ -275,6 +312,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
               <ProfileCard title="الحالة الإجتماعية" value={homemaid.maritalstatus} />
               <ProfileCard title="تاريخ الميلاد" value={homemaid.dateofbirth} />
             </div>
+            <h3 className={`text-2xl  ${myFont.className} text-right text-[rgb(1,55,73)] `}>عن العاملة</h3>
 
             {/* Skills and Experience Card */}
             <div className="bg-white rounded-2xl shadow-md p-6 space-y-4">
@@ -294,9 +332,9 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
           </div>
 
           {/* Right Column: Image */}
-          <div className="flex justify-center flex-col gap-6">
+          <div className="flex justify-center items-center flex-col gap-6">
             <img
-              className="rounded-xl object-cover w-full max-w-md h-[273px]"
+              className="rounded-xl object-fill  w-100 h-[273px]"
               src={image}
               alt={`صورة ${homemaid.Name || 'العاملة'}`}
               width={386}
@@ -308,7 +346,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
 
 
 <img
-              className="rounded-xl object-cover w-full max-w-md h-[503px]"
+              className="rounded-xl object-fill  w-100 h-[50 3px]"
               src={fullImage}
               alt={`صورة ${homemaid.Name || 'العاملة'}`}
               width={286}
@@ -316,7 +354,35 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
               // priority
               onError={() => setImage('/fallback-image.jpg')}
             />
+    {isButtonDisabled?
+   <div className='w-[448px] h-[50px] flex flex-col items-center bg-white rounded-t-2xl group'><span className={` mt-3 align-center text-[rgb(1,55,73)] text-lg ${sectionFonts.className}`}>سيرة ذاتية محجوزة</span></div> 
+  :  <div 
+      
+      
+      className='w-[448px] h-[50px] flex flex-col justify-center bg-white rounded-t-2xl group'>
+  <svg
+    fill='#C49E6A'
+    data-bbox="39.5 20 121 160.001"
+    viewBox="0 0 200 200"
+    height="60"
+    width="32"
+    xmlns="http://www.w3.org/2000/svg"
+    data-type="shape"
+    className="mt-1 group-hover:fill-[rgb(1,55,73)] self-center cursor-pointer" /* Custom Tailwind class or use CSS */
+  >
+    <g>
+      <path
+        d="M100.001 96.006c20.935 0 37.907-17.014 37.907-38.003S120.936 20 100.001 20c-20.937 0-37.909 17.014-37.909 38.003s16.972 38.003 37.909 38.003zm0-61.103c12.726 0 23.042 10.342 23.042 23.1s-10.316 23.1-23.042 23.1c-12.724 0-23.041-10.342-23.041-23.1s10.317-23.1 23.041-23.1zm60.396 137.099c-6.022-34.368-23.991-61.997-60.396-61.997-36.404 0-54.375 27.629-60.398 61.997-.732 4.175 2.525 7.999 6.753 7.999 3.333 0 6.194-2.416 6.723-5.716 4.467-27.847 17.427-50.281 46.922-50.281 29.494 0 42.453 22.434 46.919 50.281.529 3.3 3.39 5.716 6.723 5.716 4.229-.001 7.485-3.825 6.754-7.999z"
+        clip-rule="evenodd"
+        fill-rule="evenodd"
+      ></path>
+    </g>
+  </svg>
+  <h1 className='self-center text-[#C49E6A]'>حجز العاملة</h1>
+</div>
+  }
           </div>
+       
         </div>
 
         <div className="flex">
@@ -327,7 +393,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
       className={`
         ${myFontJanna.className} 
         p-2 w-50 rounded-lg transition 
-        ${isButtonDisabled ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-yellow-500 hover:bg-yellow-600 text-white'}
+        ${isButtonDisabled ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-[#C49E6A] hover:bg-yellow-600 text-white'}
       `}
     >
       حجز العاملة
