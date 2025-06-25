@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Suspense } from "react";
-import Footer from "../components/footer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -10,13 +9,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className="bg-white"
       >
-<Suspense>
-    
         {children}
-        </Suspense>
-        {/* <Footer/> */}
       </body>
     </html>
   );
