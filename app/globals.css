@@ -36,7 +36,7 @@
   --coral: #F28C38;
   --sunflower: #FACC15;
   --lavender: #C4B5FD;
-  --cream: #FFF7ED;
+  --cream: oklch(92.8% .006 264.531);
 }
 
 body {
@@ -50,7 +50,7 @@ body {
   --coral: #F28C38;
   --sunflower: #FACC15;
   --lavender: #C4B5FD;
-  --cream: #FFF7ED;
+  --cream: oklch(92.8% .006 264.531);
 }
 
 
