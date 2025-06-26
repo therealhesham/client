@@ -274,12 +274,12 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="container mx-auto  pt-30 py-8   "
+        className="container mx-auto   pt-30 py-8    "
       ><h3  className={`grid gap-6 md:grid-cols-2  lg:grid-cols-2`}><span></span><span className={`text-2xl ${myFont.className} text-center text-[rgb(1,55,73)] `}>السيرة الذاتية للعاملة</span></h3>
-        <div className="grid gap-6 md:grid-cols-2  lg:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2   lg:grid-cols-2">
           {/* Left Column: Profile Details */}
-          <div className="space-y-6 ">
-            <div className='flex flex-row-reverse justify-between'>
+          <div className="space-y-6 grid">
+            <div className=' justify-between'>
             <h3 className={`text-2xl  ${myFont.className} text-right text-[rgb(1,55,73)] `}>معلومات العاملة</h3>
             <div className='flex flex-row-reverse justify-between gap-20'>
 
