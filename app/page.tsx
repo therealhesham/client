@@ -3,19 +3,14 @@
 
 'use client';
 import { motion } from 'framer-motion';
-// pages/_app.tsx or _app.js
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-
 import DualCarousel from './components/carousel';
 import FlagGrid from './components/flagcard';
 import NavigationBar from './components/navigation';
-import localFont from 'next/font/local';
 import { FacebookIcon, HomeIcon, Instagram, Mail, Map, MapPin, Phone, TwitterIcon, X } from 'lucide-react';
 import { MapIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { useState } from 'react';
-import Footer from './components/footer';
+import localFont from 'next/font/local';
 
 const myFont = localFont({
     src: './fonts/ReadexPro-Bold.ttf',
@@ -98,16 +93,16 @@ export default function Home() {
             </div>
 
             <div className={`relative w-full bg-cover bg-center   ${sectionFonts.className}`}  >
-                <div className="grid grid-cols-3 gap-6 p-6 max-w-6xl mx-auto h-full   ">
+                <div className="grid lg:grid-cols-3 md:grid-cols-2    gap-6 p-6 max-w-6xl mx-auto h-full   ">
                    
                     <motion.div         
                     variants={heroVariants}
                       whileHover={{ scale: 1.10 }}
                       whileTap={{ scale: 0.95 }}
-                    className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 items-center justify-center rounded-lg shadow-lg">
+                    className="bg-white bg-opacity-80 p-4 flex flex-col gap-2  items-center justify-center rounded-lg shadow-lg">
 
                         {/* <div> */}
-                            <svg preserveAspectRatio="xMidYMid meet" className='h-[150px]' data-bbox="236.73 202.05 2568.99 1885.93" viewBox="0 0 3000 2000" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" data-type="ugc" role="presentation" aria-hidden="true" aria-label="">
+                            <svg preserveAspectRatio="xMidYMid meet" className='h-[150px] self-center' data-bbox="236.73 202.05 2568.99 1885.93" viewBox="0 0 3000 2000" xmlnsXlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" data-type="ugc" role="presentation" aria-hidden="true" aria-label="">
                                 <g>
                                     <defs>
                                         <linearGradient gradientUnits="userSpaceOnUse" gradientTransform="rotate(-44.63 1218.895 384.908)" y2="1241.89" x2="19.18" y1="822.21" x1="219.67" id="88813891-03a3-4b21-b9de-350d692e4d8b_comp-lvv1tkks">
@@ -848,18 +843,18 @@ export default function Home() {
 
 
 
-            <div className={`relative w-full bg-cover bg-center   ${sectionFonts.className}`} style={{ backgroundImage: `url("https://uploadcarimages.sgp1.cdn.digitaloceanspaces.com/recruitment/lgflag.png")`  }} >
-                <div className="grid grid-cols-3 gap-6 p-6 max-w-6xl mx-auto h-full   ">
-                   
+            <div className={`relative w-full bg-cover bg-center flex justify-center   ${sectionFonts.className}`} style={{ backgroundImage: `url("https://uploadcarimages.sgp1.cdn.digitaloceanspaces.com/recruitment/lgflag.png")`  }} >
+                <div className="grid  gap-6 p-6 mx-auto h-full   sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     <motion.div         
                       whileHover={{ scale: 1.05  }}
                       whileTap={{ scale: 0.5 }}
-                    className="bg-white bg-opacity-80 p-4 flex flex-col gap-2 w-75 h-75 items-center justify-center rounded-lg shadow-lg">
+                    className="bg-white bg-opacity-80 p-4    gap-2 w-75 h-75 items-center justify-center rounded-lg shadow-lg"
+                    >
 
                         {/* <div> */}
                          
 
-                        <svg preserveAspectRatio="xMidYMid meet" data-bbox="31 4.7 450.009 438.583" viewBox="31 4.7 450.009 438.583" xmlns="http://www.w3.org/2000/svg" data-type="color" role="presentation" aria-hidden="true" aria-label="">
+                        <svg  preserveAspectRatio="xMidYMid meet" data-bbox="31 4.7 450.009 438.583" viewBox="31 4.7 450.009 438.583" xmlns="http://www.w3.org/2000/svg" data-type="color" role="presentation" aria-hidden="true" aria-label="">
     <g>
         <path d="M471.05 353.35c-1.98-2.43-3.73-3.73-5.37-3.84-2.43.06-3.62.68-3.62 1.98 0 1.52 1.7 2.26 5.08 2.2 1.19.06 2.54-.11 3.9-.34m8.14 5.99c0 6.78-1.64 11.92-4.75 15.48-3.62 4.18-10.06 8.76-19.15 13.84-7.97 4.58-12.71 6.89-14.07 6.89s-31.41 8.19-32.71 6.89c0-.17 1.52-.9 4.63-2.37 12.83-5.93 41.64-16.5 58.3-29.72 3.22-2.43 4.8-4.24 4.8-5.37-.68-1.19-1.36-1.92-2.2-2.37-1.19-.68-3.28-1.02-6.33-1.13-6.61.06-9.94-2.2-9.94-6.72 0-3.45 1.19-6.61 3.5-9.32 5.37-6.21 10.68-4.29 14.74 2.94 2.15 3.95 3.16 7.57 3.16 10.96" fill="#41406a" data-color="1"></path>
         <path d="M430.88 349.39c-1.02-3.16-1.92-3.56-2.09-4.35-.23-.68.62-5.82.9-6.89.17-.68.39-1.07.57-1.13.73.28 1.52 2.15 6.89 7.23.85.85 2.15 2.32.96 2.15-.39.06-1.41-.17-3.11-.68 3.67 8.76 6.72 13.62 4.52 21.98-.68 2.43-1.58 4.29-2.6 5.42-4.01 4.63-10.85 9.66-20.39 15.08-8.3 4.8-13.22 7.17-14.69 7.17-.28 0-4.35.96-12.26 2.88-4.29 1.02-16.21 4.07-19.89 4.07l-.34-.06c0-.17 1.52-.96 4.58-2.43 11.52-5.25 26.44-10.68 39.72-17.85 8.19-4.41 14.41-8.19 18.64-11.52 3.28-2.54 4.86-4.29 4.86-5.37.06-1.41-4.41-9.27-6.27-15.71" fill="#41406a" data-color="1"></path>
@@ -1454,7 +1449,6 @@ export default function Home() {
           </motion.button>
         </div>
       </motion.section> 
-      <Footer/>
         </div>
     );
 }
