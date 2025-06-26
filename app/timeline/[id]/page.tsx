@@ -50,7 +50,7 @@ const Timeline: React.FC = () => {
   }, []);
 
   // Calculate days between two dates
-  const getDaysBetween = (date1: string, date2: number) => {
+  const getDaysBetween = (date1: string, date2: any) => {
     const d1 = new Date(date1);
     const d2 = new Date(date2);
     const diffInMs = Math.abs(d2.getTime() - d1.getTime());
