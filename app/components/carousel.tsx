@@ -64,7 +64,7 @@ const Carousel = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative max-w-7xl mx-auto ">
       <div className="overflow-hidden embla" ref={emblaRef}>
         <div className="flex">
           {slides.map((slide, index) => {
@@ -78,7 +78,7 @@ const Carousel = () => {
                   src={slide.image}
                   alt={slide.title}
                   loading="lazy"
-                  className="w-full h-[500px] object-cover rounded-lg"
+                  className="w-full h-[500px] object-scale-down rounded-lg"
                   onError={(e) => {
                     console.log(`Failed to load image: ${slide.image}`);
                     e.target.src = 'https://via.placeholder.com/1200x500';
