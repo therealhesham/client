@@ -78,12 +78,12 @@ export default function Home() {
             {/* Header */}
             <NavigationBar />
             {/* Hero Section */}
-            <main className="pt-20 px-20">
+            <main className="pt-20 ">
                 <motion.section
                     initial="hidden"
                     animate="visible"
                     variants={heroVariants}
-                    className="container mx-auto px-4 py-16 text-center"
+                    className="container mx-auto  py-16 text-center"
                 >
                     <DualCarousel />
                 </motion.section>

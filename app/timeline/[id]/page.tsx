@@ -155,7 +155,7 @@ const Timeline: React.FC = () => {
   return (
     <div dir="rtl" className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${myFont.className}`}>
       <NavigationBar />
-      <div className="max-w-3xl mx-auto py-12 px-4 sm:px-20 pt-32">
+      <div className="max-w-3xl mx-3 py-12 px-4 sm:px-20 pt-32 ">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-6">
           تابع الطلب
         </h2>
