@@ -50,7 +50,7 @@ const router = useRouter()
       {/* Main Content */}
       <main className="w-full max-w-4xl mx-auto p-4">
      
-      <div className="flex flex-row bg-white p-3 rounded-2xl max-h-[180px]">
+      <div className="flex flex-row bg-white p-3 rounded-2xl max-h-[600px]">
         <div className="flex flex-col ">
         <h3 className={`${sectionFonts.className}  text-3xl`} style={{color:"rgb(1, 55, 73)", direction: 'ltr', textAlign: 'right' }}>أفضل تجربة استقدام</h3>
 <div >
