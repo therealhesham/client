@@ -35,7 +35,7 @@ export default function Footer(){
 
     return(
         
-        <footer className={`${myFontJanna.className} grid grid-cols-3   sm:grid-cols-1   gap-8 p-10 bg-gradient-to-r from-[#ecc383] to-[#8d6c49] text-[#003749] text-center lg:grid-cols-3 md:grid-cols-1`}>
+        <footer className={`${myFontJanna.className} grid  sm:grid-cols-1   gap-8 p-10 bg-gradient-to-r from-[#ecc383] to-[#8d6c49] text-[#003749] text-center lg:grid-cols-3 md:grid-cols-1`}>
         <div className="space flex flex-col">
   
   <img src='./icon.png' className='h-20 w-20 ' style={{alignSelf:"center"}}/>
