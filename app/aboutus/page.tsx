@@ -50,10 +50,10 @@ const router = useRouter()
       {/* Main Content */}
       <main className="w-full max-w-4xl mt-3 p-4">
      
-      <div className="flex flex-row p-3 rounded-2xl max-h-[180px]">
+      <div className="flex flex-row p-3 rounded-2xl lg:max-h-[180px]">
       <img src='./icon.png' className='h-30 w-35 ' style={{alignSelf:"center"}}/>
 
-        <div className="flex flex-col min-w-[810px] w-4xl">
+        <div className="flex flex-col min-w-[210px]  w-4xl">
         <h3 className={`${sectionFonts.className}  text-3xl`} style={{color:"rgb(1, 55, 73)", direction: 'rtl', textAlign: 'right' }}>
         نبذة عنا</h3>
 <div >
@@ -75,7 +75,7 @@ const router = useRouter()
 </div>
  
       </main>
-      <div className="bg-[url('/MAP.avif')]  bg-cover  bg-center flex flex-col justify-center items-center gap-2  shadow-2xl  w-full  mt-3 p-10">
+      <div className="bg-[url('/MAP.avif')]  bg-cover  bg-center flex flex-col justify-center items-center gap-2  shadow-2xl   w-full  mt-3 p-10">
       <div className=" flex  flex-col lg:flex-row gap-3">
       <div className=" bg-white opacity-90 min-w-lg max-w-lg  self-center rounded-xl p-2">
 <div  >
@@ -106,6 +106,7 @@ const router = useRouter()
 {/* right */}
 <div className="  max-w-4xl self-center flex flex-col gap-6">
 <div  className="bg-white opacity-90 min-w-md max-w-md rounded-xl p-2">
+
     <p style={{color:"rgb(1, 55, 73)"}}  className={`${myFontJanna.className}  text-3xl  text-right mr-2`}>
     مبادئنا
 
