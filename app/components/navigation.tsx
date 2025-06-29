@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import localFont from 'next/font/local';
-
+import { usePathname, useRouter } from 'next/navigation';
 const myFont = localFont({
     src: '../fonts/ReadexPro-Bold.ttf',
     weight: '700',
@@ -39,11 +39,13 @@ export default function NavigationBar() {
     const [isSigned, setIsSigned] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+const pathname = usePathname()
     useEffect(() => {
         const item = localStorage.getItem("item");
         const Phone = localStorage.getItem("phone_number");
         setPhone(Phone);
         if (item) setIsSigned(true);
+        // alert(pathname)
     }, []);
 
     const toggleMenu = () => {
@@ -82,17 +84,19 @@ export default function NavigationBar() {
                             <motion.div
                                 key={item.name}
                                 custom={index}
+
                                 initial="hidden"
                                 animate="visible"
                                 variants={navVariants}
                             >
                                 <Link
-                                    style={{ color: "RGB(196, 158, 106)" }}
+                                    // style={{ color: "RGB(196, 158, 106)" }}
                                     href={item.link}
-                                    className="relative hover:text-gray-600 transition-colors duration-300 group"
+                                    
+                                    className={`relative hover:text-gray-600 ${pathname ==item.link?"text-[rgb(1,55,73)] ":"text-[#ecc383]"} transition-colors duration-300 group`}
                                 >
                                     {item.name}
-                                    <span className="absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
+                                    <span className={`absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full`}></span>
                                 </Link>
                             </motion.div>
                         ))}
