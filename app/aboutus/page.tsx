@@ -76,8 +76,8 @@ const router = useRouter()
  
       </main>
       <div className="bg-[url('/MAP.avif')]  bg-cover  bg-center flex flex-col justify-center items-center gap-2  shadow-2xl  w-full  mt-3 p-10">
-      <div className=" flex flex-row gap-3">
-      <div className=" bg-white opacity-90 min-w-lg max-w-lg self-center rounded-xl p-2">
+      <div className=" flex  flex-col lg:flex-row gap-3">
+      <div className=" bg-white opacity-90 min-w-lg max-w-lg  self-center rounded-xl p-2">
 <div  >
     <p style={{color:"rgb(1, 55, 73)"}}  className={`${myFontJanna.className}  text-3xl  text-right mr-2`}>
     
