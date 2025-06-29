@@ -1405,7 +1405,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        className=" text-[rgb(1,55,73)] py-16"
+        className=" text-[rgb(1,55,73)] py-16 bg-white"
       >
         <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -1415,7 +1415,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex justify-center mb-6"
           >
-            <HomeIcon className="h-12 w-12 text-[var(--cream)]" />
+            <HomeIcon className="h-12 w-12 text-[rgb(1,55,73)]" />
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -1431,7 +1431,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-lg text-[var(--cream)]/80 mb-8 max-w-xl mx-auto"
+            className="text-lg text-[rgb(1,55,73)]/80 mb-8 max-w-xl mx-auto"
           >
             تواصل معنا اليوم للعثور على أفضل مدبرات المنازل ومقدمي الرعاية
           </motion.p>
@@ -1439,7 +1439,7 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleModal}
-            className="inline-block cursor-pointer bg-teal-800 text-[var(--cream)] px-8 py-3 rounded-full font-semibold text-lg transition duration-300 shadow-lg"
+            className="inline-block cursor-pointer bg-teal-800 text-gray-100 px-8 py-3 rounded-full font-semibold text-lg transition duration-300 shadow-lg"
             animate={{
               scale: [1, 1.03, 1],
               transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },

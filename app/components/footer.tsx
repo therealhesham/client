@@ -38,8 +38,8 @@ export default function Footer(){
         <footer className={`${myFontJanna.className} grid  sm:grid-cols-1   gap-8 p-10 bg-gradient-to-r from-[#ecc383] to-[#8d6c49] text-[#003749] text-center lg:grid-cols-3 md:grid-cols-1`}>
         <div className="space flex flex-col">
   
-  <img src='./icon.png' className='h-20 w-20 ' style={{alignSelf:"center"}}/>
-          <h3 className="text-xl font-semibold text-[#003749]"> تابعنا </h3>
+  <img src='./icon.png' className='h-30 w-30 ' style={{alignSelf:"center"}}/>
+          <h3 className="text-3xl font-semibold text-[#003749]"> تابعنا </h3>
        
           <div className="flex justify-center space-x-4 mt-4">
   
