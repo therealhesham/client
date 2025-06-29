@@ -279,7 +279,7 @@ export default function CandidatesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex justify-center gap-4 flex-wrap mt-6"
+            className="flex justify-center gap-4  flex-row overflow-scroll mt-6"
           >
             {flags.map((flag, index) => (
               <motion.button
@@ -295,7 +295,7 @@ export default function CandidatesPage() {
                 } bg-white shadow-sm`}
                 aria-label={`تصفية حسب ${flag.nationality}`}
               >
-                <img src={flag.flagUrl} alt={`علم ${flag.nationality}`} className="w-30 h-20 object-cover" />
+                <img src={flag.flagUrl} alt={`علم ${flag.nationality}`} className="min-w-30 min-h-20  object-cover" />
               </motion.button>
             ))}
           </motion.div>
