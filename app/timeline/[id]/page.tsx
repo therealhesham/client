@@ -170,7 +170,7 @@ const Timeline: React.FC = () => {
           تابع الطلب
         </h2>
         <div className="relative flex flex-col w-full">
-          <div className="absolute left-1/2 transform -translate-x-1/2 top-0 w-0.5 h-full bg-gray-200 dark:bg-gray-700"></div>
+          <div className="absolute left-6 top-0 w-0.5 h-full bg-gray-200 dark:bg-gray-700"></div>
           <AnimatePresence>
             {eventsWithActiveState.map((event, index) => (
               <div key={event.id}>
@@ -190,14 +190,14 @@ const Timeline: React.FC = () => {
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 * index }}
-                  className={`relative mb-10 flex items-center ${!event.active ? 'opacity-50' : ''}`}
+                  className={` mb-10 left-5 flex items-center  ${!event.active ? 'opacity-50' : ''}`}
                 >
                   <div
                     className={`flex items-center justify-center w-12 h-12 rounded-full ${
                       event.active
                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
                         : 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
-                    } absolute left-1/2 transform -translate-x-1/2`}
+                    } absolute left-6 transform -translate-x-1/2`}
                   >
                     {event.icon}
                   </div>
