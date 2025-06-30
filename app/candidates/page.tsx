@@ -48,7 +48,7 @@ const flags = [
   { nationality: "Pakistan", flagUrl: "https://flagcdn.com/w1280/pk.png" },
   { nationality: "Bengladesh", flagUrl: "https://flagcdn.com/w1280/bd.png" },
   { nationality: "Kenya", flagUrl: "https://flagcdn.com/w1280/ke.png" },
-  { nationality: "Sri Lanka", flagUrl: "https://flagcdn.com/w1280/lk.png" },
+  // { nationality: "Sri Lanka", flagUrl: "https://flagcdn.com/w1280/lk.png" },
 ];
 
 function CandidateCard({ candidate }: { candidate: Candidate }) {
@@ -279,7 +279,7 @@ export default function CandidatesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex justify-center gap-4  flex-row overflow-scroll mt-6"
+            className="flex justify-center gap-4 flex-wrap mt-6"
           >
             {flags.map((flag, index) => (
               <motion.button
@@ -295,7 +295,7 @@ export default function CandidatesPage() {
                 } bg-white shadow-sm`}
                 aria-label={`تصفية حسب ${flag.nationality}`}
               >
-                <img src={flag.flagUrl} alt={`علم ${flag.nationality}`} className="min-w-30 min-h-20  object-cover" />
+                <img src={flag.flagUrl} alt={`علم ${flag.nationality}`} className="w-30 h-20 object-cover" />
               </motion.button>
             ))}
           </motion.div>
@@ -329,18 +329,19 @@ export default function CandidatesPage() {
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               disabled={page === 1}
               className={`px-4 py-2 rounded-full font-semibold ${
-                page === 1 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
+                page === 1 ? "bg-gray-300" : "bg-[rgb(1,55,73)] text-[var(--cream)] hover:bg-[rgb(1,45,79)] cursor-pointer"
               } transition duration-300`}
             >
               السابق
             </motion.button>
+            
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setPage((prev) => prev + 1)}
               disabled={candidates.length < 10}
               className={`px-4 py-2 rounded-full font-semibold ${
-                candidates.length < 10 ? "bg-gray-300" : "bg-[var(--teal)] text-[var(--cream)] hover:bg-[#3EE4CF]"
+                candidates.length < 10 ? "bg-gray-300" : "bg-[rgb(1,55,73)] text-[var(--cream)] hover:bg-[rgb(1,45,79)] cursor-pointer"
               } transition duration-300`}
             >
               التالي
@@ -348,167 +349,7 @@ export default function CandidatesPage() {
           </div>
         </div>
       </section>
-      {/* {isModalOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          dir="rtl"
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-xl"
-          >
-            <h2 className="text-2xl font-bold text-[#013749] mb-6">تواصل معنا</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  الاسم
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                  placeholder="أدخل اسمك"
-                />
-              </div>
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                  رقم الهاتف
-                </label>
-                <div className="flex justify-center flex-row-reverse mt-2">
-                  <span className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-100 flex items-center justify-center">
-                    +966
-                  </span>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={(e) => {
-                      const input = e.target.value;
-                      if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
-                        setFormData((prev) => ({ ...prev, phone: input }));
-                      }
-                    }}
-                    className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                    placeholder="5XXXXXXXX"
-                    pattern="[5-9][0-9]{8}"
-                    maxLength={9}
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  البريد الإلكتروني
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                  placeholder="أدخل بريدك الإلكتروني"
-                />
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-                  الرسالة
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                  placeholder="أدخل رسالتك"
-                  rows={4}
-                />
-              </div>
-              <div className="flex justify-end gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  onClick={toggleModal}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg font-medium"
-                >
-                  إلغاء
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="submit"
-                  className="px-4 py-2 bg-[#013749] text-white rounded-lg font-medium"
-                >
-                  إرسال
-                </motion.button>
-              </div>
-            </form>
-          </motion.div>
-        </motion.div>
-      )} */}
-      {/* <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="bg-[#cfc3b2] text-[var(--cream)] py-16"
-      >
-        <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex justify-center mb-6"
-          >
-            <HomeIcon className="h-12 w-12 text-[var(--cream)]" />
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-3xl md:text-4xl font-bold mb-4"
-          >
-            هل أنت جاهز لتوظيف المحترف المثالي؟
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-lg text-[var(--cream)]/80 mb-8 max-w-xl mx-auto"
-          >
-            تواصل معنا اليوم للعثور على أفضل مدبرات المنازل ومقدمي الرعاية
-          </motion.p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleModal}
-            className="inline-block cursor-pointer bg-teal-800 text-[var(--cream)] px-8 py-3 rounded-full font-semibold text-lg transition duration-300 shadow-lg"
-            animate={{
-              scale: [1, 1.03, 1],
-              transition: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-            }}
-          >
-            تواصل معنا
-          </motion.button>
-        </div>
-      </motion.section> */}
+    
     </div>
   );
 }

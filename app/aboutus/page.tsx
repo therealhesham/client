@@ -36,7 +36,7 @@ const router = useRouter()
     return (
     <div>
 <NavigationBar/>
-    <div className="flex flex-col items-center  min-h-screen bg-gray-100 pt-24">
+    <div className="flex flex-col items-center  mx-5 min-h-screen bg-gray-100 pt-24">
       {/* Header */}
       {/* <header className="w-full bg-blue-800 text-white text-center py-4">
         <div className="flex justify-center items-center space-x-2">
@@ -77,7 +77,7 @@ const router = useRouter()
       </main>
       <div className="bg-[url('/MAP.avif')]  bg-cover  bg-center flex flex-col justify-center items-center gap-2  shadow-2xl   w-full  mt-3 p-10">
       <div className=" flex  flex-col lg:flex-row gap-3">
-      <div className=" bg-white opacity-90 min-w-lg max-w-lg  self-center rounded-xl p-2">
+      <div className=" bg-white opacity-90 min-w-sm mx-4 max-w-lg  self-center rounded-xl p-2">
 <div  >
     <p style={{color:"rgb(1, 55, 73)"}}  className={`${myFontJanna.className}  text-3xl  text-right mr-2`}>
     
@@ -105,7 +105,7 @@ const router = useRouter()
 
 {/* right */}
 <div className="  max-w-4xl self-center flex flex-col gap-6">
-<div  className="bg-white opacity-90 min-w-md max-w-md rounded-xl p-2">
+<div  className="bg-white opacity-90  rounded-xl p-2 min-w-sm mx-6 max-w-lg">
 
     <p style={{color:"rgb(1, 55, 73)"}}  className={`${myFontJanna.className}  text-3xl  text-right mr-2`}>
     مبادئنا
@@ -118,8 +118,8 @@ const router = useRouter()
 
 </p>
 </div>
-<div  className="bg-white opacity-90  min-w-md max-w-md   rounded-xl p-2">
-    <p style={{color:"rgb(1, 55, 73)"}}  className={`${myFontJanna.className}  text-3xl  text-right mr-2`}>
+<div  className="bg-white opacity-90  min-w-md max-w-md   rounded-xl p-2 min-w-sm mx-4 max-w-lg">
+    <p style={{color:"rgb(1, 55, 73)"}}  className={`${myFontJanna.className}  text-3xl  text-right mr-2 `}>
     
     رؤيتنا</p>
 <p style={{color:"rgb(1, 55, 73)"}}  className={`${myFontJanna.className} max-w-lg  text-xl text-center`}>
