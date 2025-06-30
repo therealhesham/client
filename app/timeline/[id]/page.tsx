@@ -14,7 +14,8 @@ import {
   StampIcon,
   PlaneIcon,
   PackageIcon,
-  ClockIcon
+  ClockIcon,
+  LockIcon // أضفنا أيقونة قفل للمراحل غير النشطة
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -38,7 +39,7 @@ const Counter: React.FC<{ days: number }> = ({ days }) => {
         clearInterval(timer);
         return prev;
       });
-    }, 2000 / (days || 1)); // تجنب القسمة على صفر
+    }, 2000 / (days || 1));
 
     return () => clearInterval(timer);
   }, [days]);
@@ -64,7 +65,7 @@ const Counter: React.FC<{ days: number }> = ({ days }) => {
 
 const Timeline: React.FC = () => {
   const [timeline, setTimeline] = useState<{
-    Order:{ createdAt?: string };
+    Order: { createdAt?: string };
     InternalmusanedContract?: string;
     externalmusanedContract?: string;
     externalOfficeApproval?: string;
@@ -176,10 +177,12 @@ const Timeline: React.FC = () => {
   ];
 
   let isActive = true;
+  let lastActiveIndex = -1; // لتحديد آخر مرحلة نشطة
   const eventsWithActiveState = events.map((event, index) => {
     const hasDate = !!event.date;
     const active = isActive && hasDate;
     if (!hasDate) isActive = false;
+    if (active) lastActiveIndex = index; // تحديث آخر مرحلة نشطة
 
     const daysToPrevious = index > 0
       ? (
@@ -193,10 +196,10 @@ const Timeline: React.FC = () => {
   });
 
   const formatDate = (date?: string) => {
-    if (!date) return 'في انتظار الإكمال';
+    if (!date) return 'في الانتظار'; // تغيير "N/A" إلى "في الانتظار"
     const d = new Date(date);
     return isNaN(d.getTime())
-      ? 'في انتظار الإكمال'
+      ? 'في الانتظار'
       : `${d.getDate()} / ${d.getMonth() + 1} / ${d.getFullYear()}`;
   };
 
@@ -208,11 +211,17 @@ const Timeline: React.FC = () => {
           حالة الاستقدام
         </h2>
         <div className="relative flex flex-col w-full">
-          <div className="absolute left-8 top-0 w-1 h-full bg-gradient-to-b from-blue-300 to-blue-500 dark:from-blue-700 dark:to-blue-900"></div>
+          {/* الخط العمودي يتوقف عند آخر مرحلة نشطة */}
+          <div
+            className="absolute left-8 top-0 w-1 bg-gradient-to-b from-blue-300 to-blue-500 dark:from-blue-700 dark:to-blue-900"
+            style={{
+              height: lastActiveIndex >= 0 ? `${(lastActiveIndex + 1) * 100}%` : '0%',
+            }}
+          ></div>
           <AnimatePresence>
             {eventsWithActiveState.map((event, index) => (
               <div key={event.id}>
-                {event.daysToPrevious !== null && (
+                {event.daysToPrevious !== null && event.active && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -225,37 +234,38 @@ const Timeline: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 * index, ease: 'easeOut' }}
-                  className={`mb-12 left-6 flex items-center ${!event.active ? 'opacity-50 filter grayscale' : ''}`}
+                  transition={{ duration: 0.6, delay: event.active ? 0.3 * index : 0, ease: 'easeOut' }} // إزالة التأخير للمراحل غير النشطة
+                  className={`mb-12 left-6 flex items-center ${!event.active ? 'opacity-50 filter grayscale' : ''}`} // إضافة تأثير grayscale
                 >
                   <div
                     className={`flex items-center justify-center w-14 h-14 rounded-full shadow-md transition-all duration-300 ${
                       event.active
                         ? 'bg-blue-500 text-white dark:bg-blue-600'
-                        : 'bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400'
+                        : 'bg-gray-100 text-gray-300 dark:bg-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-500'
                     } absolute left-8 transform -translate-x-1/2`}
                   >
-                    {event.active ? event.icon : <ClockIcon className="w-6 h-6" />}
+                    {event.active ? event.icon : <LockIcon className="w-6 h-6" />}
                   </div>
-                  <div className={`w-full p-6 rounded-xl shadow-lg text-right border transition-all duration-300 hover:shadow-xl ${
-                    event.active
-                      ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700'
-                      : 'bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
-                  }`}>
-                    <div className={`text-sm font-medium mb-1 ${
-                      event.active ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500'
-                    }`}>
+                  <div
+                    className={`w-full p-6 rounded-xl shadow-lg text-right border transition-all duration-300 ${
+                      event.active
+                        ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:shadow-xl'
+                        : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                    }`}
+                  >
+                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
                       {formatDate(event.date)}
                     </div>
-                    <h3 className={`text-xl font-semibold mb-2 ${
-                      event.active ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
-                    }`}>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                       {event.title}
                     </h3>
-                    <p className={`text-base font-normal ${
-                      event.active ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'
-                    }`}>
+                    <p className="text-base font-normal text-gray-600 dark:text-gray-300">
                       {event.description}
+                      {!event.active && (
+                        <span className="text-gray-400 dark:text-gray-500 text-sm mr-2">
+                          (غير مكتمل)
+                        </span>
+                      )}
                     </p>
                   </div>
                 </motion.div>
