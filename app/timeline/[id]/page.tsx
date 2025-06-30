@@ -25,9 +25,46 @@ const myFont = localFont({
   weight: '700',
 });
 
+const Counter: React.FC<{ days: number }> = ({ days }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    setCount(0);
+    const timer = setInterval(() => {
+      setCount((prev) => {
+        if (prev < days) {
+          return prev + 1;
+        }
+        clearInterval(timer);
+        return prev;
+      });
+    }, 2000 / (days || 1)); // تجنب القسمة على صفر
+
+    return () => clearInterval(timer);
+  }, [days]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+      className="inline-block px-4 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-full text-sm font-medium text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-700"
+    >
+      <motion.span
+        key={days}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        {count} يوم
+      </motion.span>
+    </motion.div>
+  );
+};
+
 const Timeline: React.FC = () => {
   const [timeline, setTimeline] = useState<{
-    Order: { createdAt?: string };
+    Order:{ createdAt?: string };
     InternalmusanedContract?: string;
     externalmusanedContract?: string;
     externalOfficeApproval?: string;
@@ -143,7 +180,7 @@ const Timeline: React.FC = () => {
     const hasDate = !!event.date;
     const active = isActive && hasDate;
     if (!hasDate) isActive = false;
-    
+
     const daysToPrevious = index > 0
       ? (
         event.date && events[index - 1].date
@@ -156,10 +193,10 @@ const Timeline: React.FC = () => {
   });
 
   const formatDate = (date?: string) => {
-    if (!date) return 'N/A';
+    if (!date) return 'في انتظار الإكمال';
     const d = new Date(date);
     return isNaN(d.getTime())
-      ? 'N/A'
+      ? 'في انتظار الإكمال'
       : `${d.getDate()} / ${d.getMonth() + 1} / ${d.getFullYear()}`;
   };
 
@@ -182,34 +219,42 @@ const Timeline: React.FC = () => {
                     transition={{ duration: 0.5 }}
                     className="relative mb-6 text-center"
                   >
-                    <div className="inline-block px-4 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-full text-sm font-medium text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
-                      {event.daysToPrevious} يوم
-                    </div>
+                    <Counter days={event.daysToPrevious} />
                   </motion.div>
                 )}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 * index, ease: 'easeOut' }}
-                  className={`mb-12 left-6 flex items-center ${!event.active ? 'opacity-60' : ''}`}
+                  className={`mb-12 left-6 flex items-center ${!event.active ? 'opacity-50 filter grayscale' : ''}`}
                 >
                   <div
                     className={`flex items-center justify-center w-14 h-14 rounded-full shadow-md transition-all duration-300 ${
                       event.active
                         ? 'bg-blue-500 text-white dark:bg-blue-600'
-                        : 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
+                        : 'bg-gray-300 text-gray-500 dark:bg-gray-600 dark:text-gray-400'
                     } absolute left-8 transform -translate-x-1/2`}
                   >
                     {event.active ? event.icon : <ClockIcon className="w-6 h-6" />}
                   </div>
-                  <div className="w-full p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg text-right border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl">
-                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  <div className={`w-full p-6 rounded-xl shadow-lg text-right border transition-all duration-300 hover:shadow-xl ${
+                    event.active
+                      ? 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700'
+                      : 'bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                  }`}>
+                    <div className={`text-sm font-medium mb-1 ${
+                      event.active ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500'
+                    }`}>
                       {formatDate(event.date)}
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                    <h3 className={`text-xl font-semibold mb-2 ${
+                      event.active ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
+                    }`}>
                       {event.title}
                     </h3>
-                    <p className="text-base font-normal text-gray-600 dark:text-gray-300">
+                    <p className={`text-base font-normal ${
+                      event.active ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'
+                    }`}>
                       {event.description}
                     </p>
                   </div>
