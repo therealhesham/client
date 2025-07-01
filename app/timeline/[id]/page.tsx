@@ -151,8 +151,8 @@ const Timeline: React.FC = () => {
     const daysToPrevious = index > 0 && events[index - 1].date
       ? (
         event.date
-          ? getDaysBetween(event.date, events[index - 1].date)
-          : getDaysBetween(new Date().toISOString(), events[index - 1].date)
+          ? getDaysBetween(event.date ?? '', events[index - 1].date ?? '')
+          : getDaysBetween(new Date().toISOString(), events[index - 1].date ?? '')
       )
       : null;
 
