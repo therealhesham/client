@@ -256,7 +256,7 @@ const Timeline: React.FC = () => {
                           transition={{ duration: 0.5 }}
                         >
                           <span className="absolute text-xs font-medium text-white bg-gray-800 p-2 rounded-lg">
-                            {event.daysToPrevious} يوم مضت من هذه المرحلة  ومدتها المتوقعة {event.duration} يوم
+                            {event.daysToPrevious} يوم مضت من هذه المرحلة  {event.duration} يوم
                           </span>
                         </motion.div>
                       </div>
