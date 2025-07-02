@@ -32,15 +32,11 @@ export default function MyOrdersPage() {
   const fetchMyOrders = async () => {
     const myOrders = await fetch(`/api/myorders/${params.id}`);
     const data = await myOrders.json();
-    setOrders(data);
-  };
+    setOrders(data.orders);
+setClientInfo(data.clientinfo)  
+};
 
-  // Fetch client info
-  const fetchClientInfo = async () => {
-    const response = await fetch(`/api/client/${params.id}`);
-    const data = await response.json();
-    setClientInfo(data);
-  };
+  
 
   useEffect(() => {
     fetchMyOrders();
@@ -83,13 +79,14 @@ export default function MyOrdersPage() {
             <div>
               <p className="text-sm font-medium text-gray-600">الاسم</p>
               <p className="text-base sm:text-lg text-gray-900">
-                {orders.length > 0 ? orders[0].client?.fullname : '---'}
+                
+                {orders.length > 0 ? clientInfo.fullname : '---'}
               </p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600">رقم الهاتف</p>
               <p className="text-base sm:text-lg text-gray-900">
-                {orders.length > 0 ? orders[0].client?.phonenumber : '---'}
+                {orders.length > 0 ? clientInfo.phonenumber : '---'}
               </p>
             </div>
             <div>
@@ -126,9 +123,7 @@ export default function MyOrdersPage() {
                   <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">اسم العاملة</th>
                   <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">الحالة</th>
                   <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">الشركة</th>
-                  <
-
-th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">الإجراء</th>
+                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">الإجراء</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
