@@ -14,9 +14,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         // console.log(request.query)
         const { id } = await params;
         const findClient = await prisma.neworder.findMany({ where: { clientphonenumber: id as string }, include: { arrivals: {select:{id:true}}, HomeMaid: { include: { office: true } }, client: true } })
-
-
-        return NextResponse.json(findClient, { status: 201 });
+const clientinfo = await prisma.client.findUnique({ where: { phonenumber: id as string } })
+console.log(clientinfo?.fullname)
+return NextResponse.json({
+    orders: findClient,
+    clientinfo: clientinfo
+  }, { status: 201 });
+  
     } catch (error) {
         console.log(error)
         // return NextResponse.redirect(new URL("/login", request.url));
