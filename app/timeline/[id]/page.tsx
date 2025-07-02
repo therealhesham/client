@@ -14,7 +14,8 @@ import {
   PlaneIcon,
   PackageIcon,
   ClockIcon,
-  Loader2Icon
+  Loader2Icon,
+  UserIcon
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -27,7 +28,6 @@ const myFont = localFont({
 
 const Timeline: React.FC = () => {
   const [timeline, setTimeline] = useState<{
-    Order: { createdAt?: string };
     InternalmusanedContract?: string;
     externalmusanedContract?: string;
     externalOfficeApproval?: string;
@@ -36,17 +36,28 @@ const Timeline: React.FC = () => {
     EmbassySealing?: string;
     KingdomentryDate?: string;
     DeliveryDate?: string;
+    HomemaidName?: string;
+    Order?: {createdAt?: string ,
+      HomeMaid?: {
+        Name?: string;
+        Passportnumber?: string;
+      };
+    };
   }>();
+  const [loading, setLoading] = useState(true);
   const params = useParams();
 
   const fetchTimelineData = async () => {
     try {
+      setLoading(true);
       const fetchData = await fetch(`/api/timeline/${params.id}`);
       if (!fetchData.ok) throw new Error('فشل جلب البيانات');
       const data = await fetchData.json();
       setTimeline(data);
     } catch (error) {
       console.error('خطأ في جلب بيانات الطلب:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,8 +97,7 @@ const Timeline: React.FC = () => {
       title: 'تدريب العاملة',
       description: 'تدريب العاملة',
       icon: <GlobeIcon className="w-6 h-6" />,
-      duration: 15
-      ,
+      duration: 15,
     },
     {
       id: '4',
@@ -179,6 +189,40 @@ const Timeline: React.FC = () => {
         <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white text-center mb-12 tracking-tight">
           حالة الاستقدام
         </h2>
+
+        {/* كارت بيانات العاملة */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-12"
+        >
+          {loading ? (
+            <div className="flex justify-center items-center">
+              <Loader2Icon className="w-8 h-8 animate-spin text-blue-500" />
+            </div>
+          ) : timeline?.HomemaidName || timeline?.Order?.HomeMaid?.Name ? (
+            <div className="flex items-center">
+              <div className="flex-shrink-0 w-16 h-16 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center">
+                <UserIcon className="w-8 h-8 text-white" />
+              </div>
+              <div className="mr-4">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {timeline?.HomemaidName || timeline?.Order?.HomeMaid?.Name || 'غير متوفر'}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  رقم جواز السفر: {timeline?.Order?.HomeMaid?.Passportnumber || 'غير متوفر'}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              لا توجد بيانات متاحة للعاملة
+            </p>
+          )}
+        </motion.div>
+
+        {/* باقي الـ Timeline */}
         <div className="relative flex flex-col w-full">
           <div className="absolute left-8 top-0 w-1 h-full bg-gradient-to-b from-blue-300 to-blue-500 dark:from-blue-700 dark:to-blue-900"></div>
           <AnimatePresence>
@@ -247,26 +291,27 @@ const Timeline: React.FC = () => {
                       استغرقت تلك المرحلة {event.daysToPrevious} يوم
                     </p>
                   )}
-                  {event.inProgress && event.duration > 0 && (
-                    <div className="mt-4 relative">
-                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
-                        <motion.div
-                          className="bg-yellow-500 h-2.5 rounded-full relative flex items-center justify-center"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${event.progressPercentage}%` }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          
-                          <span className="absolute text-xs  w-25 justify-center flex  font-medium text-white bg-gray-800 p-2 rounded-lg">
-                            {event.daysToPrevious} يوم مضت 
-                          </span>
-                        </motion.div>
-                      </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 text-right">
-                        المدة المتوقعة: {event.duration} يوم
-                      </p>
-                    </div>
-                  )}
+             {event.inProgress && event.duration > 0 && (
+  <div className="mt-4 relative">
+    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+      <motion.div
+        className={`h-2.5 rounded-full relative flex items-center justify-center ${
+          event.daysToPrevious !== null && event.daysToPrevious > event.duration ? 'bg-red-500' : 'bg-yellow-500'
+        }`}
+        initial={{ width: 0 }}
+        animate={{ width: `${event.progressPercentage}%` }}
+        transition={{ duration: 0.5 }}
+      >
+        <span className="absolute text-xs w-25 justify-center flex font-medium text-white bg-gray-800 p-2 rounded-lg">
+          {event.daysToPrevious} يوم مضت
+        </span>
+      </motion.div>
+    </div>
+    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 text-right">
+      المدة المتوقعة: {event.duration} يوم
+    </p>
+  </div>
+)}
                 </div>
               </motion.div>
             ))}
