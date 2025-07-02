@@ -53,15 +53,14 @@ export default function LoginPage() {
             }
         }
     };
-const testlogin=()=>{
-                localStorage.setItem('item', 'code');
+const testlogin=(e)=>{
+    e.preventDefault();
+      
+    // localStorage.setItem('item', 'code');
                 localStorage.setItem('phone_number', phone.slice(4));
+                router.replace('/myorders/' + phone.slice(4))
+                // router.replace('/myorders/'+phone.slice(4));
 
-                router.push('/myorders/'+phone.slice(4));
-
-
-
-    
 }
     const handleSubmit = async (e) => {
         e.preventDefault();
