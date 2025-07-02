@@ -209,15 +209,15 @@ setClientInfo(data.clientinfo)
                       className="p-4 bg-white hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-600">رقم الطلب</span>
+                        <span className="text-sm  font-bold text-gray-900">رقم الطلب</span>
                         <span className="text-sm text-gray-900">{order.id}</span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-600">اسم العاملة</span>
+                        <span className="text-sm font-bold text-gray-900">اسم العاملة</span>
                         <span className="text-sm text-gray-900">{order.HomeMaid.Name}</span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-600">الحالة</span>
+                        <span className="text-sm font-bold text-gray-900">الحالة</span>
                         <span
                           className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
                             order.bookingstatus === 'اكمال الطلب'
@@ -236,7 +236,7 @@ setClientInfo(data.clientinfo)
                         </span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-600">الشركة</span>
+                        <span className="text-sm font-bold text-gray-900">الشركة</span>
                         <span className="text-sm text-gray-900">{order.HomeMaid.office.office}</span>
                       </div>
                       <div className="mt-4">
