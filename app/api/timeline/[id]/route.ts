@@ -13,7 +13,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         //   const tokenGetter = cookieStore.get("token")
         // console.log(request.query)
         const { id } = await params;
-        const findClient = await prisma.arrivallist.findUnique({ where: { id: parseInt(id, 10) }, include: { Order: true } })
+        const findClient = await prisma.arrivallist.findUnique({ where: { id: parseInt(id, 10) }, include: { Order: {include:{HomeMaid:true}} } })
         // findClient?.Order.
         return NextResponse.json(findClient, { status: 201 });
     } catch (error) {
