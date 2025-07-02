@@ -86,7 +86,8 @@ const Timeline: React.FC = () => {
       title: 'تدريب العاملة',
       description: 'تدريب العاملة',
       icon: <GlobeIcon className="w-6 h-6" />,
-      duration: 15,
+      duration: 15
+      ,
     },
     {
       id: '4',
@@ -256,7 +257,7 @@ const Timeline: React.FC = () => {
                           transition={{ duration: 0.5 }}
                         >
                           
-                          <span className="absolute text-xs  font-medium text-white bg-gray-800 p-2 rounded-lg">
+                          <span className="absolute text-xs  w-25 font-medium text-white bg-gray-800 p-2 rounded-lg">
                             {event.daysToPrevious} يوم مضت 
                           </span>
                         </motion.div>
