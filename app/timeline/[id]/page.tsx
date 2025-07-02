@@ -78,7 +78,7 @@ const Timeline: React.FC = () => {
       title: 'الربط مع مساند',
       description: 'تم الربط مع منصة مساند الداخلية',
       icon: <GlobeIcon className="w-6 h-6" />,
-      duration: 5,
+      duration: 23,
     },
     {
       id: '3',
@@ -256,7 +256,7 @@ const Timeline: React.FC = () => {
                           transition={{ duration: 0.5 }}
                         >
                           <span className="absolute text-xs font-medium text-white bg-gray-800 p-2 rounded-lg">
-                            {event.daysToPrevious} يوم
+                            {event.daysToPrevious} يوم مضت من هذه المرحلة  ومدتها المتوقعة {event.duration} يوم
                           </span>
                         </motion.div>
                       </div>
