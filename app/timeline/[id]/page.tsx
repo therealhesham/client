@@ -269,11 +269,11 @@ const Timeline: React.FC = () => {
                     }`}
                   >
                     {event.inProgress ? 'قيد التنفيذ' : (
-                      <>
+                      <div className="flex  flex-row justify-around">
                         <span>تاريخ البدء: {formatDate(event.startDate)}</span>
-                        <span className="mx-2">|</span>
+                        {/* <span className="mx-2">|</span> */}
                         <span>تاريخ الانتهاء: {formatDate(event.endDate)}</span>
-                      </>
+                      </div>
                     )}
                   </div>
                   <h3
