@@ -261,23 +261,8 @@ const Timeline: React.FC = () => {
                       : 'bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
                   }`}
                 >
-                  <div
-                    className={`text-sm font-medium mb-1 ${
-                      event.active || event.inProgress
-                        ? 'text-gray-500 dark:text-gray-400'
-                        : 'text-gray-400 dark:text-gray-500'
-                    }`}
-                  >
-                    {event.inProgress ? 'قيد التنفيذ' : (
-                      <div className="flex  flex-row justify-around">
-                        <span>تاريخ البدء: {formatDate(event.startDate)}</span>
-                        {/* <span className="mx-2">|</span> */}
-                        <span>تاريخ الانتهاء: {formatDate(event.endDate)}</span>
-                      </div>
-                    )}
-                  </div>
-                  <h3
-                    className={`text-xl font-semibold mb-2 ${
+                   <h3
+                    className={`text-xl font-semibold mb-2 justify-center flex flex-row${
                       event.active || event.inProgress
                         ? 'text-gray-900 dark:text-white'
                         : 'text-gray-500 dark:text-gray-400'
@@ -285,6 +270,26 @@ const Timeline: React.FC = () => {
                   >
                     {event.title}
                   </h3>
+                  <div
+                    className={`text-sm font-medium mb-1 ${
+                      event.active || event.inProgress
+                        ? 'text-gray-500 dark:text-gray-400'
+                        : 'text-gray-400 dark:text-gray-500'
+                    }`}
+                  ><div className="flex flex-col justify-around">
+                  {event.startDate ? (
+                    <span>تاريخ البدء: {formatDate(event.startDate)}</span>
+                  ) : (
+                    <span>تاريخ البدء: غير متوفر</span>
+                  )}
+                  {event.endDate ? (
+                    <span>تاريخ الانتهاء: {formatDate(event.endDate)}</span>
+                  ) : (
+                    <span>تاريخ الانتهاء: قيد الانتظار</span>
+                  )}
+                </div>
+                  </div>
+                 
                   <p
                     className={`text-base font-normal ${
                       event.active || event.inProgress
