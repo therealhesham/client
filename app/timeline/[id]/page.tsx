@@ -310,9 +310,10 @@ const Timeline: React.FC = () => {
                   )}
                   {event.inProgress && event.duration > 0 && (
                     <div className="mt-4 relative">
-                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                      <div className=" bg-gray-200 w-[95%] dark:bg-gray-600 rounded-full h-2.5">
                         <motion.div
-                          className={`h-2.5 rounded-full relative flex items-center justify-center ${
+                          className={`h-2.5 rounded-full relative flex items-center justify-center
+                             ${
                             event.daysToPrevious !== null && event.daysToPrevious > event.duration ? 'bg-red-500' : 'bg-yellow-500'
                           }`}
                           initial={{ width: 0 }}
