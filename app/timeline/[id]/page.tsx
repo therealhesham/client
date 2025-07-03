@@ -320,8 +320,8 @@ const Timeline: React.FC = () => {
                           animate={{ width: `${event.progressPercentage}%` }}
                           transition={{ duration: 0.5 }}
                         >
-                          <span className="absolute text-xs w-25 justify-center flex font-medium text-white bg-gray-800 p-2 rounded-lg">
-                            {event.daysToPrevious} يوم مضت
+                          <span className="absolute text-xs  justify-center flex font-medium text-white bg-gray-800 p-2 rounded-lg">
+                            {event.daysToPrevious} يوم
                           </span>
                         </motion.div>
                       </div>
