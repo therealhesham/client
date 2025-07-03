@@ -37,6 +37,7 @@ const Timeline: React.FC = () => {
     KingdomentryDate?: string;
     DeliveryDate?: string;
     HomemaidName?: string;
+    createdAt?: string;
     Order?: {createdAt?: string ,
       HomeMaid?: {
         Name?: string;
@@ -77,7 +78,7 @@ const Timeline: React.FC = () => {
   const events = [
     {
       id: '1',
-      date: timeline?.Order?.createdAt,
+      date: timeline?.createdAt,
       title: 'استلام الطلب',
       description: 'تم استلام طلبك بنجاح',
       icon: <FileCheckIcon className="w-6 h-6" />,
@@ -159,19 +160,24 @@ const Timeline: React.FC = () => {
     if (!hasDate) isActive = false;
     if (inProgress) inProgressSet = true;
 
-    const daysToPrevious = index > 0 && events[index - 1].date
-      ? (
-        event.date
-          ? getDaysBetween(event.date ?? '', events[index - 1].date ?? '')
-          : getDaysBetween(new Date().toISOString(), events[index - 1].date ?? '')
-      )
+    // Calculate start date (previous stage's date or createdAt for first stage)
+    const startDate = index > 0 ? events[index - 1].date : timeline?.createdAt;
+
+    // End date is the current stage's date
+    const endDate = event.date;
+
+    // Calculate days between start and end dates for active stages
+    const daysToPrevious = startDate && endDate
+      ? getDaysBetween(startDate, endDate)
+      : index > 0 && events[index - 1].date
+      ? getDaysBetween(new Date().toISOString(), events[index - 1].date)
       : null;
 
     const progressPercentage = inProgress && daysToPrevious !== null && event.duration > 0
       ? Math.min((daysToPrevious / event.duration) * 100, 100)
       : 0;
 
-    return { ...event, active, inProgress, daysToPrevious, progressPercentage };
+    return { ...event, active, inProgress, startDate, endDate, daysToPrevious, progressPercentage };
   });
 
   const formatDate = (date?: string) => {
@@ -183,7 +189,7 @@ const Timeline: React.FC = () => {
   };
 
   return (
-    <div dir="rtl" className={`min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 ${myFont.className}`}>
+    <div dir="rtl" className={`min-h-screen bg-gradient-to-b from-gray-50 toGRAY-100 dark:from-gray-900 dark:to-gray-800 ${myFont.className}`}>
       <NavigationBar />
       <div className="max-w-4xl mx-auto py-16 px-4 sm:px-6 lg:px-8 pt-32 flex flex-col items-center">
         <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white text-center mb-12 tracking-tight">
@@ -262,7 +268,13 @@ const Timeline: React.FC = () => {
                         : 'text-gray-400 dark:text-gray-500'
                     }`}
                   >
-                    {event.inProgress ? 'قيد التنفيذ' : formatDate(event.date)}
+                    {event.inProgress ? 'قيد التنفيذ' : (
+                      <>
+                        <span>تاريخ البدء: {formatDate(event.startDate)}</span>
+                        <span className="mx-2">|</span>
+                        <span>تاريخ الانتهاء: {formatDate(event.endDate)}</span>
+                      </>
+                    )}
                   </div>
                   <h3
                     className={`text-xl font-semibold mb-2 ${
@@ -291,27 +303,27 @@ const Timeline: React.FC = () => {
                       استغرقت تلك المرحلة {event.daysToPrevious} يوم
                     </p>
                   )}
-             {event.inProgress && event.duration > 0 && (
-  <div className="mt-4 relative">
-    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
-      <motion.div
-        className={`h-2.5 rounded-full relative flex items-center justify-center ${
-          event.daysToPrevious !== null && event.daysToPrevious > event.duration ? 'bg-red-500' : 'bg-yellow-500'
-        }`}
-        initial={{ width: 0 }}
-        animate={{ width: `${event.progressPercentage}%` }}
-        transition={{ duration: 0.5 }}
-      >
-        <span className="absolute text-xs w-25 justify-center flex font-medium text-white bg-gray-800 p-2 rounded-lg">
-          {event.daysToPrevious} يوم مضت
-        </span>
-      </motion.div>
-    </div>
-    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 text-right">
-      المدة المتوقعة: {event.duration} يوم
-    </p>
-  </div>
-)}
+                  {event.inProgress && event.duration > 0 && (
+                    <div className="mt-4 relative">
+                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                        <motion.div
+                          className={`h-2.5 rounded-full relative flex items-center justify-center ${
+                            event.daysToPrevious !== null && event.daysToPrevious > event.duration ? 'bg-red-500' : 'bg-yellow-500'
+                          }`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${event.progressPercentage}%` }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <span className="absolute text-xs w-25 justify-center flex font-medium text-white bg-gray-800 p-2 rounded-lg">
+                            {event.daysToPrevious} يوم مضت
+                          </span>
+                        </motion.div>
+                      </div>
+                      <p className="text \|sm text-gray-500 dark:text-gray-400 mt-1 text-right">
+                        المدة المتوقعة: {event.duration} يوم
+                      </p>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
