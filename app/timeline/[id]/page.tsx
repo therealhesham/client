@@ -170,7 +170,7 @@ const Timeline: React.FC = () => {
     const daysToPrevious = startDate && endDate
       ? getDaysBetween(startDate, endDate)
       : index > 0 && events[index - 1].date
-      ? getDaysBetween(new Date().toISOString(), events[index - 1].date)
+      ? getDaysBetween(new Date().toISOString(), events[index - 1].date ?? '')
       : null;
 
     const progressPercentage = inProgress && daysToPrevious !== null && event.duration > 0
