@@ -87,7 +87,9 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
       <div className="p-6 flex-1 flex flex-col gap-4">
         <div>
           <h3 className="text-xl font-semibold text-[#c39e6a] font-[Tajawal, sans-serif] leading-tight">{candidate.id}</h3>
-          <p className="text-gray-600 text-base font-[Tajawal, sans-serif]">{role}</p>
+          <h3 className="text-xl font-semibold text-[#013749] font-[Tajawal, sans-serif] leading-tight">{candidate.Name}</h3>
+
+          {/* <p className="text-gray-600 text-base font-[Tajawal, sans-serif]">{role}</p> */}
         </div>
         <div className={`${myFontJanna.className} space-y-1`}>
           <p>الخبرة: {experience}</p>
