@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     ;
   }
   try {
-    const homemaids = await prisma.homemaid.findMany({
+    const homemaids = await prisma.homemaid.findMany({orderBy:{displayOrder: "asc"},
       where: { NewOrder: { every: { HomemaidId: null } }, ...filters },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
