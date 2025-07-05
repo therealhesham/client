@@ -2,7 +2,7 @@
 //@ts-ignore
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UserIcon, HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -10,22 +10,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/navbar";
 import NavigationBar from "../components/navigation";
 import axios from "axios";
-import localFont from 'next/font/local';
+import localFont from "next/font/local";
 
 const myFont = localFont({
-    src: '../fonts/ReadexPro-Bold.ttf',
-    weight: '400',
+  src: "../fonts/ReadexPro-Bold.ttf",
+  weight: "400",
 });
 
 const myFontJanna = localFont({
-    src: '../fonts/janna.woff2',
-    weight: '400',
+  src: "../fonts/janna.woff2",
+  weight: "400",
 });
 
-
 const sectionFonts = localFont({
-    src: '../fonts/MarkaziText-VariableFont_wght.ttf',
-    weight: '700',
+  src: "../fonts/MarkaziText-VariableFont_wght.ttf",
+  weight: "700",
 });
 
 interface Candidate {
@@ -48,22 +47,49 @@ const flags = [
   { nationality: "Pakistan", flagUrl: "https://flagcdn.com/w1280/pk.png" },
   { nationality: "Bangladesh", flagUrl: "https://flagcdn.com/w1280/bd.png" },
   { nationality: "Kenya", flagUrl: "https://flagcdn.com/w1280/ke.png" },
-  // { nationality: "Sri Lanka", flagUrl: "https://flagcdn.com/w1280/lk.png" },
 ];
 
-function CandidateCard({ candidate }: { candidate: Candidate }) {
+async function fetchImageDateAirtable(name: string, signal: AbortSignal) {
+  const fetchData = await fetch("/api/getimagefromat/" + name, {
+    method: "GET",
+    signal,
+  });
+  const parser = await fetchData.json();
+  return parser.result;
+}
+
+function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate; nationalityFilter: string }) {
   const role = candidate.Nationalitycopy === "Philippines" ? "مدبرة منزل" : "مربية أطفال";
   const experience = candidate.ExperienceYears;
   const skills = ["التنظيف", "التنظيم", "رعاية الأطفال"];
   const location = candidate.Nationalitycopy === "Philippines" ? "دبي، الإمارات" : "الرياض، السعودية";
   const fallbackImage = "";
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   useEffect(() => {
-    fetchImageDateAirtable(candidate.Name).then((result) => {
-      setImageSrc(result);
-    });
-  }, [candidate.Name]);
+    const abortController = new AbortController();
+
+    setIsImageLoading(true);
+
+    fetchImageDateAirtable(candidate.Name, abortController.signal)
+      .then((result) => {
+        setImageSrc(result);
+        setIsImageLoading(false);
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          console.log("Image fetch aborted");
+        } else {
+          console.error("Error fetching image:", err);
+          setIsImageLoading(false);
+        }
+      });
+
+    return () => {
+      abortController.abort();
+    };
+  }, [candidate.Name, nationalityFilter]); // Add nationalityFilter to dependencies
 
   return (
     <motion.div
@@ -76,20 +102,26 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
       dir="rtl"
     >
       <div className="relative w-full md:w-48 h-64 md:h-auto">
-        <img
-          src={candidate.Picture?.url?.includes("digital") ? candidate.Picture.url : imageSrc || fallbackImage}
-          alt={`صورة ${candidate.Name}`}
-          className="w-full h-full object-cover object-center bg-gray-50"
-          loading="lazy"
-        />
+        {isImageLoading ? (
+          <div className="w-full h-full bg-gray-200 animate-pulse relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-shimmer" />
+          </div>
+        ) : (
+          <img
+            src={candidate.Picture?.url?.includes("digital") ? candidate.Picture.url : imageSrc || fallbackImage}
+            alt={`صورة ${candidate.Name}`}
+            className="w-full h-full object-cover object-center bg-gray-50"
+            loading="lazy"
+            onLoad={() => setIsImageLoading(false)}
+            onError={() => setIsImageLoading(false)}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
       </div>
       <div className="p-6 flex-1 flex flex-col gap-4">
         <div>
-          <h3 className="text-xl font-semibold text-[#c39e6a] font-[Tajawal, sans-serif] leading-tight">{candidate.id}</h3>
+          <h3 className="text-xl font-semibold text-[#c39e6a] font-[Taj.awt, sans-serif] leading-tight">{candidate.id}</h3>
           <h3 className="text-xl font-semibold text-[#013749] font-[Tajawal, sans-serif] leading-tight">{candidate.Name}</h3>
-
-          {/* <p className="text-gray-600 text-base font-[Tajawal, sans-serif]">{role}</p> */}
         </div>
         <div className={`${myFontJanna.className} space-y-1`}>
           <p>الخبرة: {experience}</p>
@@ -123,19 +155,11 @@ function CandidateCard({ candidate }: { candidate: Candidate }) {
   );
 }
 
-async function fetchImageDateAirtable(name: string) {
-  const fetchData = await fetch("/api/getimagefromat/" + name, {
-    method: "GET",
-  });
-  const parser = await fetchData.json();
-  return parser.result;
-}
-
 const religions = ["غير مسلم", "مسلم"];
 
 export default function CandidatesPage() {
   const SendEmail = async (data: { name: string; phone: string; email: string; message: string }) => {
-    const response = await axios.post('/api/sendEmail', data);
+    const response = await axios.post("/api/sendEmail", data);
     console.log(response);
   };
 
@@ -211,7 +235,6 @@ export default function CandidatesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Send only the phone number without +966 to the API
     await SendEmail({ ...formData, phone: formData.phone });
     setFormData({ name: "", phone: "", email: "", message: "" });
     setIsModalOpen(false);
@@ -226,7 +249,7 @@ export default function CandidatesPage() {
     router.push(`/candidates?country=` + nationality);
   };
 
-  const nationalities = ["Philippines",  "India", "Pakistan", "Bangladesh", "Sri Lanka","Burundi", "Ethiopia", "Kenya"];
+  const nationalities = ["Philippines", "India", "Pakistan", "Bangladesh", "Sri Lanka", "Burundi", "Ethiopia", "Kenya"];
   const ages = ["20", "30", "40"];
   const navVariants = {
     hidden: { opacity: 0, x: 20 },
@@ -307,7 +330,7 @@ export default function CandidatesPage() {
         <div className="max-w-7xl mx-auto">
           {loading ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="text-center text-gray-600 text-lg">
-              جارٍ التحميل...
+              jari tahmeel...
             </motion.p>
           ) : error ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="text-center text-red-600 text-lg">
@@ -315,12 +338,12 @@ export default function CandidatesPage() {
             </motion.p>
           ) : candidates.length === 0 ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="text-center text-gray-600 text-lg">
-              لا توجد نتائج مطابقة. حاول تعديل البحث أو الفلاتر.
+              la tujad nataij mutabaqa. hawl tadeel albahth aw alfilters.
             </motion.p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {candidates.map((candidate) => (
-                <CandidateCard key={candidate.id} candidate={candidate} />
+                <CandidateCard key={candidate.id} candidate={candidate} nationalityFilter={nationalityFilter} />
               ))}
             </div>
           )}
@@ -334,9 +357,8 @@ export default function CandidatesPage() {
                 page === 1 ? "bg-gray-300" : "bg-[rgb(1,55,73)] text-[var(--cream)] hover:bg-[rgb(1,45,79)] cursor-pointer"
               } transition duration-300`}
             >
-              السابق
+              Previous
             </motion.button>
-            
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -346,12 +368,11 @@ export default function CandidatesPage() {
                 candidates.length < 10 ? "bg-gray-300" : "bg-[rgb(1,55,73)] text-[var(--cream)] hover:bg-[rgb(1,45,79)] cursor-pointer"
               } transition duration-300`}
             >
-              التالي
+             Next
             </motion.button>
           </div>
         </div>
       </section>
-    
     </div>
   );
 }

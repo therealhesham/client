@@ -44,7 +44,20 @@ body {
   font-family: 'ArabicFont', sans-serif;
   /* Replace 'ArabicFont' with the actual font name */
 }
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
 
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #e5e7eb 4%, #f3f4f6 25%, #e5e7eb 36%);
+  background-size: 200% 100%;
+}
 :root {
   --teal: #2DD4BF;
   --coral: #F28C38;
