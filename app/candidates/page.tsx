@@ -330,7 +330,7 @@ export default function CandidatesPage() {
         <div className="max-w-7xl mx-auto">
           {loading ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="text-center text-gray-600 text-lg">
-              jari tahmeel...
+            Loading
             </motion.p>
           ) : error ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="text-center text-red-600 text-lg">
@@ -338,7 +338,7 @@ export default function CandidatesPage() {
             </motion.p>
           ) : candidates.length === 0 ? (
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="text-center text-gray-600 text-lg">
-              la tujad nataij mutabaqa. hawl tadeel albahth aw alfilters.
+        Not Available.
             </motion.p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
