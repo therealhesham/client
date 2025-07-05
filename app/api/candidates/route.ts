@@ -28,11 +28,12 @@ export async function GET(req: NextRequest) {
     filters.Passportnumber = {
       contains: Passportnumber.toLowerCase(),
     };
-  if (Nationality)
-    filters.Nationalitycopy = {
-      contains: Nationality.toLowerCase(),
-    };
-
+    // {Country:{contains:}}
+    if (Nationality)
+      filters.office = {
+        Country:{contains:Nationality?.toLowerCase()},
+      };
+  
   if (Religion) {
     if (Religion == "Islam - الإسلام")
       filters.Religion = {
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
   }
   try {
     const homemaids = await prisma.homemaid.findMany({orderBy:{displayOrder: "asc"},
-      where: { NewOrder: { every: { HomemaidId: null } }, ...filters },
+      where: { NewOrder: { every: { HomemaidId: null } },...filters},
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
     });

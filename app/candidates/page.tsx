@@ -43,10 +43,10 @@ interface Candidate {
 
 const flags = [
   { nationality: "Philippines", flagUrl: "https://flagcdn.com/w1280/ph.png" },
-  { nationality: "Indonesia", flagUrl: "https://flagcdn.com/w1280/id.png" },
+  { nationality: "Burundi", flagUrl: "https://flagcdn.com/w1280/bi.png" },
   { nationality: "Ethiopia", flagUrl: "https://flagcdn.com/w1280/et.png" },
   { nationality: "Pakistan", flagUrl: "https://flagcdn.com/w1280/pk.png" },
-  { nationality: "Bengladesh", flagUrl: "https://flagcdn.com/w1280/bd.png" },
+  { nationality: "Bangladesh", flagUrl: "https://flagcdn.com/w1280/bd.png" },
   { nationality: "Kenya", flagUrl: "https://flagcdn.com/w1280/ke.png" },
   // { nationality: "Sri Lanka", flagUrl: "https://flagcdn.com/w1280/lk.png" },
 ];
@@ -226,7 +226,7 @@ export default function CandidatesPage() {
     router.push(`/candidates?country=` + nationality);
   };
 
-  const nationalities = ["Philippines", "Indonesia", "India", "Pakistan", "Bangladesh", "Sri Lanka"];
+  const nationalities = ["Philippines",  "India", "Pakistan", "Bangladesh", "Sri Lanka","Burundi", "Ethiopia", "Kenya"];
   const ages = ["20", "30", "40"];
   const navVariants = {
     hidden: { opacity: 0, x: 20 },
