@@ -109,7 +109,7 @@ const Carousel = () => {
         <ChevronRight className="w-6 h-6 text-gray-800" />
       </button> */}
 
-      <div className="flex justify-center mt-4 space-x-2">
+      {/* <div className="flex justify-center mt-4 space-x-2">
         {scrollSnaps.map((_, index) => (
           <button
             key={index}
@@ -119,7 +119,7 @@ const Carousel = () => {
             onClick={() => scrollTo(index)}
           />
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
