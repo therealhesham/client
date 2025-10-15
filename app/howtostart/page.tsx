@@ -11,6 +11,10 @@ import { useRouter } from "next/navigation";
 import YouTube from "react-youtube";
 import styles from "./YouTubeEmbed.module.css";
 import { useEffect, useRef, useState } from "react";
+import React from 'react';
+import TimelineSection from '../components/TimelineSection'; // تأكد من مسار الملف الصحيح
+
+
 
 // YouTube player options (no fixed width/height for responsiveness)
 const opts = {
@@ -25,6 +29,8 @@ const myFontJanna = localFont({
   weight: "700",
 });
 
+
+
 const sectionFonts = localFont({
   src: "../fonts/MarkaziText-VariableFont_wght.ttf",
   weight: "700",
@@ -33,13 +39,23 @@ const sectionFonts = localFont({
 export default function HOWTOSTART() {
   const router = useRouter();
 
+  const handleButtonClick = () => {
+    router.push("/candidates");
+  };
+
+  const handleTrackClick = () => {
+    router.push("/login"); // أو أي مسار تتبع تريده
+  };
+
   return (
     <div>
+      
       <NavigationBar />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 pt-24">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white pt-24">
         {/* Main Content */}
         <main className="w-full max-w-4xl mx-auto p-4">
           <div className="flex flex-row bg-white p-3 rounded-2xl max-h-[900px]">
+            
             <div className="flex flex-col">
               <h3
                 className={`${sectionFonts.className} text-3xl`}
@@ -240,189 +256,35 @@ export default function HOWTOSTART() {
           </div>
 
           {/* Responsive YouTube Video Section */}
-          <div className="flex justify-center my-8 w-full">
-            <div className="w-full max-w-3xl">
-              <div className={styles.videoContainer}>
-                <YouTube
-                  videoId="I3L7Ft6W0-s"
-                  opts={opts}
-                  className={styles.youtubeVideo}
-                  aria-label="Introduction to Musaned services"
-                />
-              </div>
-            </div>
-          </div>
+<div className="flex justify-center my-8 w-full">
+  <div className="w-full max-w-3xl">
+    <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-xl shadow-lg border border-gray-100">
+      <iframe
+        src="https://www.youtube.com/embed/I3L7Ft6W0-s?modestbranding=1&rel=0&playsinline=1"
+        title="Introduction to Musaned services"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="absolute top-0 left-0 w-full h-full"
+        style={{ border: 0 }}
+      />
+    </div>
+  </div>
+  
+</div>
 
-          {/* Grid Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-9">
-            <div className={`${sectionFonts.className} bg-white p-4 rounded-xl shadow`}>
-              <h3
-                style={{ color: "rgb(1, 55, 73)", textAlign: "right" }}
-                className={`${sectionFonts.className} text-xl`}
-              >
-                تحديد نوع الاستقدام
-              </h3>
-              <p
-                style={{ textAlign: "right", color: "rgb(1, 55, 73)" }}
-                className={`${sectionFonts.className} mt-2 text-l`}
-              >
-                انتقل إلى مساند واختر نوع الاستقدام وفقًا لتفضيلاتك، سواء كان استقدام عامل بمواصفات محددة أو استقدام
-                عامل محدد بالاسم
-              </p>
-            </div>
-            <div className={`${sectionFonts.className} bg-white p-4 rounded-xl shadow`}>
-              <h3
-                style={{ color: "rgb(1, 55, 73)", textAlign: "right" }}
-                className={`${sectionFonts.className} text-xl`}
-              >
-                اختر مزود الخدمة
-              </h3>
-              <p
-                style={{ textAlign: "right", color: "rgb(1, 55, 73)" }}
-                className={`${sectionFonts.className} mt-2 text-l`}
-              >
-                عرض مساند جميع المكاتب التي تقدم خدمات الاستقدام مع إمكانية التصنيف والترتيب حسب الرغبة
-              </p>
-            </div>
-            <div className={`${sectionFonts.className} bg-white p-4 rounded-xl shadow`}>
-              <h3
-                style={{ color: "rgb(1, 55, 73)", textAlign: "right" }}
-                className={`${sectionFonts.className} text-xl`}
-              >
-                الاتصال بالمكتب
-              </h3>
-              <p
-                style={{ textAlign: "right", color: "rgb(1, 55, 73)" }}
-                className={`${sectionFonts.className} mt-2 text-l`}
-              >
-                يتم التواصل مع المكتب لاختيار السيرة الذاتية المناسبة من أجل تقديم عروض طلبات الاستقدام التي تشمل
-                الراتب المستحق للعامل وفقًا لاختيارك
-              </p>
-            </div>
-            <div className={`${sectionFonts.className} bg-white p-4 rounded-xl shadow`}>
-              <h3
-                style={{ color: "rgb(1, 55, 73)", textAlign: "right" }}
-                className={`${sectionFonts.className} text-xl`}
-              >
-                تحديد نوع المكتب
-              </h3>
-              <p
-                style={{ textAlign: "right", color: "rgb(1, 55, 73)" }}
-                className={`${sectionFonts.className} mt-2 text-l`}
-              >
-                تحديد نوع المكتب
-              </p>
-            </div>
-            <div className={`${sectionFonts.className} bg-white p-4 rounded-xl shadow`}>
-              <h3
-                style={{ color: "rgb(1, 55, 73)", textAlign: "right" }}
-                className={`${sectionFonts.className} text-xl`}
-              >
-                إجراء الدفع
-              </h3>
-              <p
-                style={{ textAlign: "right", color: "rgb(1, 55, 73)" }}
-                className={`${sectionFonts.className} mt-2 text-l`}
-              >
-                الدفع بأمان عبر مساند بعد إنشاء العقد، يمكنك اختيار أحد طرق الدفع المتاحة: فيزا، ماستركارد، أو من
-                خلال بطاقة بنكية مدى
-              </p>
-            </div>
-            <div className={`${sectionFonts.className} bg-white p-4 rounded-xl shadow`}>
-              <h3
-                style={{ color: "rgb(1, 55, 73)", textAlign: "right" }}
-                className={`${sectionFonts.className} text-xl`}
-              >
-                تتبع طلبك
-              </h3>
-              <p
-                style={{ textAlign: "right", color: "rgb(1, 55, 73)" }}
-                className={`${sectionFonts.className} mt-2 text-l`}
-              >
-                تتبع حالة الطلبات إلكترونيًا من تسليم الطلب حتى وصول العامل
-              </p>
-            </div>
-          </div>
+          
+                   
         </main>
-        <div className="bg-[url('/flagshowtostart.avif')] bg-cover bg-center flex flex-col justify-center shadow-2xl w-full mt-3 p-10">
-          <div className="bg-white opacity-90 max-w-4xl self-center rounded-lg p-2">
-            <div>
-              <p style={{ color: "rgb(1, 55, 73)" }} className={`${myFontJanna.className} text-2xl text-center`}>
-                سير ذاتية متعددة
-              </p>
-            </div>
-            <div>
-              <p style={{ color: "rgb(1, 55, 73)" }} className={`${myFontJanna.className} text-xl text-center`}>
-                مجموعة مختلفة من السير الذاتية حسب المواصفات التي ترغب بها
-              </p>
-            </div>
-            <div className="flex justify-center">
-              <button
-                className="bg-gradient-to-r from-[#ecc383] to-[#8d6c49] text-[#003749] cursor-pointer text-lg p-1 mt-9 rounded-lg self-center"
-                onClick={() => router.push("/candidates")}
-              >
-                تصفح السير الذاتية
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Grid Section */}
+                   {/* قسم خطوات الاستقدام */}
+                   <TimelineSection 
+          onButtonClick={handleButtonClick}
+          onTrackClick={handleTrackClick}
+        />
+                    
       </div>
-      <footer
-        className={`${myFontJanna.className} grid grid-cols-3 gap-8 p-10 bg-gradient-to-r from-[#ecc383] to-[#8d6c49] text-[#003749] text-center lg:grid-cols-3 md:grid-cols-1`}
-      >
-        <div className="space flex flex-col">
-          <img src="./icon.png" className="h-17 w-20" style={{ alignSelf: "center" }} />
-          <h3 className="text-xl font-semibold text-[#003749]"> تابعنا </h3>
-          <div className="flex justify-center space-x-4 mt-4">
-            <Instagram />
-            <TwitterIcon />
-            <FacebookIcon />
-          </div>
-        </div>
-        <div className="space-y-4">
-          <h3 className={`text-xl font-semibold text-[#003749] ${myFontJanna.className}`}>خارطة الموقع</h3>
-          <ul className="space-y-2 text-lg">
-            <li>
-              <a href="#" className="hover:text-indigo-400 text-md transition-colors duration-200">
-                الرئيسية
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-indigo-400 text-md transition-colors duration-200">
-                نبذة عنا
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-indigo-400 text-md transition-colors duration-200">
-                للتواصل
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-[#003749]">معلومات التواصل</h3>
-          <div className="text-sm flex items-center justify-center space-x-2">
-            <MapPin className="w-5 h-5 text-[#003749]" />
-            <p>1234 شارع المثال، المدينة، الدولة</p>
-          </div>
-          <div className="text-sm flex items-center justify-center space-x-2">
-            <Mail className="w-5 h-5 text-[#003749]" />
-            <p>
-              Email: <a href="mailto:admin@rawaes.com" className="hover:text-indigo-400 transition-colors duration-200">
-                admin@rawaes.com
-              </a>
-            </p>
-          </div>
-          <div className="text-sm flex items-center justify-center space-x-2">
-            <Phone className="w-5 h-5 text-[#003749]" />
-            <p>
-              Phone: <a href="tel:+1234567890" className="hover:text-indigo-400 transition-colors duration-200">
-                (123) 456-7890
-              </a>
-            </p>
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
+  
 }

@@ -23,7 +23,34 @@ export async function GET(req: NextRequest) {
       equals: Number(id),
     };
   if (Name) filters.Name = { contains: Name.toLowerCase() };
-  if (age) filters.age = { equals: parseInt(age, 10) };
+
+  if (age) {
+  const ageNum = parseInt(age, 10);
+  const today = new Date();
+
+  if (ageNum === 20) {
+    // العمر 20 - 29
+    const minBirthDate = new Date(today.getFullYear() - 30, today.getMonth(), today.getDate());
+    const maxBirthDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate());
+    filters.dateofbirth = { gte: minBirthDate, lte: maxBirthDate };
+  } 
+  else if (ageNum === 30) {
+    // العمر 30 - 39
+    const minBirthDate = new Date(today.getFullYear() - 40, today.getMonth(), today.getDate());
+    const maxBirthDate = new Date(today.getFullYear() - 30, today.getMonth(), today.getDate());
+    filters.dateofbirth = { gte: minBirthDate, lte: maxBirthDate };
+  } 
+  else if (ageNum === 40) {
+    // العمر 40 فما فوق
+    const maxBirthDate = new Date(today.getFullYear() - 40, today.getMonth(), today.getDate());
+    filters.dateofbirth = { lte: maxBirthDate };
+  } 
+  else {
+    // قيمة غير صحيحة
+    return NextResponse.json({ homemaids: [] }, { status: 200 });
+  }
+}
+
   if (Passportnumber)
     filters.Passportnumber = {
       contains: Passportnumber.toLowerCase(),
@@ -49,13 +76,32 @@ export async function GET(req: NextRequest) {
     ;
   }
   try {
-    const homemaids = await prisma.homemaid.findMany({orderBy:{displayOrder: "asc"},
-      where: { NewOrder: { every: { HomemaidId: null } },...filters},
-      skip: (pageNumber - 1) * pageSize,
-      take: pageSize,
-    });
+    // أولًا: احسب العدد الكلي لجميع العاملات (قبل الفلترة)
+const totalCount = await prisma.homemaid.count({
+  where: { NewOrder: { every: { HomemaidId: null } } },
+});
 
-    return NextResponse.json({ homemaids }, { status: 200 });
+// احسب عدد النتائج بعد الفلترة (للعرض في الرسالة)
+const filteredCount = await prisma.homemaid.count({
+  where: { NewOrder: { every: { HomemaidId: null } }, ...filters },
+});
+// ثانيًا: جلب النتائج بعد الفلترة
+const homemaids = await prisma.homemaid.findMany({
+  orderBy: { displayOrder: "asc" },
+  where: { NewOrder: { every: { HomemaidId: null } }, ...filters },
+  skip: (pageNumber - 1) * pageSize,
+  take: pageSize,
+});
+
+// ثالثًا: أعد إرسال البيانات + العدد الكلي
+return NextResponse.json(
+  {
+    homemaids,
+    totalCount,
+    filteredCount
+  },
+  { status: 200 }
+);
   } catch (error) {
     console.error("Error fetching homemaids:", error);
     return NextResponse.json(

@@ -16,7 +16,6 @@ export default function RootLayout({
     
         {children}
         </Suspense>
-        <Footer/>
       </body>
     </html>
   );

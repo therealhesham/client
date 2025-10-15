@@ -28,7 +28,7 @@ const mobileNavVariants = {
 };
 
 const list = [
-    { link: '/home', name: 'الرئيسية' },
+    { link: '/', name: 'الرئيسية' },
     { link: '/aboutus', name: 'نبذة عنا' },
     { link: '/howtostart', name: 'كيفية الاستقدام' },
     { link: '/candidates', name: 'المرشحون' },

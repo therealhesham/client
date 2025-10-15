@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ArrowLeftCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import NavigationBar from '@/app/components/navigation';
+import NavigationBar from "../../../app/components/navigation";
+
 
 export default function MyOrdersPage() {
   const router = useRouter();

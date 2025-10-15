@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import NavigationBar from '@/app/components/navigation';
 import { PencilIcon, ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
 import localFont from 'next/font/local';
 import axios from 'axios';
@@ -269,7 +268,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
 
   return (
     <div className="min-h-screen bg-gray-200 ">
-      <NavigationBar />
+    
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

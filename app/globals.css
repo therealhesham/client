@@ -89,6 +89,10 @@ body {
   animation: shine 3s infinite linear;
   transform: rotate(45deg);
 }
+.riyal-option {
+    font-family: 'saudi_riyal', sans-serif;
+  }
+
 
 @keyframes shine {
   0% {
@@ -102,4 +106,15 @@ body {
   100% {
     transform: translateX(-100%) rotate(45deg);
   }
+}
+.scroll-stack-card {
+  will-change: transform, filter;
+  transform-origin: top center;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.scroll-stack-inner {
+  min-height: 100vh;
 }
