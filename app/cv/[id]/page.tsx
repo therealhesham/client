@@ -10,6 +10,12 @@ import { PencilIcon, ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/s
 import localFont from 'next/font/local';
 import axios from 'axios';
 import { PersonStanding } from 'lucide-react';
+function getDate(date: string) {
+  if (!date) return null;
+  const currentDate = new Date(date);
+  const formatted = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' + currentDate.getFullYear();
+  return formatted;
+}
 
 const myFont = localFont({
     src: '../../fonts/ReadexPro-Bold.ttf',
@@ -43,12 +49,12 @@ interface Homemaid {
   ArabicLanguageLeveL: string | null;
   EnglishLanguageLevel: string | null;
   Salary: string | null;
-  LaundryLeveL: string | null;
-  IroningLevel: string | null;
-  CleaningLeveL: string | null;
-  CookingLeveL: string | null;
-  SewingLeveL: string | null;
-  BabySitterLevel: string | null;
+  laundryLevel: string | null;
+  ironingLevel: string | null;
+  cleaningLevel: string | null;
+  cookingLevel: string | null;
+  sewingLevel: string | null;
+  childcareLevel: string | null;
   Education: string | null;
   OldPeopleCare: boolean | null;
   PassportStart: string | null;
@@ -311,7 +317,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
               <ProfileCard title="الراتب" value={homemaid.Salary} />
               <ProfileCard title="الديانة" value={homemaid.Religion} />
               <ProfileCard title="الحالة الإجتماعية" value={homemaid.maritalstatus} />
-              <ProfileCard title="تاريخ الميلاد" value={homemaid.dateofbirth} />
+              <ProfileCard title="تاريخ الميلاد" value={getDate(homemaid.dateofbirth)} />
             </div>
             <h3 className={`text-2xl  ${myFont.className} text-right text-[rgb(1,55,73)] `}>عن العاملة</h3>
 
@@ -322,12 +328,12 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
                 <SkillCard title="أماكن الخبرة" level={homemaid.Experience} />
                 <SkillCard title="اللغة العربية" level={homemaid.ArabicLanguageLeveL} />
                 <SkillCard title="اللغة الإنجليزية" level={homemaid.EnglishLanguageLevel} />
-                <SkillCard title="العناية بالأطفال" level={homemaid.BabySitterLevel} />
+                <SkillCard title="العناية بالأطفال" level={homemaid.childcareLevel} />
                 <SkillCard title="رعاية كبار السن" level={homemaid.OldPeopleCare ? 'نعم' : 'لا'} />
-                <SkillCard title="الغسيل" level={homemaid.LaundryLeveL} />
-                <SkillCard title="الكوي" level={homemaid.IroningLevel} />
-                <SkillCard title="الطبخ" level={homemaid.CookingLeveL} />
-                <SkillCard title="التنظيف" level={homemaid.CleaningLeveL} />
+                <SkillCard title="الغسيل" level={homemaid.laundryLevel} />
+                <SkillCard title="الكوي" level={homemaid.ironingLevel} />
+                <SkillCard title="الطبخ" level={homemaid.cookingLevel} />
+                <SkillCard title="التنظيف" level={homemaid.cleaningLevel} />
               </div>
             </div>
           </div>
