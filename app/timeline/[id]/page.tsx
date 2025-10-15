@@ -3,7 +3,7 @@
 //@ts-ignore
 //@ts-nocheck
 
-import NavigationBar from '@/app/components/navigation';
+import NavigationBar from '../../../app/components/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FileCheckIcon,

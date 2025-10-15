@@ -9,8 +9,9 @@ import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { PencilIcon, ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
-import Navbar from '@/app/components/navbar';
-import NavigationBar from '@/app/components/navigation';
+// import Navbar from '@/app/components/navbar';
+import NavigationBar from '../../components/navigation';
+
 
 interface Homemaid {
   id: number;
