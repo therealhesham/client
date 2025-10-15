@@ -28,12 +28,12 @@ interface Homemaid {
   ArabicLanguageLeveL: string | null;
   EnglishLanguageLevel: string | null;
   Salary: string | null;
-  LaundryLeveL: string | null;
-  IroningLevel: string | null;
-  CleaningLeveL: string | null;
-  CookingLeveL: string | null;
-  SewingLeveL: string | null;
-  BabySitterLevel: string | null;
+  laundryLevel: string | null;
+  ironingLevel: string | null;
+  cleaningLevel: string | null;
+  cookingLevel: string | null;
+  sewingLevel: string | null;
+  childCareLevel: string | null;
   Education: string | null;
   OldPeopleCare: boolean | null;
   PassportStart: string | null;
@@ -332,28 +332,28 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
                       </p>
                       <p>
                         <strong>مستوى الغسيل:</strong>{' '}
-                        {homemaid.LaundryLeveL || 'غير متوفر'}
+                        {homemaid.laundryLevel || 'غير متوفر'}
                       </p>
                       <p>
                         <strong>مستوى الكي:</strong>{' '}
-                        {homemaid.IroningLevel || 'غير متوفر'}
+                        {homemaid.ironingLevel || 'غير متوفر'}
                       </p>
                     </div>
                     <div>
                       <p>
                         <strong>مستوى التنظيف:</strong>{' '}
-                        {homemaid.CleaningLeveL || 'غير متوفر'}
+                        {homemaid.cleaningLevel || 'غير متوفر'}
                       </p>
                       <p>
                         <strong>مستوى الطبخ:</strong>{' '}
-                        {homemaid.CookingLeveL || 'غير متوفر'}
+                        {homemaid.cookingLevel || 'غير متوفر'}
                       </p>
                       <p>
                         <strong>مستوى رعاية الأطفال:</strong>{' '}
-                        {homemaid.BabySitterLevel || 'غير متوفر'}
+                        {homemaid.childCareLevel || 'غير متوفر'}
                       </p>
                       <p>
-                        <strong>مستوى الخياطة:</strong> {homemaid.SewingLeveL || 'غير متوفر'}
+                        <strong>مستوى الخياطة:</strong> {homemaid.sewingLevel || 'غير متوفر'}
                       </p>
                     </div>
                   </div>
