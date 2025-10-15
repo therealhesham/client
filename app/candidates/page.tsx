@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { UserIcon, HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "../components/navbar";
@@ -12,17 +12,17 @@ import NavigationBar from "../components/navigation";
 import axios from "axios";
 import localFont from "next/font/local";
 import TextType from '../components/TextType';
-
+import { GlobeAltIcon, StarIcon, UserIcon } from '@heroicons/react/24/outline';
+import { FaPeace, FaStarAndCrescent } from "react-icons/fa";
 const myFont = localFont({
   src: "../fonts/ReadexPro-Bold.ttf",
   weight: "400",
 });
-
+// FaStarAndCrescent
 const myFontJanna = localFont({
   src: "../fonts/janna.woff2",
   weight: "400",
 });
-
 const sectionFonts = localFont({
   src: "../fonts/MarkaziText-VariableFont_wght.ttf",
   weight: "700",
@@ -443,20 +443,23 @@ const updatePeriod = () => {
 <div className="max-w-4xl mx-auto mb-8">
   <div className="flex border-b-2 border-[#ECC383]/30 bg-white rounded-t-lg shadow-sm">
     {[
-      { key: "nationality", label: "حسب الجنسية", icon: "🌍" },
-      { key: "religion", label: "حسب الديانة", icon: "🕋" },
-      { key: "age", label: "حسب العمر", icon: "👶" },
+      { key: "nationality", label: "حسب الجنسية", icon: <GlobeAltIcon className="w-6 h-6 text-[#003749]" /> },
+      { key: "religion", label: "حسب الديانة", icon:
+     <FaStarAndCrescent  style={{ opacity: 0.5 }} className="w-6 h-6 text-[#003749]" />
+         },
+      { key: "age", label: "حسب العمر", icon: <UserIcon className="w-6 h-6 text-[#003749]" /> },
     ].map((tab) => (
       <button
         key={tab.key}
         onClick={() => setActiveTab(tab.key as any)}
-        className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-sm md:text-base font-medium transition-all duration-300 relative ${
+        className={`flex-1 flex items-center cursor-pointer justify-center gap-2 py-3 px-4 text-sm md:text-base font-medium transition-all duration-300 relative ${
           activeTab === tab.key
             ? "text-[#ECC383] font-bold"
             : "text-gray-600 hover:text-gray-800"
         }`}
         aria-selected={activeTab === tab.key}
       >
+        {/* {tab.icon} */}
         {tab.label}
         <span>{tab.icon}</span>
       
@@ -1029,8 +1032,11 @@ const updatePeriod = () => {
         </button>
         <button
           onClick={() => {
-            alert("تم تطبيق الفلاتر!");
+            // alert("تم تطبيق الفلاتر!");
             setIsAdvancedModalOpen(false);
+          
+          
+          
           }}
           className="px-6 py-3 bg-[#ECC383] text-white rounded-xl font-medium hover:bg-[#012f3f] transition-shadow shadow-md hover:shadow-lg"
         >

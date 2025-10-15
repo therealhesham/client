@@ -7,11 +7,21 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ArrowLeftCircle } from 'lucide-react';
 import Link from 'next/link';
+import localFont from "next/font/local";
+
 import { useParams, useRouter } from 'next/navigation';
 import NavigationBar from "../../../app/components/navigation";
 
-
+const myFontTajawal = localFont({
+  src: '../../fonts/Tajawal-Medium.ttf',
+  weight: '700',
+});
+const myFont = localFont({
+  src: '../../fonts/ReadexPro-Bold.ttf',
+  weight: '700',
+});
 export default function MyOrdersPage() {
+ 
   const router = useRouter();
   const params = useParams();
   const [orders, setOrders] = useState<{
@@ -55,7 +65,7 @@ setClientInfo(data.clientinfo)
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8" dir="rtl">
+    <div className={`min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8 ${myFontTajawal.className}`} dir="rtl">
       <NavigationBar />
       <div className="max-w-5xl mx-auto py-6">
         {/* Header */}
@@ -78,20 +88,20 @@ setClientInfo(data.clientinfo)
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">معلومات العميل</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-medium text-gray-600">الاسم</p>
+              <p className="text-md font-medium text-gray-600">الاسم</p>
               <p className="text-base sm:text-lg text-gray-900">
                 
                 {orders.length > 0 ? clientInfo.fullname : '---'}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">رقم الهاتف</p>
+              <p className="text-md font-medium text-gray-600">رقم الهاتف</p>
               <p className="text-base sm:text-lg text-gray-900">
                 {orders.length > 0 ? clientInfo.phonenumber : '---'}
               </p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">البريد الإلكتروني</p>
+              <p className="text-md font-medium text-gray-600">البريد الإلكتروني</p>
               <p className="text-base sm:text-lg text-gray-900">{clientInfo?.email || '---'}</p>
             </div>
           </div>
@@ -104,7 +114,7 @@ setClientInfo(data.clientinfo)
             placeholder="ابحث باسم العاملة، الحالة، أو الشركة..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full p-3 sm:p-4 pr-10 sm:pr-12 rounded-lg bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 text-sm sm:text-base"
+            className="w-full p-3 sm:p-4 pr-10 sm:pr-12 rounded-lg bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 text-md sm:text-base"
           />
           <Search className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         </div>
@@ -118,13 +128,13 @@ setClientInfo(data.clientinfo)
         >
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 hidden sm:table">
-              <thead className="bg-indigo-50">
+              <thead className="bg-teal-800">
                 <tr>
-                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">رقم الطلب</th>
-                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">اسم العاملة</th>
-                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">الحالة</th>
-                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">الشركة</th>
-                  <th className="px-4 sm:px-6 py-3 text-right text-xs sm:text-sm font-semibold text-gray-900">الإجراء</th>
+                  <th className="px-4 sm:px-6 py-3 text-right text-md sm:text-md font-semibold text-white">رقم الطلب</th>
+                  <th className="px-4 sm:px-6 py-3 text-right text-md sm:text-md font-semibold text-white">اسم العاملة</th>
+                  <th className="px-4 sm:px-6 py-3 text-right text-md sm:text-md font-semibold text-white">الحالة</th>
+                  <th className="px-4 sm:px-6 py-3 text-right text-md sm:text-md font-semibold text-white">الشركة</th>
+                  <th className="px-4 sm:px-6 py-3 text-right text-md sm:text-md font-semibold text-white">الإجراء</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -135,7 +145,7 @@ setClientInfo(data.clientinfo)
                       animate={{ opacity: 1 }}
                       className="text-center"
                     >
-                      <td colSpan={5} className="px-4 sm:px-6 py-4 text-gray-500 text-sm">
+                      <td colSpan={5} className="px-4 sm:px-6 py-4 text-gray-500 text-md">
                         لا توجد طلبات مطابقة.
                       </td>
                     </motion.tr>
@@ -149,33 +159,33 @@ setClientInfo(data.clientinfo)
                         transition={{ duration: 0.3 }}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-4 sm:px-6 py-4 text-sm text-gray-900">{order.id}</td>
-                        <td className="px-4 sm:px-6 py-4 text-sm text-gray-900">{order.HomeMaid.Name}</td>
-                        <td className="px-4 sm:px-6 py-4 text-sm">
+                        <td className="px-4 sm:px-6 py-4 text-md text-gray-900">{order.id}</td>
+                        <td className="px-4 sm:px-6 py-4 text-md text-gray-900">{order?.HomeMaid?.name}</td>
+                        <td className="px-4 sm:px-6 py-4 text-md">
                           <span
-                            className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
+                            className={`inline-block px-2 sm:px-3 py-1 rounded-full text-md font-medium ${
                               order.bookingstatus === 'اكمال الطلب'
                                 ? 'bg-green-100 text-green-800'
-                                : order.bookingstatus === 'حجز جديد'
+                                : order.bookingstatus === 'new_order'
                                 ? 'bg-yellow-100 text-yellow-800'
                                 : 'bg-red-100 text-red-800'
                             }`}
                           >
                             {order.bookingstatus === 'اكمال الطلب'
                               ? 'تم الاستلام'
-                              : order.bookingstatus === 'حجز جديد'
+                              : order.bookingstatus === 'new_order'
                               ? 'في انتظار المراجعة'
                               : 'طلب مرفوض'}
                           </span>
                         </td>
-                        <td className="px-4 sm:px-6 py-4 text-sm text-gray-900">{order.HomeMaid.office.office}</td>
+                        <td className="px-4 sm:px-6 py-4 text-md text-gray-900">{order.HomeMaid?.office?.office}</td>
                         <td className="px-4 sm:px-6 py-4">
                           <motion.button
                             disabled={order?.arrivals[0]?.id ? false : true}
                             onClick={() => router.push('/timeline/' + order.arrivals[0].id)}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-indigo-700 transition-colors"
+                            className="flex items-center gap-2 px-3 sm:px-4 cursor-pointer py-2 bg-teal-800 text-white rounded-lg text-md sm:text-md font-medium hover:bg-teal-700 transition-colors"
                           >
                             <ArrowLeftCircle size={16} />
                             متابعة
@@ -195,7 +205,7 @@ setClientInfo(data.clientinfo)
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="p-4 text-center text-gray-500 text-sm"
+                    className="p-4 text-center text-gray-500 text-md"
                   >
                     لا توجد طلبات مطابقة.
                   </motion.div>
@@ -210,20 +220,20 @@ setClientInfo(data.clientinfo)
                       className="p-4 bg-white hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm  font-bold text-gray-900">رقم الطلب</span>
-                        <span className="text-sm text-gray-900">{order.id}</span>
+                        <span className="text-md  font-bold text-gray-900">رقم الطلب</span>
+                        <span className="text-md text-gray-900">{order.id}</span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-bold text-gray-900">اسم العاملة</span>
-                        <span className="text-sm text-gray-900">{order.HomeMaid.Name}</span>
+                        <span className="text-md font-bold text-gray-900">اسم العاملة</span>
+                        <span className="text-md text-gray-900">{order?.HomeMaid?.Name}</span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-bold text-gray-900">الحالة</span>
+                        <span className="text-md font-bold text-gray-900">الحالة</span>
                         <span
-                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          className={`inline-block px-2 py-1 rounded-full text-md font-medium ${
                             order.bookingstatus === 'اكمال الطلب'
                               ? 'bg-green-100 text-green-800'
-                              : order.bookingstatus === 'حجز جديد'
+                              : order.bookingstatus === 'new_order'
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-red-100 text-red-800'
                           }`}
@@ -231,14 +241,14 @@ setClientInfo(data.clientinfo)
                           {order.bookingstatus === 'اكمال الطلب'
 
 ? 'تم الاستلام'
-                            : order.bookingstatus === 'حجز جديد'
+                            : order.bookingstatus === 'new_order'
                             ? 'في انتظار المراجعة'
                             : 'طلب مرفوض'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-bold text-gray-900">الشركة</span>
-                        <span className="text-sm text-gray-900">{order.HomeMaid.office.office}</span>
+                        <span className="text-md font-bold text-gray-900">الشركة</span>
+                        <span className="text-md text-gray-900">{order.HomeMaid?.office?.office}</span>
                       </div>
                       <div className="mt-4">
                         <motion.button
@@ -246,7 +256,7 @@ setClientInfo(data.clientinfo)
                           onClick={() => router.push('/timeline/' + order.arrivals[0].id)}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          className="w-full flex justify-center items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+                          className="w-full flex justify-center items-center gap-2 px-4 py-2 bg-teal-800 cursor-pointer text-white rounded-lg text-md font-medium hover:bg-teal-700 transition-colors"
                         >
                           <ArrowLeftCircle size={16} />
                           متابعة
@@ -277,7 +287,7 @@ setClientInfo(data.clientinfo)
           .text-lg {
             font-size: 1rem;
           }
-          .text-sm {
+          .text-md {
             font-size: 0.875rem;
           }
           .p-6 {
