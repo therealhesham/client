@@ -91,13 +91,13 @@ setClientInfo(data.clientinfo)
               <p className="text-md font-medium text-gray-600">الاسم</p>
               <p className="text-base sm:text-lg text-gray-900">
                 
-                {orders.length > 0 ? clientInfo.fullname : '---'}
+                {clientInfo.fullname }
               </p>
             </div>
             <div>
               <p className="text-md font-medium text-gray-600">رقم الهاتف</p>
               <p className="text-base sm:text-lg text-gray-900">
-                {orders.length > 0 ? clientInfo.phonenumber : '---'}
+                {clientInfo.phonenumber }
               </p>
             </div>
             <div>
