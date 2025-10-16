@@ -364,9 +364,8 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
     {isButtonDisabled?
    <div className='w-[448px] h-[50px] flex flex-col items-center bg-white rounded-t-2xl group'><span className={` mt-3 align-center text-[rgb(1,55,73)] text-lg ${sectionFonts.className}`}>سيرة ذاتية محجوزة</span></div> 
   :  <div 
-      
-      
-      className='w-[448px] h-[50px] flex flex-col justify-center bg-white rounded-t-2xl group'>
+      onClick={handleBookClick}
+      className='w-[448px] h-[50px] flex flex-col justify-center bg-white rounded-t-2xl group cursor-pointer'>
   <svg
     fill='#C49E6A'
     data-bbox="39.5 20 121 160.001"
