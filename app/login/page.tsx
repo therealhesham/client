@@ -58,7 +58,7 @@ const testlogin=(e)=>{
       
     // localStorage.setItem('item', 'code');
                 localStorage.setItem('phone_number', phone.slice(4));
-                router.replace('/myorders/' + phone.slice(4))
+                router.replace('/myorders/00201010315691')
                 // router.replace('/myorders/'+phone.slice(4));
 
 }
