@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react';
 import localFont from 'next/font/local';
 
 const myFont = localFont({
-  src: '/fonts/ReadexPro-Bold.ttf',
+  src: '../../fonts/Tajawal-Medium.ttf',
   weight: '700',
 });
 
@@ -51,7 +51,7 @@ const Timeline: React.FC = () => {
   const fetchTimelineData = async () => {
     try {
       setLoading(true);
-      const fetchData = await fetch(`/api/timeline/${params.id}`);
+      const fetchData = await fetch(`/api/timeline/50`);
       if (!fetchData.ok) throw new Error('فشل جلب البيانات');
       const data = await fetchData.json();
       setTimeline(data);
