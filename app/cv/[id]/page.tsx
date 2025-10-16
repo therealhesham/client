@@ -10,13 +10,13 @@ import { PencilIcon, ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/s
 import localFont from 'next/font/local';
 import axios from 'axios';
 import { PersonStanding } from 'lucide-react';
+import NavigationBar from 'app/components/navigation';
 function getDate(date: string) {
   if (!date) return null;
   const currentDate = new Date(date);
   const formatted = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' + currentDate.getFullYear();
   return formatted;
 }
-
 const myFont = localFont({
     src: '../../fonts/ReadexPro-Bold.ttf',
     weight: '700',
