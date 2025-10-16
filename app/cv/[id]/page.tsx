@@ -81,7 +81,7 @@ const ProfileCard = ({ title, value }: { title: string; value: string | number |
     className={` text-lg  ${myFontJanna.className}`}>{title}</p>
     <h1
     
-    className="text-md font-semibold  text-nowrap text-[rgb(1,55,73)] text-ellipsis ">{value ?? 'غير متوفر'}</h1>
+    className="text-md font-semibold  text-nowrap text-[rgb(1,55,73)] ">{value ?? 'غير متوفر'}</h1>
   </div>
 );
 
