@@ -81,7 +81,7 @@ const ProfileCard = ({ title, value }: { title: string; value: string | number |
     className={` text-lg  ${myFontJanna.className}`}>{title}</p>
     <h1
     
-    className="text-md font-semibold  text-nowrap text-[rgb(1,55,73)] ">{value ?? 'غير متوفر'}</h1>
+    className="text-md font-semibold  text-nowrap text-[rgb(1,55,73)] text-ellipsis overflow-hidden">{value ?? 'غير متوفر'}</h1>
   </div>
 );
 
@@ -309,7 +309,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
               <ProfileCard title="العمر" value={homemaid.age} />
               <ProfileCard title="الجنسية" value={homemaid.Nationalitycopy} />
               <ProfileCard title="رقم السيرة الذاتية" value={homemaid.id} />
-              <ProfileCard title="اسم العاملة" value={homemaid.Name} />
+              <ProfileCard title="اسم العاملة" value={homemaid.Name} />//لو الاسم طويل
             </div>
             </div>
             
