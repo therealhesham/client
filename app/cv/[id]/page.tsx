@@ -306,7 +306,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
             <div>
             {/* Personal Info Card */}
             <div className="bg-white text-right  rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-              <ProfileCard title="العمر" value={homemaid.age} />
+              <ProfileCard title="العمر" value={homemaid?.ages} />
               <ProfileCard title="الجنسية" value={homemaid.Nationalitycopy} />
               <ProfileCard title="رقم السيرة الذاتية" value={homemaid.id} />
               <ProfileCard title="اسم العاملة" value={homemaid.Name} />
