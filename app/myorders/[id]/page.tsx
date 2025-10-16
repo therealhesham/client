@@ -48,6 +48,34 @@ setClientInfo(data.clientinfo)
 };
 
   
+const translateBookingStatusToEnglish = (arabicStatus: string) => {
+  const reverseTranslations: { [key: string]: string } = {
+    'قيد الانتظار': 'pending',
+    'موافقة المكتب الخارجي': 'external_office_approved',
+    'في انتظار المكتب الخارجي': 'pending_external_office',
+    'تم اجتياز الفحص الطبي': 'medical_check_passed',
+    'في انتظار الفحص الطبي': 'pending_medical_check',
+    'موافقة وزارة العمل الأجنبية': 'foreign_labor_approved',
+    'في انتظار وزارة العمل الأجنبية': 'pending_foreign_labor',
+    'تم دفع الوكالة': 'agency_paid',
+    'في انتظار دفع الوكالة': 'pending_agency_payment',
+    'موافقة السفارة السعودية': 'embassy_approved',
+    'في انتظار السفارة السعودية': 'pending_embassy',
+    'تم إصدار التأشيرة': 'visa_issued',
+    'في انتظار إصدار التأشيرة': 'pending_visa',
+    'تم إصدار تصريح السفر': 'travel_permit_issued',
+    'في انتظار تصريح السفر': 'pending_travel_permit',
+    'تم الاستلام': 'received',
+    'في انتظار الاستلام': 'pending_receipt',
+    'ملغي': 'cancelled',
+    'مرفوض': 'rejected',
+    'تم التسليم': 'delivered',
+    'طلب جديد': 'new_order',
+    'طلبات جديدة': 'new_orders'
+  };
+  
+  return reverseTranslations[arabicStatus] || arabicStatus;
+};
 
   useEffect(() => {
     fetchMyOrders();
@@ -160,7 +188,7 @@ setClientInfo(data.clientinfo)
                         className="hover:bg-gray-50 transition-colors"
                       >
                         <td className="px-4 sm:px-6 py-4 text-md text-gray-900">{order.id}</td>
-                        <td className="px-4 sm:px-6 py-4 text-md text-gray-900">{order?.HomeMaid?.name}</td>
+                        <td className="px-4 sm:px-6 py-4 text-md text-gray-900">{order?.HomeMaid?.Name}</td>
                         <td className="px-4 sm:px-6 py-4 text-md">
                           <span
                             className={`inline-block px-2 sm:px-3 py-1 rounded-full text-md font-medium ${
@@ -175,7 +203,7 @@ setClientInfo(data.clientinfo)
                               ? 'تم الاستلام'
                               : order.bookingstatus === 'new_order'
                               ? 'في انتظار المراجعة'
-                              : 'طلب مرفوض'}
+                              : translateBookingStatusToEnglish(order.bookingstatus)}
                           </span>
                         </td>
                         <td className="px-4 sm:px-6 py-4 text-md text-gray-900">{order.HomeMaid?.office?.office}</td>
