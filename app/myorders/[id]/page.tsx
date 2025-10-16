@@ -91,7 +91,7 @@ setClientInfo(data.clientinfo)
               <p className="text-md font-medium text-gray-600">الاسم</p>
               <p className="text-base sm:text-lg text-gray-900">
                 
-                {clientInfo.fullname }
+                {clientInfo?.fullname }
               </p>
             </div>
             <div>
