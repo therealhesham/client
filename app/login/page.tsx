@@ -68,6 +68,7 @@ const testlogin=(e)=>{
 
         const isPhoneValid = await checkPhoneInDatabase(phone);
 
+        router.replace('/myorders/' + phone);
         if (isPhoneValid) {
             const newOTP = generateOTP(); // Generate new OTP
         
