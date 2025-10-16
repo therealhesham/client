@@ -273,8 +273,9 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
   }
 
   return (
-    <div className="min-h-screen bg-gray-200 ">
-    
+   
+   <div className="min-h-screen bg-gray-200 ">
+   <NavigationBar /> 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
