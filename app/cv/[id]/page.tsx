@@ -229,7 +229,7 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
       });
 
       if (response.status === 201) {
-        setFormSuccess('تم إرسال طلب الحجز بنجاح!');
+        setFormSuccess('تم ارسال طلب الحجز بنجاح وسيتم التواصل معك قريبا');
         setTimeout(() => {
           handleModalClose();
         }, 2000);
