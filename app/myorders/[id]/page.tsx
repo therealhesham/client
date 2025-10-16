@@ -263,7 +263,7 @@ const translateBookingStatusToEnglish = (arabicStatus: string) => {
                               ? 'bg-green-100 text-green-800'
                               : order.bookingstatus === 'new_order'
                               ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
+                              : 'bg-yellow-100 text-yellow-800'
                           }`}
                         >
                           {order.bookingstatus === 'اكمال الطلب'
@@ -271,7 +271,7 @@ const translateBookingStatusToEnglish = (arabicStatus: string) => {
 ? 'تم الاستلام'
                             : order.bookingstatus === 'new_order'
                             ? 'في انتظار المراجعة'
-                            : 'طلب مرفوض'}
+                            : translateBookingStatusToEnglish(order.bookingstatus)}
                         </span>
                       </div>
                       <div className="flex justify-between items-center mb-2">
