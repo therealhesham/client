@@ -207,14 +207,14 @@ const Timeline: React.FC = () => {
             <div className="flex justify-center items-center">
               <Loader2Icon className="w-8 h-8 animate-spin text-blue-500" />
             </div>
-          ) : timeline?.HomemaidName || timeline?.Order?.HomeMaid?.Name ? (
+          ) :  timeline?.Order?.HomeMaid?.Name ? (
             <div className="flex items-center">
               <div className="flex-shrink-0 w-16 h-16 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center">
                 <UserIcon className="w-8 h-8 text-white" />
               </div>
               <div className="mr-4">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {timeline?.HomemaidName || timeline?.Order?.HomeMaid?.Name || 'غير متوفر'}
+                  { timeline?.Order?.HomeMaid?.Name || 'غير متوفر'}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   رقم جواز السفر: {timeline?.Order?.HomeMaid?.Passportnumber || 'غير متوفر'}
