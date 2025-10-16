@@ -623,7 +623,7 @@ const updatePeriod = () => {
         setAgeFilter("");
         router.push("/candidates");
       }}
-      className="bg-[#ECC383] hover:bg-[#d4b16f] text-white text-xs md:text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-[#ECC383]/50 min-w-24"
+      className="bg-[#ECC383] hover:bg-[#d4b16f] text-white cursor-pointer text-xs md:text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-[#ECC383]/50 min-w-24"
     >
       إعادة تعيين
     </motion.button>
@@ -633,7 +633,7 @@ const updatePeriod = () => {
 <div className="text-right mt-4">
   <button
     onClick={() => setIsAdvancedModalOpen(true)}
-    className="text-[#ECC383] hover:underline font-medium text-sm md:text-base inline-flex items-center gap-1 bg-transparent border-none cursor-pointer p-0 focus:outline-none"
+    className="text-[#ECC383] hover:underline font-medium text-sm md:text-base inline-flex items-center gap-1 bg-transparent border-none cursor-pointer p-0 focus:outline-none cursor-pointer"
   >
     استخدم البحث المتقدم
     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -647,11 +647,11 @@ const updatePeriod = () => {
  {/* Modal البحث المتقدم */}
  {isAdvancedModalOpen && (
   <div
-    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm cursor-pointer"
     onClick={() => setIsAdvancedModalOpen(false)}
   >
     <div
-      className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+      className="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto cursor-pointer"
       onClick={(e) => e.stopPropagation()}
       dir="rtl"
     >
@@ -667,14 +667,14 @@ const updatePeriod = () => {
     </h3>
     <button
       onClick={() => setIsAdvancedModalOpen(false)}
-      className="text-gray-500 hover:text-gray-700 text-2xl font-bold transition"
+      className="text-gray-500 hover:text-gray-700 text-2xl font-bold transition cursor-pointer"
     >
       &times;
     </button>
   </div>
 
   {/* تنبيه واضح */}
-  <div className="bg-[#ECC383]/20 border border-[#ECC383] rounded-xl p-4 shadow-inner">
+  <div className="bg-[#ECC383]/20 border border-[#ECC383] rounded-xl p-4 shadow-inner cursor-pointer">
     <div className="flex items-start gap-3">
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#ECC383] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
