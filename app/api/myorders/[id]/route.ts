@@ -15,7 +15,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         const { id } = await params;
         const findClient = await prisma.neworder.findMany({ where: { client: {phonenumber: id as string}}, include: { arrivals: {select:{id:true}}, HomeMaid: { include: { office: true } }, client: true } })
 const clientinfo = await prisma.client.findUnique({ where: { phonenumber: id as string } })
-console.log(clientinfo?.fullname)
+// clientinfo.phonenumber
+console.log(clientinfo?.phonenumber)
 return NextResponse.json({
     orders: findClient,
     clientinfo: clientinfo
