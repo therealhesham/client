@@ -133,7 +133,7 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
           <img
             src={candidate.Picture?.url?.includes("digital") ? candidate.Picture.url : imageSrc || fallbackImage}
             alt={`صورة ${candidate.Name}`}
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-contain object-center"
             loading="lazy"
             onError={() => setIsImageLoading(false)}
           />
@@ -193,7 +193,7 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className={`w-full ${myFont.className} bg-[#013749] text-white py-2.5 rounded-lg font-medium text-sm transition-colors duration-200`}
+              className={`w-full ${myFont.className} cursor-pointer bg-[#013749] text-white py-2.5 rounded-lg font-medium text-sm transition-colors duration-200`}
             >
               عرض الملف الشخصي
             </motion.button>
