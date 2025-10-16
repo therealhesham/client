@@ -51,7 +51,7 @@ const Timeline: React.FC = () => {
   const fetchTimelineData = async () => {
     try {
       setLoading(true);
-      const fetchData = await fetch(`/api/timeline/20`);
+      const fetchData = await fetch(`/api/timeline/171`);
       if (!fetchData.ok) throw new Error('فشل جلب البيانات');
       const data = await fetchData.json();
       setTimeline(data);
