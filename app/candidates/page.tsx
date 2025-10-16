@@ -133,7 +133,7 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
           <img
             src={candidate.Picture?.url?.includes("digital") ? candidate.Picture.url : imageSrc || fallbackImage}
             alt={`صورة ${candidate.Name}`}
-            className="w-full h-full object-contain object-center"
+            className="w-full h-full object-cover object-center"
             loading="lazy"
             onError={() => setIsImageLoading(false)}
           />
