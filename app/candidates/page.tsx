@@ -388,7 +388,7 @@ const updatePeriod = () => {
   const message = getWhatsAppMessage();
   const phoneNumber = currentPeriod === "morning" 
     ? "966555230531" 
-    : "966533370402"; // استبدل هذا الرقم برقم الواتساب المسائي الفعلي
+    : "966555770723"; // استبدل هذا الرقم برقم الواتساب المسائي الفعلي
   
   return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 };
