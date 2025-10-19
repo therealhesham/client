@@ -56,10 +56,8 @@ export default function LoginPage() {
 const testlogin=(e)=>{
     e.preventDefault();
       
-    // localStorage.setItem('item', 'code');
                 localStorage.setItem('phone_number', phone.slice(4));
-                router.replace('/myorders/00201010315691')
-                // router.replace('/myorders/'+phone.slice(4));
+router.replace('/myorders/'+phone.slice(4));
 
 }
     const handleSubmit = async (e) => {
@@ -67,8 +65,9 @@ const testlogin=(e)=>{
         setError('');
 
         const isPhoneValid = await checkPhoneInDatabase(phone);
-router.replace('/myorders/00201010315691' );
+
         if (isPhoneValid) {
+testlogin();            
             const newOTP = generateOTP(); // Generate new OTP
         
             setGeneratedOTP(newOTP); // Store the generated OTP
@@ -181,7 +180,7 @@ const [verifyError,setVerifyError]=useState("")
                                     }}
                                     className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none"
                                     placeholder="5XXXXXXXX"
-                                    pattern="[5-9][0-9]{8}"
+                                    // pattern="[5-9][0-9]{8}"
                                     maxLength={9}
                                     required
                                 />
