@@ -23,6 +23,7 @@ export async function POST(req: Request) {
         // Insert into the database
         const newHomemaid = await prisma.neworder.create({
             data: {
+                typeOfContract:"recruitment",
                 bookingstatus: "new_order",
                 HomeMaid: { connect: { id: homemaidId } },
                 clientphonenumber: phone_number,

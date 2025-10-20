@@ -53,12 +53,20 @@ export default function LoginPage() {
             }
         }
     };
-const testlogin=(e)=>{
+const testlogin=async(e)=>{
     e.preventDefault();
-      
-                localStorage.setItem('phone_number', phone.slice(4));
-router.replace('/myorders/'+phone.slice(4));
 
+
+    const isPhoneValid = await checkPhoneInDatabase(phone);
+
+if(isPhoneValid){
+                localStorage.setItem('phone_number', phone.slice(4));
+router.replace('/myorders/'+phone.slice(4));}
+else {
+alert("رقم الجوال غير موجود في قاعدة البيانات")
+
+
+}
 }
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -67,7 +75,6 @@ router.replace('/myorders/'+phone.slice(4));
         const isPhoneValid = await checkPhoneInDatabase(phone);
 
         if (isPhoneValid) {
-testlogin();            
             const newOTP = generateOTP(); // Generate new OTP
         
             setGeneratedOTP(newOTP); // Store the generated OTP

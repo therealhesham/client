@@ -9,8 +9,8 @@ import { useEffect, useState } from 'react';
 import localFont from 'next/font/local';
 import { usePathname, useRouter } from 'next/navigation';
 const myFont = localFont({
-    src: '../fonts/ReadexPro-Bold.ttf',
-    weight: '700',
+    src: '../fonts/Tajawal-Bold.ttf',
+    weight: '500',
 });
 
 const navVariants = {
@@ -100,7 +100,7 @@ const pathname = usePathname()
                                 </Link>
                             </motion.div>
                         ))}
-                        {/* {isSigned ? (
+                      {isSigned ? (
                             <Link
                                 style={{ color: "RGB(196, 158, 106)" }}
                                 href={'/myorders/' + phone}
@@ -118,7 +118,7 @@ const pathname = usePathname()
                                 تتبع الطلب
                                 <span className="absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
                             </Link>
-                        )} */}
+                        )} 
                     </nav>
                 </div>
             </div>
