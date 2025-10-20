@@ -23,7 +23,7 @@ export async function POST(req: Request) {
         // Insert into the database
         const newHomemaid = await prisma.neworder.create({
             data: {
-                bookingstatus: "حجز جديد",
+                bookingstatus: "new_order",
                 HomeMaid: { connect: { id: homemaidId } },
                 clientphonenumber: phone_number,
                 client: { connectOrCreate: { where: { phonenumber: phone_number }, create: { phonenumber: phone_number, fullname: fullName } } }
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
         try {
 
-            await prisma.notifications.create({ data: { title: "حجز جديد", message: `تم حجز عاملة بواسطة ${fullName}` } })
+            await prisma.notifications.create({ data: { title: " تم حجز عاملة جديدة من الموقع الالكتروني", message: `تم حجز عاملة بواسطة ${fullName}` } })
 
         } catch (error) {
             console.log(error)
