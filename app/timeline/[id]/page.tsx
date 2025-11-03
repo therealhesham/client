@@ -47,14 +47,27 @@ const Timeline: React.FC = () => {
   }>();
   const [loading, setLoading] = useState(true);
   const params = useParams();
-
+  const[orderData,setOrderData]=useState<{
+    internalMusanedContract?: string;
+    externalmusanedContract?: string;
+    externalOfficeApproval?: string;
+    medicalCheckFile?: string;
+    AgencyDate?: string;
+    EmbassySealing?: string;
+    KingdomentryDate?: string;
+    DeliveryDate?: string;
+  }>({});
+const [bookingstatus,setBookingStatus]=useState("")
   const fetchTimelineData = async () => {
     try {
       setLoading(true);
       const fetchData = await fetch(`/api/timeline/${params.id}`);
       if (!fetchData.ok) throw new Error('فشل جلب البيانات');
       const data = await fetchData.json();
-      setTimeline(data);
+      console.log(data)
+      setBookingStatus(data?.findClient?.Order?.bookingstatus)
+            setTimeline(data.findClient);
+            setOrderData(data?.orderData)
     } catch (error) {
       console.error('خطأ في جلب بيانات الطلب:', error);
     } finally {
@@ -74,6 +87,64 @@ const Timeline: React.FC = () => {
     const diffInMs = Math.abs(d2.getTime() - d1.getTime());
     return Math.round(diffInMs / (1000 * 60 * 60 * 24));
   };
+//external_office_approved
+//pending_external_office
+
+
+
+//medical_check_passed
+//pending_medical_check
+
+
+//foreign_labor_approved
+//pending_foreign_labor
+
+
+//agency_paid
+//pending_agency_payment
+
+
+//embassy_approved
+//pending_embassy
+
+
+
+//visa_issued
+//pending_visa
+
+//travel_permit_issued
+//pending_travel_permit
+
+
+//received
+const translateBookingStatus = (status: string) => {
+  const statusTranslations: { [key: string]: string } = {
+    'pending': 'قيد الانتظار',
+    'external_office_approved': 'موافقة المكتب الخارجي',
+    'pending_external_office': 'في انتظار المكتب الخارجي',
+    'medical_check_passed': 'تم اجتياز الفحص الطبي',
+    'pending_medical_check': 'في انتظار الفحص الطبي',
+    'foreign_labor_approved': 'موافقة وزارة العمل الأجنبية',
+    'pending_foreign_labor': 'في انتظار وزارة العمل الأجنبية',
+    'agency_paid': 'تم دفع الوكالة',
+    'pending_agency_payment': 'في انتظار دفع الوكالة',
+    'embassy_approved': 'موافقة السفارة السعودية',
+    'pending_embassy': 'في انتظار السفارة السعودية',
+    'visa_issued': 'تم إصدار التأشيرة',
+    'pending_visa': 'في انتظار إصدار التأشيرة',
+    'travel_permit_issued': 'تم إصدار تصريح السفر',
+    'pending_travel_permit': 'في انتظار تصريح السفر',
+    'received': 'تم الاستلام',
+    'pending_receipt': 'في انتظار الاستلام',
+    'cancelled': 'ملغي',
+    'rejected': 'مرفوض',
+    'delivered': 'تم التسليم',
+    'new_order': 'طلب جديد',
+    'new_orders': 'طلبات جديدة'
+  };
+  
+  return statusTranslations[status] || status;
+};
 
   const events = [
     {
@@ -86,20 +157,29 @@ const Timeline: React.FC = () => {
     },
     {
       id: '2',
-      date: timeline?.InternalmusanedContract,
+      date: orderData?.musanedDate,
       title: 'الربط مع مساند',
       description: 'تم الربط مع منصة مساند الداخلية',
       icon: <GlobeIcon className="w-6 h-6" />,
       duration: 23,
     },
-    {
-      id: '3',
-      date: timeline?.externalmusanedContract,
-      title: 'تدريب العاملة',
-      description: 'تدريب العاملة',
-      icon: <GlobeIcon className="w-6 h-6" />,
-      duration: 15,
+    ,{
+      id: '5',
+      date:orderData?.foreignLaborApproval,
+      title: 'موافقة وزارة العمل',
+      // description: 'تم إجراء الفحص الطبي',
+      icon: <StethoscopeIcon className="w-6 h-6" />,
+      duration: 2,
     },
+    
+    // {
+    //   id: '3',
+    //   date: timeline?.externalmusanedContract,
+    //   title: 'تدريب العاملة',
+    //   description: 'تدريب العاملة',
+    //   icon: <GlobeIcon className="w-6 h-6" />,
+    //   duration: 15,
+    // },
     {
       id: '4',
       date: timeline?.medicalCheckFile,
@@ -107,14 +187,6 @@ const Timeline: React.FC = () => {
       description: 'تم إجراء الفحص الطبي',
       icon: <StethoscopeIcon className="w-6 h-6" />,
       duration: 3,
-    },
-    {
-      id: '5',
-      date: timeline?.medicalCheckFile,
-      title: 'موافقة وزارة العمل',
-      description: 'تم إجراء الفحص الطبي',
-      icon: <StethoscopeIcon className="w-6 h-6" />,
-      duration: 2,
     },
     {
       id: '6',
@@ -153,7 +225,7 @@ const Timeline: React.FC = () => {
   let isActive = true;
   let inProgressSet = false;
   const eventsWithActiveState = events.map((event, index) => {
-    const hasDate = !!event.date;
+    const hasDate = !!event?.date;
     const active = isActive && hasDate;
     const inProgress = !active && isActive && !inProgressSet;
 
@@ -161,20 +233,20 @@ const Timeline: React.FC = () => {
     if (inProgress) inProgressSet = true;
 
     // Calculate start date (previous stage's date or createdAt for first stage)
-    const startDate = index > 0 ? events[index - 1].date : timeline?.createdAt;
+    const startDate = index > 0 ? events[index - 1]?.date : timeline?.createdAt;
 
     // End date is the current stage's date
-    const endDate = event.date;
+    const endDate = event?.date;
 
     // Calculate days between start and end dates for active stages
     const daysToPrevious = startDate && endDate
       ? getDaysBetween(startDate, endDate)
-      : index > 0 && events[index - 1].date
-      ? getDaysBetween(new Date().toISOString(), events[index - 1].date ?? '')
+      : index > 0 && events[index - 1]?.date
+      ? getDaysBetween(new Date().toISOString(), events[index - 1]?.date ?? '')
       : null;
 
-    const progressPercentage = inProgress && daysToPrevious !== null && event.duration > 0
-      ? Math.min((daysToPrevious / event.duration) * 100, 100)
+    const progressPercentage = inProgress && daysToPrevious !== null && event?.duration > 0
+      ? Math.min((daysToPrevious / event?.duration) * 100, 100)
       : 0;
 
     return { ...event, active, inProgress, startDate, endDate, daysToPrevious, progressPercentage };
@@ -212,14 +284,24 @@ const Timeline: React.FC = () => {
               <div className="flex-shrink-0 w-16 h-16 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center">
                 <UserIcon className="w-8 h-8 text-white" />
               </div>
-              <div className="mr-4">
+              <div className="mr-4 gap-2">
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   { timeline?.Order?.HomeMaid?.Name || 'غير متوفر'}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   رقم جواز السفر: {timeline?.Order?.HomeMaid?.Passportnumber || 'غير متوفر'}
                 </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  حالة الطلب: {translateBookingStatus(timeline?.Order?.bookingstatus || '') || 'غير متوفر'}
+                </p>
               </div>
+
+
+<div className='mb-4'> 
+
+
+</div>
+
             </div>
           ) : (
             <p className="text-center text-gray-500 dark:text-gray-400">
