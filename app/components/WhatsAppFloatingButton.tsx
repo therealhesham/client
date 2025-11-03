@@ -27,8 +27,8 @@ export default function WhatsAppFloatingButton() {
     : "مساء الخير، احتاج للمساعدة";
       
     const phoneNumber = period === "morning" 
-      ? "966500000000" 
-      : "966555555555";
+      ? "966555230531" 
+      : "966555770723";
       
     return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(baseMessage)}`;
   };
