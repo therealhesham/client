@@ -38,7 +38,9 @@ const Timeline: React.FC = () => {
     DeliveryDate?: string;
     HomemaidName?: string;
     createdAt?: string;
-    Order?: {createdAt?: string ,
+    Order?: {
+      createdAt?: string;
+      bookingstatus?: string;
       HomeMaid?: {
         Name?: string;
         Passportnumber?: string;
@@ -48,6 +50,15 @@ const Timeline: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const params = useParams();
   const[orderData,setOrderData]=useState<{
+    officeLinkInfo?: {
+      musanedDate?: string;
+      nationalId?: string;
+      visaNumber?: string;
+      internalMusanedContract?: string;
+    };
+    foreignLaborApproval?: {
+      approved?: boolean;
+    };
     internalMusanedContract?: string;
     externalmusanedContract?: string;
     externalOfficeApproval?: string;
@@ -157,15 +168,15 @@ const translateBookingStatus = (status: string) => {
     },
     {
       id: '2',
-      date: orderData?.musanedDate,
+      date: orderData?.officeLinkInfo?.musanedDate,
       title: 'الربط مع مساند',
       description: 'تم الربط مع منصة مساند الداخلية',
       icon: <GlobeIcon className="w-6 h-6" />,
       duration: 23,
     },
-    ,{
+    {
       id: '5',
-      date:orderData?.foreignLaborApproval,
+      date: orderData?.foreignLaborApproval?.approved ? new Date().toISOString() : undefined,
       title: 'موافقة وزارة العمل',
       // description: 'تم إجراء الفحص الطبي',
       icon: <StethoscopeIcon className="w-6 h-6" />,

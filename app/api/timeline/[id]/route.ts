@@ -7,9 +7,9 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   console.log('Order ID:', id);
 
   try {
@@ -174,13 +174,12 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   try {
     const body = await request.json();
     const { field, value, section, updatedData } = body;
-    console.log('Request Body:', { field, value, section, updatedData });
 
     const order = await prisma.neworder.findUnique({
       where: { id: Number(id) },
