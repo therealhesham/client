@@ -4,36 +4,44 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { PencilIcon, ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/24/solid';
+import { motion, AnimatePresence } from 'framer-motion';
 import localFont from 'next/font/local';
 import axios from 'axios';
-import { PersonStanding } from 'lucide-react';
+import { 
+  PersonStanding, 
+  CheckCircle2, 
+  Star, 
+  MapPin, 
+  Calendar, 
+  Wallet, 
+  User, 
+  Briefcase,
+  Languages,
+  Shirt,
+  Utensils,
+  Baby,
+  Sparkles,
+  ChevronRight,
+  ChevronLeft
+} from 'lucide-react';
+import CitySelect from 'app/components/CitySelect';
 import NavigationBar from 'app/components/navigation';
+
+// --- Helper Functions ---
 function getDate(date: string) {
   if (!date) return null;
   const currentDate = new Date(date);
-  const formatted = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' + currentDate.getFullYear();
-  return formatted;
+  return currentDate.toLocaleDateString('en-GB'); // DD/MM/YYYY
 }
+
+// --- Fonts ---
 const myFont = localFont({
-    src: '../../fonts/ReadexPro-Bold.ttf',
-    weight: '700',
+  src: '../../fonts/ReadexPro-Bold.ttf',
+  weight: '700',
+  variable: '--font-readex',
 });
 
-const myFontJanna = localFont({
-    src: '../../fonts/janna.woff2',
-    weight: '900',
-});
-
-
-const sectionFonts = localFont({
-    src: '../../fonts/MarkaziText-VariableFont_wght.ttf',
-    weight: '700',
-});
-
-// Homemaid interface for TypeScript
+// --- Interfaces ---
 interface Homemaid {
   id: number;
   Name: string | null;
@@ -65,137 +73,107 @@ interface Homemaid {
   officeName: string | null;
   Picture?: { url: string } | null;
   FullPicture?: { url: string } | null;
-  weeklyStatusId: { id: number; status: string; date: string }[];
-  NewOrder: { id: number; ClientName: string; bookingstatus: string }[];
-  Session: { id: number; reason: string; date: string }[];
-  Housed: { id: number; isHoused: boolean }[];
-  inHouse: { id: number; houseentrydate: string; checkIns: { id: number; breakfastOption: string }[] }[];
-  logs: { id: number; Status: string; createdAt: string }[];
+  weeklyStatusId: any[];
+  NewOrder: any[];
+  ages?: string | number; 
 }
 
-// Reusable component for profile card sections
-const ProfileCard = ({ title, value }: { title: string; value: string | number | null }) => (
-  <div className="flex flex-col p-4 ">
-    <p 
-       style={{color:"RGB(196, 158, 106)"}}
-    className={` text-lg  ${myFontJanna.className}`}>{title}</p>
-    <h1
-    
-    className="text-md font-semibold  text-nowrap text-[rgb(1,55,73)] ">{value ?? 'غير متوفر'}</h1>
+// --- Sub-Components ---
+
+// بطاقة المعلومات الرئيسية
+// ملاحظة: بوجود dir="rtl" في الصفحة، الـ Flex سيضع الأيقونة يمين والنص يسار تلقائياً
+const InfoItem = ({ icon: Icon, label, value }: { icon: any, label: string, value: string | number | null }) => (
+  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#C49E6A]/30 transition-all duration-300">
+    <div className="p-2 bg-white rounded-lg shadow-sm text-[#003749]">
+      <Icon size={18} strokeWidth={2} />
+    </div>
+    <div className="flex flex-col text-right"> {/* تأكيد المحاذاة لليمين */}
+      <span className="text-xs text-gray-400 font-medium mb-0.5">{label}</span>
+      <span className="text-sm font-bold text-gray-800">{value ?? '-'}</span>
+    </div>
   </div>
 );
 
-// Reusable component for skill levels
-const SkillCard = ({ title, level }: { title: string; level: string | null }) => (
-  <div className="flex flex-col p-2">
-
-    <p 
-       style={{color:"RGB(196, 158, 106)"}}
-
-    className={` text-lg text-right  ${myFontJanna.className}`}>{title}</p>
-    <h1 className="text-md  text-right font-semibold text-nowrap text-[rgb(1,55,73)] ">{level ?? 'غير متوفر'}</h1>
-  </div>
-);
+// بطاقة المهارات
+const SkillBadge = ({ icon: Icon, label, level }: { icon: any, label: string, level: string | null }) => {
+  const isHigh = level?.includes('ممتاز') || level?.includes('جيد') || level === 'نعم';
+  
+  return (
+    <div className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ${isHigh ? 'bg-[#003749]/5 border border-[#003749]/10' : 'bg-gray-50 border border-gray-100'}`}>
+      <Icon className={`mb-2 ${isHigh ? 'text-[#C49E6A]' : 'text-gray-400'}`} size={24} />
+      <span className="text-xs font-bold text-gray-700 mb-1">{label}</span>
+      <span className={`text-[10px] px-2 py-0.5 rounded-full ${isHigh ? 'bg-[#003749] text-white' : 'bg-gray-200 text-gray-500'}`}>
+        {level ?? 'غير محدد'}
+      </span>
+    </div>
+  );
+};
 
 export default function Profile() {
-
-
-
   const params = useParams();
   const router = useRouter();
   const [homemaid, setHomemaid] = useState<Homemaid | null>(null);
-  const [image, setImage] = useState<string>('');
-    const [homemaidsList, setHomemaidsList] = useState<Homemaid[]>([]); // قائمة العاملات
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
+  const [fullImage, setFullImage] = useState<string | null>(null);
   
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
-  const [formData, setFormData] = useState({
-    clientName: '',
-    phoneNumber: '',
-    residence: '',
-  });
+  
+  // Form States
+  const [formData, setFormData] = useState({ clientName: '', phoneNumber: '', residence: '' });
+  const [fieldErrors, setFieldErrors] = useState({ clientName: '', phoneNumber: '', residence: '' });
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
-  const [isButton, setButton] = useState(true)
-  const handlePreviousHomemaid = () => {
-    // alert("params")
-    const no = parseInt(params.id, 10) - 1
 
-    router.push("/cv/" + no.toString())
-    // params.id = 1 + parseInt(params.id)
-  };
+  // Navigation Handlers
+  const handlePreviousHomemaid = () => router.push("/cv/" + (parseInt(params.id as string, 10) - 1).toString());
+  const handleNextHomemaid = () => router.push("/cv/" + (parseInt(params.id as string, 10) + 1).toString());
 
-  const handleNextHomemaid = () => {
-    // alert("params")
-    const no = parseInt(params.id, 10) + 1
-
-    router.push("/cv/" + no.toString())
-    // params.id = 1 + parseInt(params.id)
-
-  };
-
-  // Fetch homemaid data
   useEffect(() => {
     const fetchHomemaid = async () => {
       try {
         setLoading(true);
+        setImage(null);
+        setFullImage(null);
         const response = await fetch(`/api/homemaid/${params.id}`);
         if (response.redirected) {
           router.push(response.url);
           return;
         }
-        if (!response.ok) {
-          throw new Error('فشل في تحميل البيانات');
-        }
+        if (!response.ok) throw new Error('فشل في تحميل البيانات');
         const data: Homemaid = await response.json();
         setHomemaid(data);
-        setIsButtonDisabled(data.NewOrder.length > 0);
+        setIsButtonDisabled(data.NewOrder && data.NewOrder.length > 0);
       } catch (err) {
         setError('فشل في تحميل تفاصيل السيرة الذاتية');
       } finally {
         setLoading(false);
       }
     };
-
-    if (params.id) {
-      fetchHomemaid();
-    }
+    if (params.id) fetchHomemaid();
   }, [params.id, router]);
-const [fullImage,setFullImage]=useState("")
-  // Full body picture - صورة كامل الجسم
-  // Fetch image from Airtable
+
   useEffect(() => {
     const fetchImage = async (name: string) => {
       try {
         const response = await fetch(`/api/fetchbothimage/${encodeURIComponent(name)}`);
-        if (!response.ok) {
-          throw new Error('فشل في جلب الصورة');
-        }
+        if (!response.ok) throw new Error('Error');
         const data = await response.json();
-        setImage(data.result[0].fields.Picture[0].url || '/fallback-image.jpg');
-       setFullImage(data.result[0].fields["Full body picture - صورة كامل الجسم "][0].url );
+        const imgUrl = data.result[0]?.fields?.Picture?.[0]?.url;
+        const fullImgUrl = data.result[0]?.fields?.["Full body picture - صورة كامل الجسم "]?.[0]?.url;
+        setImage(imgUrl || null);
+        setFullImage(fullImgUrl || null);
       } catch (err) {
-        console.error('Error fetching image:', err);
-        setImage('/fallback-image.jpg');
+        console.error(err);
       }
     };
-
-    if (homemaid?.Name) {
-      fetchImage(homemaid.Name);
-    }
+    if (homemaid?.Name) fetchImage(homemaid.Name);
   }, [homemaid?.Name]);
 
-
-
-
-
-
-
-
-
   const handleBookClick = () => {
+    if (isButtonDisabled) return;
     setIsModalOpen(true);
     setFormError(null);
     setFormSuccess(null);
@@ -204,22 +182,44 @@ const [fullImage,setFullImage]=useState("")
   const handleModalClose = () => {
     setIsModalOpen(false);
     setFormData({ clientName: '', phoneNumber: '', residence: '' });
-    setFormError(null);
-    setFormSuccess(null);
+    setFieldErrors({ clientName: '', phoneNumber: '', residence: '' });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (fieldErrors[name as keyof typeof fieldErrors]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
-
-
-const verifyPhone = ()=>{ // verify phone number by sending otp 
-
-}
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({ clientName: '', phoneNumber: '', residence: '' });
+    setFormError(null);
+
+    let hasError = false;
+    const newErrors = { clientName: '', phoneNumber: '', residence: '' };
+
+    if (formData.clientName.trim().length < 3) {
+      newErrors.clientName = 'الاسم يجب أن يكون ثلاثي الحروف على الأقل';
+      hasError = true;
+    }
+    const saudiPhoneRegex = /^(05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/;
+    if (!saudiPhoneRegex.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = 'يرجى إدخال رقم جوال صحيح (مثال: 05xxxxxxxx)';
+      hasError = true;
+    }
+    if (!formData.residence) {
+      newErrors.residence = 'يرجى اختيار المدينة';
+      hasError = true;
+    }
+
+    if (hasError) {
+      setFieldErrors(newErrors);
+      return;
+    }
+
     try {
       const response = await axios.post('/api/bookhomemaid', {
         homemaidId: homemaid?.id,
@@ -230,265 +230,311 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
 
       if (response.status === 201) {
         setFormSuccess('تم ارسال طلب الحجز بنجاح وسيتم التواصل معك قريبا');
-        setTimeout(() => {
-          handleModalClose();
-        }, 2000);
+        setTimeout(() => handleModalClose(), 2000);
       }
     } catch (err) {
       setFormError('فشل في إرسال طلب الحجز. حاول مرة أخرى.');
     }
   };
 
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8F9FA]">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#C49E6A] border-opacity-75"></div>
+      <p className="mt-4 text-[#003749] font-medium animate-pulse">جاري تحميل السيرة الذاتية...</p>
+    </div>
+  );
 
-
-
-
-
-
-
-
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-200">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-200">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
-
-  if (!homemaid) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-200">
-        <p>لم يتم العثور على بيانات السيرة الذاتية</p>
-      </div>
-    );
-  }
+  if (error || !homemaid) return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F8F9FA] gap-4">
+      <div className="p-6 bg-red-50 rounded-full"><Briefcase className="text-red-400 h-12 w-12" /></div>
+      <p className="text-gray-600 font-bold text-lg">{error || 'لم يتم العثور على البيانات'}</p>
+      <button onClick={() => router.back()} className="text-[#C49E6A] underline">العودة للصفحة السابقة</button>
+    </div>
+  );
 
   return (
-   
-   <div className="min-h-screen bg-gray-200 ">
-   <NavigationBar /> 
-      <motion.div
+    // تم إضافة dir="rtl" هنا ليطبق على الصفحة كاملة
+    <div className={`min-h-screen bg-[#F5F7F9] pb-24 md:pb-10 ${myFont.className}`} dir="rtl">
+      <NavigationBar />
+
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="container mx-auto   pt-30 py-8    "
-      ><h3  className={`grid gap-6 md:grid-cols-2  lg:grid-cols-2`}><span></span><span className={`text-2xl ${myFont.className} text-center text-[rgb(1,55,73)] `}>السيرة الذاتية للعاملة</span></h3>
-        <div className="grid gap-6 md:grid-cols-2   lg:grid-cols-2">
-          {/* Left Column: Profile Details */}
-          <div className="space-y-6 grid">
-            <div className=' justify-between'>
-            <h3 className={`text-2xl  ${myFont.className} text-right text-[rgb(1,55,73)] `}>معلومات العاملة</h3>
-            <div className='flex flex-row-reverse justify-between gap-20'>
-
-              <button onClick={handleNextHomemaid}
-      className={`        ${myFontJanna.className}          p-2 w-30 mr-3 rounded-lg transition cursor-pointer bg-[#C49E6A] text-white
-      `}
-      >التالي</button>
-              <button  
-              onClick={handlePreviousHomemaid}
-              className={`
-        ${myFontJanna.className} 
-        p-2 w-30  rounded-lg transition cursor-pointer
-      bg-[#C49E6A] text-white 
-      `}>السابق</button>
-
-            </div>
-            </div>
-            <div>
-            {/* Personal Info Card */}
-            <div className="bg-white text-right  rounded-2xl shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-              <ProfileCard title="العمر" value={homemaid?.ages} />
-              <ProfileCard title="الجنسية" value={homemaid.Nationalitycopy} />
-              <ProfileCard title="رقم السيرة الذاتية" value={homemaid.id} />
-              <ProfileCard title="اسم العاملة" value={homemaid.Name} />
-            </div>
-            </div>
-            
-            {/* Additional Info Card */}
-            <div className="bg-white rounded-2xl text-right shadow-md p-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-              <ProfileCard title="الراتب" value={homemaid.Salary} />
-              <ProfileCard title="الديانة" value={homemaid.Religion} />
-              <ProfileCard title="الحالة الإجتماعية" value={homemaid.maritalstatus} />
-              <ProfileCard title="تاريخ الميلاد" value={getDate(homemaid.dateofbirth)} />
-            </div>
-            <h3 className={`text-2xl  ${myFont.className} text-right text-[rgb(1,55,73)] `}>عن العاملة</h3>
-
-            {/* Skills and Experience Card */}
-            <div className="bg-white rounded-2xl shadow-md p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SkillCard title="سنوات الخبرة" level={homemaid.ExperienceYears} />
-                <SkillCard title="أماكن الخبرة" level={homemaid.Experience} />
-                <SkillCard title="اللغة العربية" level={homemaid.ArabicLanguageLeveL} />
-                <SkillCard title="اللغة الإنجليزية" level={homemaid.EnglishLanguageLevel} />
-                <SkillCard title="العناية بالأطفال" level={homemaid.childcareLevel} />
-                <SkillCard title="رعاية كبار السن" level={homemaid.OldPeopleCare ? 'نعم' : 'لا'} />
-                <SkillCard title="الغسيل" level={homemaid.laundryLevel} />
-                <SkillCard title="الكوي" level={homemaid.ironingLevel} />
-                <SkillCard title="الطبخ" level={homemaid.cookingLevel} />
-                <SkillCard title="التنظيف" level={homemaid.cleaningLevel} />
-              </div>
-            </div>
+        transition={{ duration: 0.6 }}
+        className="container mx-auto px-4 pt-24 md:pt-32 max-w-6xl"
+      >
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+          
+          {/* العنوان والنص التعريفي (الآن يظهر على اليمين بسبب RTL) */}
+          <div className="text-center md:text-right order-2 md:order-1">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#003749] mb-1">السيرة الذاتية</h1>
+            <p className="text-[#C49E6A] text-sm font-medium opacity-80">استعرض تفاصيل العاملة والمهارات</p>
           </div>
 
-          {/* Right Column: Image */}
-          <div className="flex justify-center items-center flex-col gap-6">
-            <img
-              className="rounded-xl object-fill  w-100 h-[273px]"
-              src={image}
-              alt={`صورة ${homemaid.Name || 'العاملة'}`}
-              width={386}
-              height={273}
-              // priority
-              onError={() => setImage('/fallback-image.jpg')}
-            />
-
-
-
-<img
-              className="rounded-xl object-fill  w-100 h-[50 3px]"
-              src={fullImage}
-              alt={`صورة ${homemaid.Name || 'العاملة'}`}
-              width={286}
-              height={273}
-              // priority
-              onError={() => setImage('/fallback-image.jpg')}
-            />
-    {isButtonDisabled?
-   <div className='w-[448px] h-[50px] flex flex-col items-center bg-white rounded-t-2xl group'><span className={` mt-3 align-center text-[rgb(1,55,73)] text-lg ${sectionFonts.className}`}>سيرة ذاتية محجوزة</span></div> 
-  :  <div 
-      onClick={handleBookClick}
-      className='w-[448px] h-[50px] flex flex-col justify-center bg-white rounded-t-2xl group cursor-pointer'>
-  <svg
-    fill='#C49E6A'
-    data-bbox="39.5 20 121 160.001"
-    viewBox="0 0 200 200"
-    height="60"
-    width="32"
-    xmlns="http://www.w3.org/2000/svg"
-    data-type="shape"
-    className="mt-1 group-hover:fill-[rgb(1,55,73)] self-center cursor-pointer" /* Custom Tailwind class or use CSS */
-  >
-    <g>
-      <path
-        d="M100.001 96.006c20.935 0 37.907-17.014 37.907-38.003S120.936 20 100.001 20c-20.937 0-37.909 17.014-37.909 38.003s16.972 38.003 37.909 38.003zm0-61.103c12.726 0 23.042 10.342 23.042 23.1s-10.316 23.1-23.042 23.1c-12.724 0-23.041-10.342-23.041-23.1s10.317-23.1 23.041-23.1zm60.396 137.099c-6.022-34.368-23.991-61.997-60.396-61.997-36.404 0-54.375 27.629-60.398 61.997-.732 4.175 2.525 7.999 6.753 7.999 3.333 0 6.194-2.416 6.723-5.716 4.467-27.847 17.427-50.281 46.922-50.281 29.494 0 42.453 22.434 46.919 50.281.529 3.3 3.39 5.716 6.723 5.716 4.229-.001 7.485-3.825 6.754-7.999z"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
-      ></path>
-    </g>
-  </svg>
-  <h1 className='self-center text-[#C49E6A]'>حجز العاملة</h1>
-</div>
-  }
+          {/* أزرار التنقل (الآن تظهر على اليسار) */}
+          <div className="flex gap-3 order-1 md:order-2">
+             <button onClick={handlePreviousHomemaid} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm text-[#003749] hover:bg-[#C49E6A] hover:text-white transition-all duration-300 text-sm font-bold">
+                <ChevronRight size={16} /> السابق
+             </button>
+             <button onClick={handleNextHomemaid} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm text-[#003749] hover:bg-[#C49E6A] hover:text-white transition-all duration-300 text-sm font-bold">
+                التالي <ChevronLeft size={16} />
+             </button>
           </div>
-       
+
         </div>
 
-        <div className="flex">
-  {isButton ? (
-    <button
-      disabled={isButtonDisabled}
-      onClick={handleBookClick}
-      className={`
-        ${myFontJanna.className} 
-        p-2 w-50 rounded-lg transition 
-        ${isButtonDisabled ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-[#C49E6A] hover:bg-yellow-600 text-white'}
-      `}
-    >
-      حجز العاملة
-    </button>
-  ) : ""}
-</div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* العمود الأيسر (المحتوى النصي) */}
+          <div className="lg:col-span-8 flex flex-col gap-6 order-2">
+            
+            {/* Card 1: Basic Info */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-50 p-6 md:p-8">
+               <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                 <div className="p-2.5 bg-[#003749]/5 rounded-xl text-[#003749]">
+                   <User size={24} />
+                 </div>
+                 <h2 className="text-xl font-bold text-[#003749]">البيانات الأساسية</h2>
+               </div>
 
+               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                 <InfoItem icon={User} label="الاسم" value={homemaid.Name} />
+                 <InfoItem icon={MapPin} label="الجنسية" value={homemaid.Nationalitycopy} />
+                 <InfoItem icon={Star} label="العمر" value={homemaid.ages} />
+                 <InfoItem icon={Star} label="الديانة" value={homemaid.Religion} />
+                 <InfoItem icon={User} label="الحالة الاجتماعية" value={homemaid.maritalstatus} />
+                 <InfoItem icon={Calendar} label="تاريخ الميلاد" value={getDate(homemaid.dateofbirth || '')} />
+<InfoItem 
+  icon={Wallet} 
+  label="الراتب" 
+  // هذا الكود يحذف أي نص قديم ويبقي الأرقام فقط ثم يضيف كلمة ريال
+  value={homemaid.Salary ? `${homemaid.Salary.toString().replace(/[^0-9]/g, '')} ريال` : 'غير محدد'} 
+/>
+                 <InfoItem icon={Briefcase} label="الرقم المرجعي" value={`CV-${homemaid.id}`} />
+               </div>
+            </div>
+
+            {/* Card 2: Skills & Experience */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-50 p-6 md:p-8">
+               <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                 <div className="p-2.5 bg-[#C49E6A]/10 rounded-xl text-[#C49E6A]">
+                   <Star size={24} />
+                 </div>
+                 <h2 className="text-xl font-bold text-[#003749]">المهارات والخبرات</h2>
+               </div>
+
+               <div className="mb-6">
+                 <h3 className="text-sm font-bold text-gray-400 mb-3 text-right">الخبرة واللغة</h3>
+                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                   <SkillBadge icon={Briefcase} label="سنوات الخبرة" level={homemaid.ExperienceYears} />
+                   <SkillBadge icon={MapPin} label="أماكن الخبرة" level={homemaid.Experience} />
+                   <SkillBadge icon={Languages} label="العربية" level={homemaid.ArabicLanguageLeveL} />
+                   <SkillBadge icon={Languages} label="الإنجليزية" level={homemaid.EnglishLanguageLevel} />
+                 </div>
+               </div>
+
+               <div>
+                 <h3 className="text-sm font-bold text-gray-400 mb-3 text-right">المهارات العملية</h3>
+                 <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                   <SkillBadge icon={Utensils} label="الطبخ" level={homemaid.cookingLevel} />
+                   <SkillBadge icon={Sparkles} label="التنظيف" level={homemaid.cleaningLevel} />
+                   <SkillBadge icon={Shirt} label="الغسيل" level={homemaid.laundryLevel} />
+                   <SkillBadge icon={Shirt} label="الكوي" level={homemaid.ironingLevel} />
+                   <SkillBadge icon={Baby} label="الأطفال" level={homemaid.childcareLevel} />
+                   <SkillBadge icon={User} label="كبار السن" level={homemaid.OldPeopleCare ? 'نعم' : 'لا'} />
+                 </div>
+               </div>
+            </div>
+          </div>
+
+          {/* العمود الأيمن (الصور والأكشن) */}
+          <div className="lg:col-span-4 flex flex-col gap-6 order-1">
+            
+            {/* Image Gallery */}
+            <div className="bg-white p-2 rounded-[2rem] shadow-lg shadow-gray-100/50 overflow-hidden relative group">
+               <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-gray-100">
+                 
+                 {image ? (
+                   <img 
+                      src={image} 
+                      alt={homemaid.Name || 'Worker'} 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                   />
+                 ) : (
+                   <div className="w-full h-full bg-gray-200 animate-pulse flex flex-col items-center justify-center gap-2">
+                      <User size={40} className="text-gray-300" />
+                      <span className="text-gray-400 text-xs font-medium">جاري تحميل الصورة...</span>
+                   </div>
+                 )}
+
+                 {!loading && (
+                   <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md shadow-sm
+                      ${isButtonDisabled ? 'bg-gray-900/60 text-white' : 'bg-green-500/80 text-white'}`}>
+                      {isButtonDisabled ? 'محجوزة' : 'متاحة للتعاقد'}
+                   </div>
+                 )}
+               </div>
+               
+               {fullImage && (
+                 <div className="mt-2 relative aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-gray-100 border-2 border-dashed border-gray-200">
+                    <img 
+                        src={fullImage} 
+                        alt="Full Body" 
+                        className="w-full h-full object-contain p-2"
+                    />
+                 </div>
+               )}
+            </div>
+
+            {/* Desktop Sticky Action Box */}
+            <div className="hidden lg:block sticky top-28 bg-[#003749] rounded-3xl p-6 text-white shadow-xl shadow-[#003749]/20 overflow-hidden relative text-right">
+               <div className="absolute top-0 left-0 w-32 h-32 bg-[#C49E6A]/10 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2"></div>
+               
+               <h3 className="text-xl font-bold mb-2 relative z-10">هل تناسبك هذه العاملة؟</h3>
+               <p className="text-[#C49E6A] text-sm mb-6 relative z-10 opacity-90">قم بحجزها الآن قبل فوات الأوان، الإجراءات سهلة وسريعة.</p>
+               
+               <button
+                 onClick={handleBookClick}
+                 disabled={isButtonDisabled}
+                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg transition-all duration-300 transform hover:-translate-y-1
+                   ${isButtonDisabled 
+                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                     : 'bg-[#C49E6A] text-[#003749] hover:shadow-[#C49E6A]/40'}`}
+               >
+                 {isButtonDisabled ? 'غير متاحة حالياً' : (
+                   <>
+                     <Sparkles size={20} />
+                     حجز العاملة
+                   </>
+                 )}
+               </button>
+            </div>
+          </div>
+
+        </div>
       </motion.div>
-      {isModalOpen && (
-              <div
-                className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-              >
-                <motion.div
-                  className="bg-white rounded-lg p-6 w-full max-w-md"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <h2 className="text-2xl font-semibold text-green-700 mb-4">حجز العاملة</h2>
-                  <form onSubmit={handleFormSubmit}>
-                    <div className="mb-4">
-                      <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">
-                        الاسم
-                      </label>
-                      <input
-                        type="text"
-                        id="clientName"
-                        name="clientName"
-                        value={formData.clientName}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full  h-8  rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
-                        رقم الجوال
-                      </label>
-                      <input
-                        type="tel"
-                   placeholder="5XXXXXXXX"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label htmlFor="residence" className="block text-sm font-medium text-gray-700">
-                        محل الإقامة
-                      </label>
-                      <input
-                        type="text"
-                        id="residence"
-                        name="residence"
-                        value={formData.residence}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full  rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                        required
-                      />
-                    </div>
-                    {formError && (
-                      <p className="text-red-500 text-sm mb-4">{formError}</p>
-                    )}
-                    {formSuccess && (
-                      <p className="text-green-500 text-sm mb-4">{formSuccess}</p>
-                    )}
-                    <div className="flex justify-end space-x-4">
-                      <button
-                        type="button"
-                        onClick={handleModalClose}
-                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
-                      >
-                        إلغاء
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
-                      >
-                        إرسال
-                      </button>
-                    </div>
-                  </form>
-                </motion.div>
+{/* Mobile Sticky Bottom Bar */}
+<div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-6 z-40 lg:hidden shadow-[0_-5px_20px_rgba(0,0,0,0.05)] backdrop-blur-lg bg-white/90">
+        <div className="container mx-auto flex items-center justify-between gap-4">
+          
+          <div className="flex flex-col text-right pr-18">
+            <span className="text-xs text-gray-400">الراتب الشهري</span>
+            
+            <div className="flex items-center justify-start gap-1">
+               {/* نستخرج الرقم فقط لضمان عدم تكرار كلمة ريال */}
+               <span className="text-lg font-bold text-[#003749]">
+                 {homemaid.Salary ? homemaid.Salary.toString().replace(/[^0-9]/g, '') : 'غير محدد'}
+               </span>
+               
+               {/* نضيف كلمة ريال مرة واحدة فقط هنا */}
+               {homemaid.Salary && <span className="text-sm font-bold text-[#003749]">ريال</span>}
+            </div>
+          </div>
+
+          <button
+             onClick={handleBookClick}
+             disabled={isButtonDisabled}
+             className={`flex-1 py-3 px-6 rounded-xl font-bold text-md shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95
+               ${isButtonDisabled 
+                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                 : 'bg-[#003749] text-[#ECC383]'}`}
+          >
+            {isButtonDisabled ? 'محجوزة' : 'حجز العاملة الآن'}
+          </button>
+        </div>
+      </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#003749]/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+            // dir="rtl" هو أصلاً موروث من الحاوية الرئيسية، لكن للتأكيد
+            dir="rtl"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              // التعديل 1: أزلنا overflow-hidden وجعلناها relative
+              className="bg-white rounded-[2rem] shadow-2xl max-w-md w-full relative" 
+            >
+              {/* Modal Header */}
+              {/* التعديل 2: أضفنا rounded-t-[2rem] يدوياً للرأس لأننا أزلنا القص من الأب */}
+              <div className="bg-[#003749] p-8 text-center relative overflow-hidden rounded-t-[2rem]">
+                 <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent"></div>
+                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#ECC383]/20 mb-4 backdrop-blur-sm border border-[#ECC383]/30">
+                    <PersonStanding className="text-[#ECC383] w-8 h-8" />
+                 </div>
+                 <h2 className="text-2xl font-bold text-white mb-1">تأكيد الحجز</h2>
+                 <p className="text-[#ECC383]/80 text-sm">أكمل بياناتك وسيتم التواصل معك فوراً</p>
               </div>
-            )}
+
+              <form onSubmit={handleFormSubmit} className="p-8 space-y-5">
+                 <div>
+                   <label className="block text-sm font-bold text-gray-700 mb-2">الاسم الكامل</label>
+                   <input
+                     type="text"
+                     name="clientName"
+                     value={formData.clientName}
+                     onChange={handleInputChange}
+                     placeholder="الاسم الثلاثي"
+                     className={`w-full px-4 py-3 rounded-xl bg-gray-50 border outline-none transition-colors
+                       ${fieldErrors.clientName ? 'border-red-500 bg-red-50' : 'border-gray-100 focus:border-[#ECC383] focus:bg-white'}`}
+                   />
+                   {fieldErrors.clientName && <p className="text-red-500 text-xs mt-1">{fieldErrors.clientName}</p>}
+                 </div>
+
+                 <div>
+                   <label className="block text-sm font-bold text-gray-700 mb-2">رقم الجوال</label>
+                   <div className="relative">
+                     <input
+                       type="tel"
+                       name="phoneNumber"
+                       value={formData.phoneNumber}
+                       onChange={handleInputChange}
+                       placeholder="05xxxxxxxx"
+                       dir="ltr"
+                       className={`w-full pl-14 pr-4 py-3 rounded-xl bg-gray-50 border outline-none transition-colors text-left placeholder:text-right
+                         ${fieldErrors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-100 focus:border-[#ECC383] focus:bg-white'}`}
+                     />
+                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm border-r border-gray-300 pr-3 h-5 flex items-center">SA</span>
+                   </div>
+                   {fieldErrors.phoneNumber && <p className="text-red-500 text-xs mt-1">{fieldErrors.phoneNumber}</p>}
+                 </div>
+
+                 <div>
+                   <CitySelect
+                      label="محل الإقامة"
+                      value={formData.residence}
+                      onChange={(val) => {
+                        setFormData(prev => ({ ...prev, residence: val }));
+                        setFieldErrors(prev => ({ ...prev, residence: '' }));
+                      }}
+                   />
+                   {fieldErrors.residence && <p className="text-red-500 text-xs mt-1">{fieldErrors.residence}</p>}
+                 </div>
+
+                 {formError && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm text-center font-medium">{formError}</div>}
+                 {formSuccess && <div className="p-3 bg-green-50 text-green-600 rounded-xl text-sm text-center font-medium flex items-center justify-center gap-2"><CheckCircle2 size={16} /> {formSuccess}</div>}
+
+                 <div className="flex gap-3 pt-4">
+                   <button type="submit" className="flex-1 bg-[#ECC383] text-[#003749] py-3.5 rounded-xl font-bold shadow-lg hover:bg-[#dcb374] transition-all active:scale-[0.98]">
+                     إرسال الطلب
+                   </button>
+                   <button type="button" onClick={handleModalClose} className="px-6 py-3.5 bg-gray-50 text-gray-600 rounded-xl font-bold hover:bg-gray-100 transition-colors">
+                     إلغاء
+                   </button>
+                 </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
