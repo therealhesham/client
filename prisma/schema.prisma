@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -18,6 +19,8 @@ model homemaid {
   clientphonenumber String?    @db.VarChar(15)
   Picture           Json?
   FullPicture       Json?
+  professionId Int?
+  profession professions? @relation(fields: [professionId], references: [id],onDelete: Cascade)
   ExperienceYears   String?    @db.VarChar(255)
   maritalstatus     String?    @db.VarChar(255)
   Experience        String?    @db.VarChar(255)
@@ -26,6 +29,19 @@ model homemaid {
   age               Int?
   Passportphoto    String?    @db.VarChar(255)
   job               String?    @db.VarChar(255)
+  Education String? @db.VarChar(255)
+  EnglishLanguageLevel String? @db.VarChar(255)
+  ArabicLanguageLeveL String? @db.VarChar(255)
+  SewingLevel String? @db.VarChar(255)
+  weight Int?
+  height Int?
+  CleaningLevel String? @db.VarChar(255)
+  CookingLevel String? @db.VarChar(255)
+  WashingLevel String? @db.VarChar(255)
+  IroningLevel String? @db.VarChar(255)
+  ChildcareLevel String? @db.VarChar(255)
+  ElderlycareLevel String? @db.VarChar(255)
+  LaundryLevel String? @db.VarChar(255)
   flag              Json?
   phone             String?    @db.VarChar(17)
   bookingstatus     String?    @db.VarChar(255)
@@ -38,10 +54,7 @@ model homemaid {
  PassportStart DateTime?
   PassportEnd       DateTime?
   OldPeopleCare     Boolean?
-  ArabicLanguageLeveL String?  @db.VarChar(100)
-  EnglishLanguageLevel String? @db.VarChar(100)
   Salary            String?    @db.VarChar(20)
-  Education         String?    @db.VarChar(60)
   Housed            housing[]
   inHouse           housedworker[]
   Session           Session[]
@@ -60,6 +73,24 @@ childcareLevel String? @db.VarChar(100)
 elderlycareLevel String? @db.VarChar(100)
 laundryLevel String? @db.VarChar(100)
 
+}
+
+
+model DeliveryDetails{
+  id Int @id @default(autoincrement())
+  deliveryDate DateTime?
+  deliveryTime String? @db.VarChar(100)
+  deliveryFile String? @db.VarChar(255)
+  deliveryNotes String? @db.VarChar(255)
+  cost Decimal?
+  newOrderId Int?
+  isDelivered Boolean? @default(false)
+  userId Int?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  user User? @relation(fields: [userId], references: [id],onDelete: Cascade)
+  completionDate DateTime? @default(now())
+  neworder neworder? @relation(fields: [newOrderId], references: [id])
 }
 model reports{
 
@@ -86,7 +117,7 @@ model User {
   id            Int       @id @default(autoincrement())
   phonenumber   String?   @unique @db.VarChar(15)
   admin         Boolean?  @default(false)
-  pictureurl    String?   @default("")
+  pictureurl    String?   @default("") @db.VarChar(1024)
   username      String    @unique @db.VarChar(191)
   password      String    @db.VarChar(191)
   roleId        Int?      // Foreign key to Role model
@@ -97,11 +128,14 @@ model User {
   assignedTasks tasks[] @relation("TaskAssignedBy")
   logs          logs[]
   emaillist    emaillist[]
+  readNotifications NotificationRead[]
   cashLogs      cashLogs[]
   SystemLogs    systemUserLogs[]
-
+  DeliveryDetails DeliveryDetails[]
   createdAt     DateTime? @default(now())
   updatedAt     DateTime? @updatedAt
+
+  AccountSystemLogs AccountSystemLogs[]
 }
 
 
@@ -152,6 +186,8 @@ completionNotes    String?   @db.VarChar(500) // ملاحظات الإنجاز
 parentTaskId       Int?      // المهمة الأصلية للتكرار
 parentTask         tasks?    @relation("TaskRepeats", fields: [parentTaskId], references: [id])
 repeatTasks        tasks[]   @relation("TaskRepeats") // المهام المتكررة
+
+notifications notifications?
 }
 model weeklyStatus{
   id              Int       @id @default(autoincrement())
@@ -171,14 +207,29 @@ homeMaid_id  Int
 model notifications {
   id              Int       @id @default(autoincrement())
 title        String?   @db.VarChar(55)
-
+type          String? @db.VarChar(32)
 message        String?   @db.VarChar(255)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   isRead          Boolean?  @default(false)
   userId          String?
   user            User?     @relation(fields: [userId], references: [username]) 
+taskId        Int? @unique()
+task          tasks?     @relation(fields: [taskId], references: [id]) 
+  readByUsers    NotificationRead[]  // الإشعارات العامة المقروءة من المستخدمين
+}
 
+model NotificationRead {
+  id             Int       @id @default(autoincrement())
+  notificationId Int
+  userId          String
+  readAt          DateTime  @default(now())
+  notification    notifications @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [username], onDelete: Cascade)
+  
+  @@unique([notificationId, userId])  // كل مستخدم يمكنه قراءة نفس الإشعار مرة واحدة فقط
+  @@index([notificationId])
+  @@index([userId])
 }
 model officemssages{
  //الموديل ده خاص بالرسايل اللي هيكتبها روائس وهيستعرضها المكتب
@@ -213,7 +264,7 @@ model offices {
   office            String?    @db.VarChar(191) @unique
   password         String?    @db.VarChar(191)
   url         String?    @db.VarChar(512)
-  
+  email         String?    @db.VarChar(191)
   office_id       String?    @db.VarChar(191)
 Country         String?    @db.VarChar(191)
 phoneNumber     String ?@db.VarChar(191)
@@ -221,6 +272,8 @@ HomeMaid  homemaid[]
   officemssages   officemssages[]
   financialRecords foreignOfficeFinancial[]
   musanadFinancialRecords MusanadFinancialRecord[] // Added relation to financial records
+language        String? @default("eng")
+
 }
 // model Office {
 //   id         Int       @id @default(autoincrement())
@@ -254,6 +307,9 @@ notes_date        DateTime?
   musanadFinancialRecords MusanadFinancialRecord[] // Added relation to financial records
   notes notes[]
   visa visa[]
+  salesRecords TaxSalesRecord[] // Added relation to sales records
+
+  AccountSystemLogs AccountSystemLogs[]
 }
 model notes{
   id Int @id @default(autoincrement())
@@ -279,12 +335,15 @@ model cashLogs{
 
 model systemUserLogs{
   id            Int       @id @default(autoincrement()) 
-
-action String
+actionType String? @db.VarChar(255)
+beneficiary String? @db.VarChar(255)
+action String? @db.VarChar(255)
+BeneficiaryId Int?
+pageRoute String? @db.VarChar(255)
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
 userId Int
-  user          User?     @relation(fields: [userId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id],onDelete: Cascade)
 
   
 }
@@ -299,7 +358,7 @@ model logs{
   
   userId        String?
   homemaidId  Int?
-  user          User?     @relation(fields: [userId], references: [username])
+  user          User?     @relation(fields: [userId], references: [username],onDelete: Cascade)
   homemaid      homemaid? @relation(fields: [homemaidId], references: [id])
 }
 model Session {
@@ -358,7 +417,7 @@ ratings       Rating[]
   ExperienceYears    String?   @db.VarChar(255)
   maritalstatus      String?   @db.VarChar(255)
   Experience         String?   @db.VarChar(255)
-  dateofbirth       String?   @db.VarChar(255)
+  dateofbirth       DateTime?
   Nationality        Json?
   age                Int?
   flag               Json?
@@ -380,7 +439,10 @@ notes String?
   musanadFinancialRecords MusanadFinancialRecord[] // Added relation to financial records
   isContractEnded Boolean? @default(false)
   clientAccountStatement ClientAccountStatement[]
+  // visa visa?
+  DeliveryDetails DeliveryDetails[]
 }
+
 model visa {
 id Int @id @default(autoincrement())
 visaNumber String? @db.VarChar(255)
@@ -392,8 +454,8 @@ clientID Int?
 client Client? @relation(fields: [clientID], references: [id])
 createdAt DateTime? @default(now())
 updatedAt DateTime? @updatedAt
-
-
+// orderID Int @unique
+// order neworder? @relation(fields: [orderID], references: [id])
 
 
 }
@@ -470,7 +532,7 @@ externaldeparatureCity  String? @db.VarChar(191)
 externalArrivalCityDate          DateTime?
  externalArrivalCityTime           String?  @db.VarChar(30)
 
-
+externalTicketFile              String?   @db.VarChar(255)
 //////
 
 
@@ -493,6 +555,7 @@ externalReason            String?
 visaNumber                String?   @db.VarChar(191)
 foreignLaborApproval        Boolean? @default(false)
 foreignLaborApprovalDate    DateTime?
+  medicalCheckDate            DateTime?
 startWorkingDate       DateTime?
 endWorkingDate          DateTime?
 ExternalStatusByoffice    String?
@@ -528,8 +591,10 @@ guaranteeStatus               String?  @db.VarChar(100)
   BookinDate                DateTime?
   GuaranteeDurationEnd      DateTime?
   travelPermit              String?
+  travelPermitDate          DateTime?
   medicalCheckFile          String?   @db.VarChar(191)
   ticketFile                String?   @db.VarChar(191)
+  visaIssuanceDate          DateTime?
   deparatureTicketFile      String?    @db.VarChar(255)
   receivingFile             String?   @db.VarChar(191)
   receiptMethod            String?   @db.VarChar(50) // طريقة الاستلام: direct, indirect, intermediary
@@ -553,11 +618,12 @@ model transferSponsorShips{
 HomeMaid        homemaid @relation(references: [id],fields: [HomeMaidId])
 NewClientId        Int @unique
 NewClient        Client @relation("NewSponsor", references: [id],fields: [NewClientId])
-
+EntryDate DateTime?
 OldClientId        Int @unique
 OldClient        Client @relation("OldSponsor", references: [id],fields: [OldClientId])
 Cost              Decimal?  
 Paid              Decimal?
+ExperimentDuration  String?
 ExperimentStart   DateTime?
 ExperimentEnd   DateTime?
 ContractDate DateTime?
@@ -566,11 +632,22 @@ Notes         String?
 WorkDuration String?
 NationalID     String?
 TransferingDate   String?
-
+  TransferOperationNumber String?
 file        String?
 transferStage   String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+}
+
+model professions{
+
+
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  homemaid homemaid[]
 
 }
 // model Transfer {
@@ -628,7 +705,7 @@ model housedworker {
   id             Int       @id @default(autoincrement())
 deparatureReason  String?   @db.VarChar(100) 
 deparatureHousingDate  DateTime? 
-
+isExternal Boolean? @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   homeMaid_id       Int?       @unique
@@ -644,6 +721,8 @@ deparatureHousingDate  DateTime?
   location_id     Int?
     location          inHouseLocation?  @relation(fields: [location_id], references: [id])
 isHasEntitlements     Boolean? @default(true)
+entitlementsCost     Decimal?
+entitlementReason   String?
   Order          homemaid?  @relation(fields: [homeMaid_id], references: [id])
 }
 
@@ -738,8 +817,8 @@ model AutomaticEmployee {
   passportStartDate String?
   passportEndDate  String?
   contractDuration  String?
-  weight            String?
-  height            String?
+  weight            Int ?
+  height            Int?
   salary            String?
   
   // Languages (flattened)
@@ -787,8 +866,11 @@ model ClientAccountStatement {
   totalRevenue   Decimal   @default(0)
   totalExpenses  Decimal   @default(0)
   netAmount      Decimal   @default(0)
+  commissionPercentage Decimal? @default(0)
+  masandTransferAmount Decimal?   @default(0)
   contractStatus String?   @db.VarChar(100)
   notes          String?   @db.VarChar(500)
+  attachment     String?   @db.VarChar(500)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   entries        ClientAccountEntry[]
@@ -947,38 +1029,63 @@ model TaxDeclaration {
 
 model TaxSalesRecord {
   id                Int       @id @default(autoincrement())
-  taxDeclarationId  Int
-  taxDeclaration    TaxDeclaration @relation(fields: [taxDeclarationId], references: [id], onDelete: Cascade)
+  taxDeclarationId  Int?
+  taxDeclaration    TaxDeclaration? @relation(fields: [taxDeclarationId], references: [id], onDelete: Cascade)
   
-  category          String    @db.VarChar(255) // فئة المبيعات
-  description       String    @db.VarChar(500) // وصف المبيعات
+  category          String?   @db.VarChar(255) // فئة المبيعات
+  description       String?   @db.VarChar(500) // وصف المبيعات
   amount            Decimal   @default(0) // المبلغ
   adjustment        Decimal   @default(0) // التعديل
   total             Decimal   @default(0) // الإجمالي
   taxRate           Decimal   @default(15) // نسبة الضريبة
   
+  // Additional fields for detailed sales records
+  customerId        Int?      // ID العميل
+  customer          Client?   @relation(fields: [customerId], references: [id], onDelete: SetNull) // Relation to Client
+  customerName      String?   @db.VarChar(255) // اسم العميل (للرجوع السريع)
+  date              DateTime? @default(now()) // تاريخ المبيعات
+  salesBeforeTax    Decimal?  @default(0) // المبيعات قبل الضريبة
+  taxValue          Decimal?  @default(0) // قيمة الضريبة
+  salesIncludingTax Decimal?  @default(0) // المبيعات شاملة الضريبة
+  paymentMethod     String?   @db.VarChar(255) // طريقة الدفع
+  attachment        String?   @db.VarChar(500) // المرفق
+  
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   
   @@index([taxDeclarationId])
+  @@index([customerId])
+  @@index([date])
 }
 
 model TaxPurchaseRecord {
   id                Int       @id @default(autoincrement())
-  taxDeclarationId  Int
-  taxDeclaration    TaxDeclaration @relation(fields: [taxDeclarationId], references: [id], onDelete: Cascade)
+  taxDeclarationId  Int?
+  taxDeclaration    TaxDeclaration? @relation(fields: [taxDeclarationId], references: [id], onDelete: Cascade)
   
-  category          String    @db.VarChar(255) // فئة المشتريات
-  description       String    @db.VarChar(500) // وصف المشتريات
+  category          String?   @db.VarChar(255) // فئة المشتريات
+  description       String?   @db.VarChar(500) // وصف المشتريات
   amount            Decimal   @default(0) // المبلغ
   adjustment        Decimal   @default(0) // التعديل
   total             Decimal   @default(0) // الإجمالي
   taxRate           Decimal   @default(15) // نسبة الضريبة
   
+  // Additional fields for detailed purchase records
+  supplierName      String?   @db.VarChar(255) // اسم المورد
+  date              DateTime? @default(now()) // تاريخ المشتريات
+  status            String?   @db.VarChar(255) // الحالة (مثل: مدفوعة، غير مدفوعة)
+  invoiceNumber     String?   @db.VarChar(255) // رقم الفاتورة
+  supplyType        String?   @db.VarChar(255) // نوع التوريد (مثل: رسوم حكومية، خدمة)
+  purchasesBeforeTax Decimal?  @default(0) // المشتريات قبل الضريبة
+  taxValue          Decimal?  @default(0) // قيمة الضريبة
+  purchasesIncludingTax Decimal? @default(0) // المشتريات شاملة الضريبة
+  attachment        String?   @db.VarChar(500) // المرفق
+  
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   
   @@index([taxDeclarationId])
+  @@index([date])
 }
 
 model TaxVATRecord {
@@ -1016,4 +1123,39 @@ model PDFExtractedRecord {
   updatedAt         DateTime  @updatedAt
   
   @@index([sessionId])
+}
+
+// SLA rules for external offices
+model OfficeSlaRule {
+  id         Int      @id @default(autoincrement())
+  officeName String   @db.VarChar(255)
+  stage      String   @db.VarChar(100)
+  days       Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([officeName])
+  @@index([stage])
+}
+
+
+
+
+
+model AccountSystemLogs  {
+  id Int @id @default(autoincrement())
+  action String?
+  actionNotes String?
+  actionType String?
+  actionStatus String?
+  actionAmount Decimal?
+  actionClientId Int?
+  actionClient Client? @relation(fields: [actionClientId], references: [id])
+  actionUserId Int?
+  actionUser User? @relation(fields: [actionUserId], references: [id])
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([actionClientId])
+  @@index([actionUserId])
 }
