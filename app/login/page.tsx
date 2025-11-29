@@ -8,113 +8,84 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import localFont from 'next/font/local';
 import NavigationBar from '../components/navigation';
+
 const myFont = localFont({
     src: '/fonts/Almarai-Regular.ttf',
     weight: '500',
 });
 
 export default function LoginPage() {
+    const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('+966');
-    const [code, setCode] = useState(['', '', '', '', '', '']);
-    const [showOTP, setShowOTP] = useState(false);
     const [error, setError] = useState('');
-    const [generatedOTP, setGeneratedOTP] = useState(''); // Store generated OTP
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    // Function to generate a random 6-digit OTP
-    const generateOTP = () => {
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        return otp;
-    };
-
-    const checkPhoneInDatabase = async (phoneNumber) => {
+    // دالة التحقق من ال API
+    const checkUserCredentials = async (emailInput, phoneInput) => {
         try {
             const response = await fetch(`/api/checkPhone`, { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ phone:phoneNumber}) 
+                body: JSON.stringify({ 
+                    email: emailInput, 
+                    phone: phoneInput 
+                }) 
             });
-            if(response.status == 201 ) return true
+            
+            if (response.status === 200) return true;
+            return false;
         } catch (error) {
-            console.error('Error checking phone:', error);
+            console.error('Error checking credentials:', error);
             return false;
         }
     };
 
-    const handleCodeChange = (index, value) => {
-        if (/^\d?$/.test(value)) {
-            const newCode = [...code];
-            newCode[index] = value;
-            setCode(newCode);
-            if (value && index < 5) {
-                document.getElementById(`code-${index + 1}`).focus();
-            }
-        }
-    };
-const testlogin=async(e)=>{
-    e.preventDefault();
-
-
-    const isPhoneValid = await checkPhoneInDatabase(phone);
-
-if(isPhoneValid){
-                localStorage.setItem('phone_number', phone.slice(4));
-router.replace('/myorders/'+phone.slice(4));}
-else {
-alert("رقم الجوال غير موجود في قاعدة البيانات")
-
-
-}
-}
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        const isPhoneValid = await checkPhoneInDatabase(phone);
+       // استخدام نفس دالة التحقق
+       if (!validateEmail(email)) {
+        return;
+    }
+        // --- نهاية كود التحقق من الإيميل ---
 
-        if (isPhoneValid) {
-            const newOTP = generateOTP(); // Generate new OTP
-        
-            setGeneratedOTP(newOTP); // Store the generated OTP
-            const phonenumber = phone.slice(4);
-            const message = `Your verification code is ${newOTP}`;
-            // alert(message)
-            const url = `https://www.brcitco-api.com/api/sendsms/?user=966555544961&pass=Rwes1484&to=966${phonenumber}&message=${encodeURIComponent(message)}&sender=روائس للاستقدام`;
+        setLoading(true);
 
-            try {
-                const response = await fetch(url, { method: 'GET' });
-                if (response.ok) {
-                    console.log('SMS sent successfully with OTP:', newOTP);
-                    setShowOTP(true);
-                } else {
-                    setError('Failed to send SMS. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error sending SMS:', error);
-                setError('Error sending SMS. Please try again.');
-            }
+        // تجهيز رقم الجوال (حذف المفتاح الدولي للبحث في قاعدة البيانات)
+        const actualPhoneNumber = phone.slice(4);
+
+        // التحقق من البيانات
+        const isValidUser = await checkUserCredentials(email, actualPhoneNumber);
+
+        if (isValidUser) {
+            // تخزين البيانات وتوجيه المستخدم مباشرة
+            localStorage.setItem('phone_number', actualPhoneNumber);
+            localStorage.setItem('email', email); 
+
+            router.replace('/myorders/' + actualPhoneNumber);
         } else {
-            setError('Phone number not found in database.');
+            setError('البيانات غير صحيحة. تأكد من مطابقة البريد الإلكتروني ورقم الجوال.');
+            setLoading(false);
         }
     };
-const [verifyError,setVerifyError]=useState("")
-    const handleVerifyCode = (e) => {
-        e.preventDefault();
-        const verificationCode = code.join('');
-        if (verificationCode.length === 6 && /^\d{6}$/.test(verificationCode)) {
-            if (verificationCode === generatedOTP) {
-                // console.log('Verification successful');
-                localStorage.setItem('item', 'code');
-                localStorage.setItem('phone_number', phone.slice(4));
 
-                router.push('/myorders/'+phone.slice(4));
-            } else {
-                setVerifyError('خطأ في رمز التحقق');
-            }
-        } else {
-            setVerifyError('خطأ في رمز التحقق');
+    const validateEmail = (emailValue) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailValue)) {
+            setError('الرجاء إدخال بريد إلكتروني صحيح');
+            return false;
+        }
+        return true;
+    };
+
+    const handleBlur = () => {
+        // التحقق فقط إذا كان الحقل ليس فارغاً
+        if (email.length > 0) {
+            validateEmail(email);
         }
     };
 
@@ -134,22 +105,13 @@ const [verifyError,setVerifyError]=useState("")
                         transition={{ duration: 0.4 }}
                         className="text-center mb-6"
                     >
-                        <svg
-                            className="w-48 h-48 mb-4"
-                            preserveAspectRatio="xMidYMid meet"
-                            data-bbox="3.999 3.999 192.002 192.004"
-                            viewBox="0 0 200 200"
-                            xmlns="http://www.w3.org/2000/svg"
-                            data-type="ugc"
-                            role="presentation"
-                            aria-hidden="true"
-                            aria-label=""
-                        >
+                        {/* الشعار */}
+                        <svg className="w-48 h-48 mb-4" preserveAspectRatio="xMidYMid meet" data-bbox="3.999 3.999 192.002 192.004" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" data-type="ugc" role="presentation" aria-hidden="true">
                             <g>
                                 <defs>
                                     <linearGradient gradientUnits="userSpaceOnUse" y2="100" x2="196" y1="100" x1="4" id="23da6e02-e8bd-4f40-bb46-20f89387c16c_comp-lzbbhro9">
-                                        <stop stop-color="#8d6c49" offset="0"></stop>
-                                        <stop stop-color="#ebc181" offset="1"></stop>
+                                        <stop stopColor="#8d6c49" offset="0"></stop>
+                                        <stop stopColor="#ebc181" offset="1"></stop>
                                     </linearGradient>
                                 </defs>
                                 <path d="M100.05 196C49.09 196.38 4.2 155.01 4 100.08 3.82 49.46 44.32 4.24 99.93 4c53.09-.23 96.32 43.14 96.07 96.34-.26 53.78-43.91 95.86-95.95 95.66m-12.02-83.81c7.2 1.51 14.46 2.13 21.67.39 18.42-4.43 30.8-15.76 35.51-34.06 4.62-17.95-.49-33.73-13.92-46.6-2.12-2.03-4.72-3.57-7.1-5.34.04-3.83.14-7.66.11-11.49-.02-3.73-.07-3.75-3.72-4.56-12.07-2.65-24.19-3.17-36.38-.9-24.86 4.62-44.78 17.12-59.35 37.78-13.94 19.76-18.9 41.82-15.72 65.74 1.63 12.29 5.71 23.72 12.19 34.28.27.55.48 1.15.82 1.65 21.67 31.96 51.82 46.29 90.12 42.06 21.58-2.39 39.89-12.34 54.82-28.21 4.48-4.76 8.69-9.78 11.54-15.76 1.53-1.8 2.57-3.91 3.6-6.01 8.03-16.49 11.12-33.79 8.92-52.08-1.22-10.15-4.11-19.75-8.43-28.96-.32-.69-.38-1.74-1.65-1.82-1.16 4.65-2.21 9.3-3.49 13.89-5.06 18.17-12.5 35.3-22.45 51.33-5.4-2.38-10.76-4.82-16.66-5.84-4.11-.71-7.97-.17-11.28 2.21-6.7 4.83-14.13 7.29-22.28 8.01-9.42.84-18.39-.55-26.82-4.95 1.29-1.31 2.63-2.58 3.87-3.94 2.06-2.25 4.65-4.03 6.1-6.83Z" fill="url(#23da6e02-e8bd-4f40-bb46-20f89387c16c_comp-lzbbhro9)"></path>
@@ -163,17 +125,39 @@ const [verifyError,setVerifyError]=useState("")
                     </motion.div>
 
                     <form onSubmit={handleSubmit} className="w-full space-y-4">
+                        
+                        {/* حقل البريد الإلكتروني */}
                         <div>
-                            <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center">
-                                ادخل رقم جوال الحجز
+                            <label htmlFor="email" className="block text-lg font-medium text-gray-700 text-center mb-1">
+                                البريد الإلكتروني
                             </label>
-                            <div className="flex justify-center mt-2">                              
-                            
-                            <input
+                           <input
+    type="email"
+    id="email"
+    value={email}
+    // التعديل هنا: عند الكتابة نخفي الخطأ، وعند الخروج نتحقق
+    onChange={(e) => {
+        setEmail(e.target.value);
+        if(error) setError(''); 
+    }}
+    onBlur={handleBlur} // <--- هذا السطر الجديد المسؤول عن الفحص الفوري
+    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E5BC7E] text-center ${error ? 'border-red-500' : 'border-gray-300'}`}
+    required
+    placeholder="name@example.com"
+/>
+                        </div>
+
+                        {/* حقل رقم الجوال */}
+                        <div>
+                            <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center mb-1">
+                                رقم جوال الحجز
+                            </label>
+                            <div className="flex justify-center mt-2" dir="ltr">
+                                <input
                                     type="text"
                                     id="phone-966"
                                     value={"+966"}
-                                    className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100"
+                                    className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100 text-center"
                                     readOnly
                                 />
                                 <input
@@ -183,11 +167,11 @@ const [verifyError,setVerifyError]=useState("")
                                         const input = e.target.value;
                                         if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
                                             setPhone('+966' + input);
+                                            if(error) setError('');
                                         }
                                     }}
                                     className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none"
                                     placeholder="5XXXXXXXX"
-                                    // pattern="[5-9][0-9]{8}"
                                     maxLength={9}
                                     required
                                 />
@@ -195,53 +179,19 @@ const [verifyError,setVerifyError]=useState("")
                         </div>
 
                         {error && (
-                            <p className="text-red-600 text-center">{error}</p>
+                            <p className="text-red-600 text-center text-sm font-bold bg-red-50 p-2 rounded">{error}</p>
                         )}
 
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             type="submit"
-                            className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center"
+                            disabled={loading}
+                            className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center disabled:opacity-50"
                         >
-                            إرسال رمز التحقق
+                            {loading ? 'جاري التحقق...' : 'دخول'}
                         </motion.button>
                     </form>
-
-                    {showOTP && (
-                        <form onSubmit={handleVerifyCode} className="w-full space-y-4 mt-6">
-                            <label className="block text-lg font-medium text-gray-700 text-center">
-                                ادخل رمز التحقق
-                            </label>
-                            <div className="flex justify-center space-x-2">
-                                {code.map((digit, index) => (
-                                    <input
-                                        key={index}
-                                        id={`code-${index}`}
-                                        type="text"
-                                        value={digit}
-                                        onChange={(e) => handleCodeChange(index, e.target.value)}
-                                        className="w-12 h-12 text-center text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E5BC7E]"
-                                        maxLength={1}
-                                        required
-                                    />
-                                ))}
-                            </div>
-
-                            {verifyError && (
-                                <p className="text-red-600 text-center">{verifyError}</p>
-                            )}
-
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="submit"
-                                className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center"
-                            >
-                                تحقق
-                            </motion.button>
-                        </form>
-                    )}
                 </motion.div>
             </div>
         </div>

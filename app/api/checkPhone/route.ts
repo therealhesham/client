@@ -1,32 +1,33 @@
-// app/api/homemaid/newemployer/route.js
 import { PrismaClient } from '@prisma/client';
-import jwt from "jsonwebtoken"
-import { headers } from 'next/headers';
-import { throws } from 'node:assert';
+
 const prisma = new PrismaClient();
+
 export async function POST(req: Request) {
     try {
-        // console.log(await req.json())
+        const { email, phone } = await req.json();
 
+        if (!email || !phone) {
+            return new Response(JSON.stringify({ error: 'البيانات ناقصة' }), { status: 400 });
+        }
 
-        const {
-            phone,
-         
+        // البحث عن العميل الذي يطابق الايميل ورقم الجوال معاً
+        // ملاحظة: تأكد أن phone المرسل يطابق الصيغة المخزنة في الداتا بيس
+        const client = await prisma.client.findFirst({
+            where: {
+                email: email,
+                phonenumber: phone 
+            }
+        });
 
-        } = await req.json();
-        // Validate required fields, or handle with default/fallback values
-        // const header = await headers();
-        // const token = header.get("authorization")?.split(' ')[1];
-        // const verify = jwt.decode(token)
-        // console.log(verify.office)
-        // Insert into the database
-        const newHomemaid = await prisma.client.findUnique({where:{phonenumber:phone.slice(4)}})
-        if(!newHomemaid?.phonenumber)throw new Error("الرقم غير مسجل")
+        if (client) {
+            return new Response(JSON.stringify({ exists: true, clientId: client.id }), { status: 200 });
+        } else {
+            return new Response(JSON.stringify({ exists: false }), { status: 404 });
+        }
 
-            return new Response(JSON.stringify(newHomemaid), { status: 201 });
     } catch (error) {
-        console.error('Error creating new homemaid:', error);
-        return new Response(JSON.stringify({ error: 'Something went wrong' }), {
+        console.error('Error checking client:', error);
+        return new Response(JSON.stringify({ error: 'Server error' }), {
             status: 500,
         });
     }
