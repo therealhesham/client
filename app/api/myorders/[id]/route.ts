@@ -35,8 +35,37 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             where: { phonenumber: id as string } 
         });
 
+        // جلب CustomTimeline لكل طلب بناءً على بلد المكتب
+        const ordersWithTimeline = await Promise.all(
+            findClient.map(async (order) => {
+                let customTimeline = null;
+                
+                // التحقق من وجود مكتب وبلد للمكتب
+                if (order.HomeMaid?.office?.Country) {
+                    const officeCountry = order.HomeMaid.office.Country;
+                    
+                    // البحث عن CustomTimeline المطابق لبلد المكتب
+                    const timeline = await prisma.customTimeline.findUnique({
+                        where: { 
+                            country: officeCountry
+                        }
+                    });
+                    
+                    // التحقق من أن Timeline نشط
+                    if (timeline && timeline.isActive) {
+                        customTimeline = timeline;
+                    }
+                }
+                
+                return {
+                    ...order,
+                    customTimeline: customTimeline
+                };
+            })
+        );
+
         return NextResponse.json({
-            orders: findClient,
+            orders: ordersWithTimeline,
             clientinfo: clientinfo
         }, { status: 200 });
         

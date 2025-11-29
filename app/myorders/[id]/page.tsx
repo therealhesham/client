@@ -52,8 +52,8 @@ const COLORS = {
   gray: '#94a3b8'
 };
 
-// --- تعريف المراحل (9 مراحل) ---
-const STEPS = [
+// --- تعريف المراحل (9 مراحل) - الافتراضي ---
+const DEFAULT_STEPS = [
   { id: 1, label: 'الطلب', icon: FileCheck, statuses: ['new_order', 'new_orders', 'pending'] },
   { id: 2, label: 'المكتب الخارجي', icon: Globe, statuses: ['pending_external_office', 'external_office_approved'] },
   { id: 3, label: 'وزارة العمل', icon: Building2, statuses: ['pending_foreign_labor', 'foreign_labor_approved'] },
@@ -64,6 +64,68 @@ const STEPS = [
   { id: 8, label: 'تصريح السفر', icon: Plane, statuses: ['pending_travel_permit', 'travel_permit_issued'] },
   { id: 9, label: 'الاستلام', icon: PackageCheck, statuses: ['pending_receipt', 'received', 'delivered'] }
 ];
+
+// Mapping بين field names والأيقونات
+const FIELD_ICON_MAP = {
+  'DateOfApplication': FileCheck,
+  'InternalmusanedContract': Globe,
+  'externalmusanedContract': Globe,
+  'foreignLaborApproval': Building2,
+  'foreignLaborApprovalDate': Building2,
+  'medicalCheckFile': Stethoscope,
+  'medicalCheckDate': Stethoscope,
+  'approvalPayment': Wallet,
+  'AgencyDate': Wallet,
+  'EmbassySealing': Stamp,
+  'visaNumber': FileText,
+  'visaIssuanceDate': FileText,
+  'travelPermit': Plane,
+  'travelPermitDate': Plane,
+  'DeliveryDate': PackageCheck,
+  'ticketFile': Plane,
+  'KingdomentryDate': Plane,
+};
+
+// دالة لتحويل CustomTimeline.stages إلى STEPS format
+const convertCustomTimelineToSteps = (customTimeline, arrivals) => {
+  if (!customTimeline || !customTimeline.stages) {
+    return DEFAULT_STEPS;
+  }
+
+  try {
+    let stages;
+    if (Array.isArray(customTimeline.stages)) {
+      stages = customTimeline.stages;
+    } else if (typeof customTimeline.stages === 'string') {
+      stages = JSON.parse(customTimeline.stages);
+    } else {
+      stages = customTimeline.stages;
+    }
+    
+    if (!Array.isArray(stages) || stages.length === 0) {
+      return DEFAULT_STEPS;
+    }
+    
+    return stages
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .map((stage, index) => {
+        const fieldValue = arrivals?.[0]?.[stage.field];
+        const isCompleted = !!fieldValue;
+        
+        return {
+          id: index + 1,
+          label: stage.label || `مرحلة ${index + 1}`,
+          icon: FIELD_ICON_MAP[stage.field] || FileCheck,
+          field: stage.field,
+          order: stage.order || index + 1,
+          isCompleted: isCompleted
+        };
+      });
+  } catch (error) {
+    console.error('Error parsing custom timeline:', error);
+    return DEFAULT_STEPS;
+  }
+};
 
 // --- دوال المساعدة ---
 
@@ -97,11 +159,37 @@ const translateBookingStatusToArabic = (status) => {
 };
 
 // 2. تحديد المرحلة الحالية
-const getCurrentStepIndex = (status) => {
+const getCurrentStepIndex = (status, steps, arrivals) => {
   if (['cancelled', 'rejected'].includes(status)) return -1;
 
-  for (let i = STEPS.length - 1; i >= 0; i--) {
-    if (STEPS[i].statuses.includes(status)) return STEPS[i].id;
+  // إذا كان هناك CustomTimeline، نستخدم field values من arrivals
+  if (steps && steps.length > 0 && steps[0]?.field) {
+    // البحث عن آخر مرحلة مكتملة
+    let lastCompletedIndex = -1;
+    for (let i = steps.length - 1; i >= 0; i--) {
+      const fieldValue = arrivals?.[0]?.[steps[i].field];
+      if (fieldValue) {
+        lastCompletedIndex = i;
+        break;
+      }
+    }
+    
+    // إذا كانت هناك مرحلة مكتملة، المرحلة التالية هي الحالية
+    if (lastCompletedIndex >= 0) {
+      // إذا كانت آخر مرحلة مكتملة هي الأخيرة، نبقى عليها
+      if (lastCompletedIndex === steps.length - 1) {
+        return steps[lastCompletedIndex].id;
+      }
+      // وإلا، المرحلة التالية هي الحالية
+      return steps[lastCompletedIndex + 1].id;
+    }
+    // إذا لم تكن هناك مرحلة مكتملة، نبدأ من الأولى
+    return 1;
+  }
+
+  // استخدام الطريقة الافتراضية مع statuses
+  for (let i = steps.length - 1; i >= 0; i--) {
+    if (steps[i].statuses && steps[i].statuses.includes(status)) return steps[i].id;
   }
   return 1; // الافتراضي
 };
@@ -127,8 +215,10 @@ const getStatusBadgeStyle = (status) => {
 // --- المكونات الفرعية ---
 
 // مكون شريط التقدم (Stepper)
-const OrderStepper = ({ status }) => {
-  const currentStep = getCurrentStepIndex(status);
+const OrderStepper = ({ status, order, customTimeline }) => {
+  // تحويل CustomTimeline إلى STEPS
+  const steps = convertCustomTimelineToSteps(customTimeline, order?.arrivals);
+  const currentStep = getCurrentStepIndex(status, steps, order?.arrivals);
   const isCancelled = currentStep === -1;
 
   if (isCancelled) {
@@ -141,7 +231,7 @@ const OrderStepper = ({ status }) => {
   }
 
   // حساب نسبة التقدم للشريط الملون
-  const progressPercentage = ((currentStep - 1) / (STEPS.length - 1)) * 100;
+  const progressPercentage = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
     <div className="w-full mt-4">
@@ -158,7 +248,7 @@ const OrderStepper = ({ status }) => {
             style={{ width: `${progressPercentage}%` }}
           ></div>
 
-          {STEPS.map((step) => {
+          {steps.map((step) => {
             const isCompleted = step.id < currentStep;
             const isCurrent = step.id === currentStep;
 
@@ -491,7 +581,11 @@ export default function MyOrdersPage() {
                          <h4 className="text-sm font-bold" style={{ color: COLORS.primary }}>مسار الطلب</h4>
                          <span className="text-xs text-gray-400">آخر تحديث تلقائي</span>
                       </div>
-                      <OrderStepper status={order.bookingstatus} />
+                      <OrderStepper 
+                        status={order.bookingstatus} 
+                        order={order}
+                        customTimeline={order.customTimeline}
+                      />
                     </div>
 
                     {/* Documents Section (New) */}
