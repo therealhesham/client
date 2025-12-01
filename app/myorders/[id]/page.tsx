@@ -62,7 +62,7 @@ const DEFAULT_STEPS = [
   { id: 6, label: 'السفارة', icon: Stamp, statuses: ['pending_embassy', 'embassy_approved'] },
   { id: 7, label: 'التأشيرة', icon: FileText, statuses: ['pending_visa', 'visa_issued'] },
   { id: 8, label: 'تصريح السفر', icon: Plane, statuses: ['pending_travel_permit', 'travel_permit_issued'] },
-  { id: 9, label: 'الاستلام', icon: PackageCheck, statuses: ['pending_receipt', 'received', 'delivered'] }
+  { id: 9, label: 'الاستلام', icon: CheckCircle2, statuses: ['pending_receipt', 'received', 'delivered'] }
 ];
 
 // Mapping بين field names والأيقونات
