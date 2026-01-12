@@ -85,7 +85,7 @@ const totalCount = await prisma.homemaid.count({
       every: {
         OR: [
           { HomemaidId: null },
-          { bookingstatus: ["cancelled", "rejected"] }
+          { bookingstatus: { in: ["cancelled", "rejected"] } }
         ]
       }
     } 
@@ -99,7 +99,7 @@ const filteredCount = await prisma.homemaid.count({
       every: {
         OR: [
           { HomemaidId: null },
-          { bookingstatus: ["cancelled", "rejected"] }
+          { bookingstatus: { in: ["cancelled", "rejected"] } }
         ]
       }
     }, 
@@ -114,7 +114,7 @@ const homemaids = await prisma.homemaid.findMany({
       every: {
         OR: [
           { HomemaidId: null },
-          { bookingstatus: ["cancelled", "rejected"] }
+          { bookingstatus: { in: ["cancelled", "rejected"] } }
         ]
       }
     }, 
