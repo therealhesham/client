@@ -56,14 +56,7 @@ const flags = [
   { nationality: "Kenya", displayName: "كينيا", flagUrl: "https://flagcdn.com/w1280/ke.png" },
 ];
 
-async function fetchImageDateAirtable(name: string, signal: AbortSignal) {
-  const fetchData = await fetch("/api/getimagefromat/" + name, {
-    method: "GET",
-    signal,
-  });
-  const parser = await fetchData.json();
-  return parser.result;
-}
+// Images are now only from Digital Ocean
 
 
 
@@ -91,29 +84,7 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
     })
     .filter(Boolean) as string[];
 
-  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
-  const [isImageLoading, setIsImageLoading] = useState(true);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    setIsImageLoading(true);
-    fetchImageDateAirtable(candidate.Name, abortController.signal)
-      .then((result) => {
-        setImageSrc(result);
-        setIsImageLoading(false);
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") {
-          console.log("Image fetch aborted");
-        } else {
-          console.error("Error fetching image:", err);
-          setIsImageLoading(false);
-        }
-      });
-    return () => {
-      abortController.abort();
-    };
-  }, [candidate.Name, nationalityFilter]);
+  // Images are now only from Digital Ocean - no need for Airtable fetch
 
   return (
     <motion.div
@@ -127,17 +98,13 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
     >
       {/* القسم العلوي: الصورة */}
       <div className="relative w-full h-56 bg-gray-100">
-        {isImageLoading ? (
-          <div className="w-full h-full animate-pulse bg-gradient-to-r from-gray-200 to-gray-300"></div>
-        ) : (
-          <img
-            src={candidate.Picture?.url?.includes("digital") ? candidate.Picture.url : imageSrc || fallbackImage}
-            alt={`صورة ${candidate.Name}`}
-            className="w-full h-full object-cover object-center"
-            loading="lazy"
-            onError={() => setIsImageLoading(false)}
-          />
-        )}
+        <img
+          src={candidate?.Picture?.url ? candidate?.Picture?.url : candidate?.Picture}
+          alt={`صورة ${candidate.Name}`}
+          className="w-full h-full object-cover object-center"
+          loading="lazy"
+          onError={() => {}}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
       </div>
 

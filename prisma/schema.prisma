@@ -2,7 +2,7 @@ generator client {
   provider = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
-  
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -35,6 +35,7 @@ model homemaid {
   SewingLevel String? @db.VarChar(255)
   weight Int?
   height Int?
+  children Int?
   CleaningLevel String? @db.VarChar(255)
   CookingLevel String? @db.VarChar(255)
   WashingLevel String? @db.VarChar(255)
@@ -43,6 +44,7 @@ model homemaid {
   ElderlycareLevel String? @db.VarChar(255)
   LaundryLevel String? @db.VarChar(255)
   flag              Json?
+  isApproved        Boolean? @default(false)
   phone             String?    @db.VarChar(17)
   bookingstatus     String?    @db.VarChar(255)
   ages              String?    @db.VarChar(255)
@@ -53,15 +55,14 @@ model homemaid {
   experienceType    String?    @db.VarChar(100)
  PassportStart DateTime?
   PassportEnd       DateTime?
-  OldPeopleCare     Boolean?
   Salary            String?    @db.VarChar(20)
-  Housed            housing[]
+  // Housed            housing[]
   inHouse           housedworker[]
   Session           Session[]
   createdAt         DateTime?   @default(now())
   updatedAt         DateTime?  @updatedAt
   logs              logs[]
-  displayOrder      Int        @default(0) // Added field for display order
+  displayOrder      Int?       @unique 
   transferSponsorShips transferSponsorShips?
   isExternal          Boolean? @default(false)
 sewingLevel String? @db.VarChar(100)
@@ -70,8 +71,10 @@ cookingLevel String? @db.VarChar(100)
 washingLevel String? @db.VarChar(100)
 ironingLevel String? @db.VarChar(100)
 childcareLevel String? @db.VarChar(100)
+contractType String @default("recruitment") @db.VarChar(100)
 elderlycareLevel String? @db.VarChar(100)
 laundryLevel String? @db.VarChar(100)
+BabySitterLevel String? @db.VarChar(100)
 
 }
 
@@ -117,9 +120,10 @@ model User {
   id            Int       @id @default(autoincrement())
   phonenumber   String?   @unique @db.VarChar(15)
   admin         Boolean?  @default(false)
-  pictureurl    String?   @default("") @db.VarChar(1024)
+  pictureurl    String?   @default("") @db.LongText
   username      String    @unique @db.VarChar(191)
   password      String    @db.VarChar(191)
+  email         String?   @db.VarChar(191)
   roleId        Int?      // Foreign key to Role model
   idnumber      Int?      @unique
   role          Role?     @relation(fields: [roleId], references: [id])
@@ -136,6 +140,8 @@ model User {
   updatedAt     DateTime? @updatedAt
 
   AccountSystemLogs AccountSystemLogs[]
+  createdComplaints Complaint[] @relation("ComplaintCreatedBy")
+  assignedComplaints Complaint[] @relation("ComplaintAssignedTo")
 }
 
 
@@ -340,6 +346,7 @@ beneficiary String? @db.VarChar(255)
 action String? @db.VarChar(255)
 BeneficiaryId Int?
 pageRoute String? @db.VarChar(255)
+details String? @db.VarChar(255)
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
 userId Int
@@ -404,8 +411,9 @@ transactios transactions[]
   isHidden        Boolean? @default(false)
 ratings       Rating[]
   ReasonOfRejection  String?   @db.VarChar(255)
+  ReasonOfCancellation String?   @db.VarChar(255)
   typeOfContract String?
-  housed              housing[]
+  // housed              housing[]
   income              income[]
   Nationalitycopy    String?   @db.VarChar(255)
   Name               String?   @db.VarChar(255)
@@ -439,7 +447,8 @@ notes String?
   musanadFinancialRecords MusanadFinancialRecord[] // Added relation to financial records
   isContractEnded Boolean? @default(false)
   clientAccountStatement ClientAccountStatement[]
-  // visa visa?
+  visaId Int? // Foreign key to visa
+  visa visa? @relation(fields: [visaId], references: [id])
   DeliveryDetails DeliveryDetails[]
 }
 
@@ -448,10 +457,11 @@ id Int @id @default(autoincrement())
 visaNumber String? @db.VarChar(255)
 gender String? @db.VarChar(255)
 profession String? @db.VarChar(255)
-visaFile String? @db.VarChar(255)
+visaFile String? @db.VarChar(1024)
 nationality String? @db.VarChar(255)
 clientID Int?
 client Client? @relation(fields: [clientID], references: [id])
+orders neworder[] // Relation to orders using this visa
 createdAt DateTime? @default(now())
 updatedAt DateTime? @updatedAt
 // orderID Int @unique
@@ -646,6 +656,7 @@ model professions{
 
   id Int @id @default(autoincrement())
   name String @db.VarChar(255)
+  gender String? @db.VarChar(50) // male, female, or null for both
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   homemaid homemaid[]
@@ -676,18 +687,6 @@ model professions{
 //   marketeername         String?   @db.VarChar(191)
 //   notes                 String?   @db.VarChar(191)
 // }
-
-
-model housing{// مش بنستخدمه في قاعدة البيانات
-  id                    Int       @id @default(autoincrement())
-isHoused              Boolean? @default(false)
-
-HomeMaidId        Int @unique
-HomeMaid        homemaid @relation(references: [id],fields: [HomeMaidId])
-newOrderId    Int?
-neworder        neworder? @relation(references: [id],fields: [newOrderId])
-  
-}
 
 
 model transactions{
@@ -895,8 +894,8 @@ model ClientAccountEntry {
 
 model EmployeeCash {
   id                Int       @id @default(autoincrement())
-  employeeId        Int       // ربط بالموظف
-  employee          Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId        Int?      // ربط بالموظف (اختياري للسجلات المؤقتة)
+  employee          Employee? @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   cashNumber        String?   @db.VarChar(100) // رقم العهدة
   receivedAmount    Decimal   @default(0) // المبلغ المستلم
   expenseAmount     Decimal   @default(0) // المصروف
@@ -904,6 +903,7 @@ model EmployeeCash {
   description       String?   @db.VarChar(500) // البيان
   attachment        String?   @db.VarChar(255) // المرفق
   transactionDate   DateTime  @default(now()) // تاريخ المعاملة
+  isTemporary       Boolean   @default(false) // سجل مؤقت (يُحذف تلقائياً إذا لم يكتمل)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 }
@@ -1106,25 +1106,25 @@ model TaxVATRecord {
   @@index([taxDeclarationId])
 }
 
-// PDF Processing and Image Extraction Models
-model PDFExtractedRecord {
-  id                Int       @id @default(autoincrement())
-  sessionId         String    @db.VarChar(255) // Unique session identifier for this processing
+// // PDF Processing and Image Extraction Models
+// model PDFExtractedRecord {
+//   id                Int       @id @default(autoincrement())
+//   sessionId         String    @db.VarChar(255) // Unique session identifier for this processing
   
-  // Extracted data fields (flexible JSON structure)
-  extractedData     Json      // Structured data from Gemini API
-  selectedImages    Json      // Array of selected image URLs
-  originalFileName  String?   @db.VarChar(255)
+//   // Extracted data fields (flexible JSON structure)
+//   extractedData     Json      // Structured data from Gemini API
+//   selectedImages    Json      // Array of selected image URLs
+//   originalFileName  String?   @db.VarChar(255)
   
-  // Metadata
-  processedBy       String?   @db.VarChar(100) // User who processed the data
-  notes             String?   @db.VarChar(1000) // Additional notes
+//   // Metadata
+//   processedBy       String?   @db.VarChar(100) // User who processed the data
+//   notes             String?   @db.VarChar(1000) // Additional notes
   
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+//   createdAt         DateTime  @default(now())
+//   updatedAt         DateTime  @updatedAt
   
-  @@index([sessionId])
-}
+//   @@index([sessionId])
+// }
 
 // SLA rules for external offices
 model OfficeSlaRule {
@@ -1173,4 +1173,26 @@ model CustomTimeline {
 
   @@index([country])
   @@unique([country])
+}
+
+// Complaints Model
+model Complaint {
+  id                Int       @id @default(autoincrement())
+  title             String?   @db.VarChar(255) // عنوان الشكوى
+  description       String?   @db.Text // وصف الشكوى
+  screenshot         String?   @db.VarChar(1024) // رابط screenshot
+  status            String    @default("pending") @db.VarChar(50) // حالة الشكوى: pending, in_progress, resolved, closed
+  createdById       Int       // منشئ الشكوى (Admin)
+  createdBy         User      @relation("ComplaintCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  assignedToId      Int?      // المسؤول عن حل الشكوى (IT User)
+  assignedTo        User?     @relation("ComplaintAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  resolutionNotes   String?   @db.Text // ملاحظات الحل
+  resolvedAt        DateTime? // تاريخ الحل
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([createdById])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([createdAt])
 }

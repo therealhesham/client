@@ -54,7 +54,6 @@ const CVDetailsPage = () => {
 
   const [error, setError] = useState<string | null>(null);
 
-  const [image, setImage] = useState("");
   const router = useRouter();
   useEffect(() => {
     const fetchHomemaid = async () => {
@@ -79,18 +78,7 @@ const CVDetailsPage = () => {
     fetchHomemaid();
   }, [params.id]);
 
-  useEffect(() => {
-    fetchImageDateAirtable(homemaid?.Name || "");
-  }, [homemaid]);
-
-  async function fetchImageDateAirtable(name: string) {
-    const fetchData = await fetch("/api/getimagefromprisma/" + name, {
-      method: "get",
-    });
-    const parser = await fetchData.json();
-    console.log(parser);
-    setImage(parser.result);
-  };
+  // Images are now only from Digital Ocean - no need for Airtable fetch
 
   const handleEditClick = () => {
     // Replace with actual edit logic (e.g., redirect to edit page or open modal)
@@ -128,9 +116,9 @@ const CVDetailsPage = () => {
         <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
-              {image ? (
+              {homemaid.Picture?.url?.includes("digital") ? (
                 <Image
-                  src={image?.includes("airtable") ? image : homemaid.Picture?.url || ""}
+                  src={homemaid.Picture.url}
                   alt="Profile"
                   width={120}
                   height={120}

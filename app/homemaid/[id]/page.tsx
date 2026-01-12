@@ -58,7 +58,7 @@ const CVDetailsPage = () => {
   const [homemaidsList, setHomemaidsList] = useState<Homemaid[]>([]); // قائمة العاملات
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [image, setImage] = useState("");
+  // Images are now only from Digital Ocean - no need for image state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     clientName: '',
@@ -101,17 +101,7 @@ const CVDetailsPage = () => {
     fetchHomemaidsList();
   }, [params.id]);
 
-  useEffect(() => {
-    fetchImageDateAirtable(homemaid?.Name || "");
-  }, [homemaid]);
-
-  async function fetchImageDateAirtable(name: string) {
-    const fetchData = await fetch("/api/getimagefromprisma/" + name, {
-      method: "get",
-    });
-    const parser = await fetchData.json();
-    setImage(parser.result);
-  }
+  // Images are now only from Digital Ocean - no need for Airtable fetch
 
   const handleEditClick = () => {
     alert('سيتم تنفيذ وظيفة التعديل قريباً!');
@@ -215,9 +205,9 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
               <div className="bg-[#003749] text-white p-8">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-6">
-                    {image ? (
+                    {homemaid.Picture?.url?.includes("digital") ? (
                       <Image
-                        src={image?.includes("airtable") ? image : homemaid.Picture?.url || ""}
+                        src={homemaid.Picture.url}
                         alt="الصورة الشخصية"
                         width={120}
                         height={120}

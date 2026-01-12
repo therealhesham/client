@@ -113,8 +113,7 @@ export default function Profile() {
   const params = useParams();
   const router = useRouter();
   const [homemaid, setHomemaid] = useState<Homemaid | null>(null);
-  const [image, setImage] = useState<string | null>(null);
-  const [fullImage, setFullImage] = useState<string | null>(null);
+  // Images are now only from Digital Ocean - using homemaid.Picture and homemaid.FullPicture directly
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -135,8 +134,7 @@ export default function Profile() {
     const fetchHomemaid = async () => {
       try {
         setLoading(true);
-        setImage(null);
-        setFullImage(null);
+        // Images are now only from Digital Ocean
         const response = await fetch(`/api/homemaid/${params.id}`);
         if (response.redirected) {
           router.push(response.url);
@@ -155,22 +153,7 @@ export default function Profile() {
     if (params.id) fetchHomemaid();
   }, [params.id, router]);
 
-  useEffect(() => {
-    const fetchImage = async (name: string) => {
-      try {
-        const response = await fetch(`/api/fetchbothimage/${encodeURIComponent(name)}`);
-        if (!response.ok) throw new Error('Error');
-        const data = await response.json();
-        const imgUrl = data.result[0]?.fields?.Picture?.[0]?.url;
-        const fullImgUrl = data.result[0]?.fields?.["Full body picture - صورة كامل الجسم "]?.[0]?.url;
-        setImage(imgUrl || null);
-        setFullImage(fullImgUrl || null);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    if (homemaid?.Name) fetchImage(homemaid.Name);
-  }, [homemaid?.Name]);
+  // Images are now only from Digital Ocean - no need for Airtable fetch
 
   const handleBookClick = () => {
     if (isButtonDisabled) return;
@@ -355,9 +338,9 @@ export default function Profile() {
             <div className="bg-white p-2 rounded-[2rem] shadow-lg shadow-gray-100/50 overflow-hidden relative group">
                <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-gray-100">
                  
-                 {image ? (
+                 {homemaid.Picture ? (
                    <img 
-                      src={image} 
+                      src={homemaid?.Picture?.url ? homemaid?.Picture?.url : homemaid?.Picture} 
                       alt={homemaid.Name || 'Worker'} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                    />
@@ -376,10 +359,10 @@ export default function Profile() {
                  )}
                </div>
                
-               {fullImage && (
+               {homemaid.FullPicture && (
                  <div className="mt-2 relative aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-gray-100 border-2 border-dashed border-gray-200">
                     <img 
-                        src={fullImage} 
+                        src={homemaid?.FullPicture?.url ? homemaid?.FullPicture?.url : homemaid?.FullPicture} 
                         alt="Full Body" 
                         className="w-full h-full object-contain p-2"
                     />
