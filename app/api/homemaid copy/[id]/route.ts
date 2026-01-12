@@ -57,7 +57,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         Client: true,
         Session: true,
         logs: true,
-        Housed: true,
+        // Housed: true,
         inHouse: {
           include: {
             checkIns: true,
@@ -176,7 +176,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         experienceType,
         PassportStart,
         PassportEnd,
-        OldPeopleCare,
+        // OldPeopleCare,
         ArabicLanguageLeveL,
         EnglishLanguageLevel,
         Salary,
@@ -194,7 +194,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         Client: true,
         Session: true,
         logs: true,
-        Housed: true,
+        // Housed: true,
         inHouse: {
           include: {
             checkIns: true,
