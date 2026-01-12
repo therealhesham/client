@@ -77,18 +77,49 @@ export async function GET(req: NextRequest) {
   }
   try {
     // أولًا: احسب العدد الكلي لجميع العاملات (قبل الفلترة)
+    // تظهر فقط إذا كانت جميع طلباتها ملغاة أو ليس لها طلبات
+    // لا تظهر إذا كان لديها طلب نشط أو مرفوض
 const totalCount = await prisma.homemaid.count({
-  where: { NewOrder: { every: { HomemaidId: null } } },
+  where: { 
+    NewOrder: { 
+      every: {
+        OR: [
+          { HomemaidId: null },
+          { bookingstatus: ["cancelled", "rejected"] }
+        ]
+      }
+    } 
+  },
 });
 
 // احسب عدد النتائج بعد الفلترة (للعرض في الرسالة)
 const filteredCount = await prisma.homemaid.count({
-  where: { NewOrder: { every: { HomemaidId: null } }, ...filters },
+  where: { 
+    NewOrder: { 
+      every: {
+        OR: [
+          { HomemaidId: null },
+          { bookingstatus: ["cancelled", "rejected"] }
+        ]
+      }
+    }, 
+    ...filters 
+  },
 });
 // ثانيًا: جلب النتائج بعد الفلترة
 const homemaids = await prisma.homemaid.findMany({
   orderBy: { displayOrder: "asc" },
-  where: { NewOrder: { every: { HomemaidId: null } }, ...filters },
+  where: { 
+    NewOrder: { 
+      every: {
+        OR: [
+          { HomemaidId: null },
+          { bookingstatus: ["cancelled", "rejected"] }
+        ]
+      }
+    }, 
+    ...filters 
+  },
   skip: (pageNumber - 1) * pageSize,
   take: pageSize,
 });
