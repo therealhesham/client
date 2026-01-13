@@ -34,6 +34,19 @@ function getDate(date: string) {
   return currentDate.toLocaleDateString('en-GB'); // DD/MM/YYYY
 }
 
+function calculateAge(dateofbirth: string | null): number | null {
+  if (!dateofbirth) return null;
+  const birthDate = new Date(dateofbirth);
+  if (isNaN(birthDate.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 // --- Fonts ---
 const myFont = localFont({
   src: '../../fonts/ReadexPro-Bold.ttf',
@@ -284,7 +297,7 @@ export default function Profile() {
                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                  <InfoItem icon={User} label="الاسم" value={homemaid.Name} />
                  <InfoItem icon={MapPin} label="الجنسية" value={homemaid.Nationalitycopy} />
-                 <InfoItem icon={Star} label="العمر" value={homemaid.ages} />
+                 <InfoItem icon={Star} label="العمر" value={calculateAge(homemaid.dateofbirth)} />
                  <InfoItem icon={Star} label="الديانة" value={homemaid.Religion} />
                  <InfoItem icon={User} label="الحالة الاجتماعية" value={homemaid.maritalstatus} />
                  <InfoItem icon={Calendar} label="تاريخ الميلاد" value={getDate(homemaid.dateofbirth || '')} />
