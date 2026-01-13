@@ -325,7 +325,7 @@ export default function Profile() {
                    <SkillBadge icon={Shirt} label="الغسيل" level={homemaid.laundryLevel} />
                    <SkillBadge icon={Shirt} label="الكوي" level={homemaid.ironingLevel} />
                    <SkillBadge icon={Baby} label="الأطفال" level={homemaid.childcareLevel} />
-                   <SkillBadge icon={User} label="كبار السن" level={homemaid.OldPeopleCare ? 'نعم' : 'لا'} />
+                   <SkillBadge icon={User} label="كبار السن" level={homemaid.elderlycareLevel} />
                  </div>
                </div>
             </div>
