@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
     // تظهر فقط إذا كانت جميع طلباتها ملغاة أو ليس لها طلبات
     // لا تظهر إذا كان لديها طلب نشط أو مرفوض
 const totalCount = await prisma.homemaid.count({
-  where: { 
+  where: { isApproved: true,
     NewOrder: { 
       every: {
         OR: [
@@ -94,7 +94,7 @@ const totalCount = await prisma.homemaid.count({
 
 // احسب عدد النتائج بعد الفلترة (للعرض في الرسالة)
 const filteredCount = await prisma.homemaid.count({
-  where: { 
+  where: { isApproved: true,
     NewOrder: { 
       every: {
         OR: [
@@ -109,8 +109,8 @@ const filteredCount = await prisma.homemaid.count({
 // ثانيًا: جلب النتائج بعد الفلترة
 const homemaids = await prisma.homemaid.findMany({
   orderBy: { displayOrder: "asc" },
-  where: { 
-    NewOrder: { 
+  where: { isApproved: true,
+    NewOrder: {   
       every: {
         OR: [
           { HomemaidId: null },
