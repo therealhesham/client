@@ -201,7 +201,7 @@ export default function Profile() {
       newErrors.clientName = 'الاسم يجب أن يكون ثلاثي الحروف على الأقل';
       hasError = true;
     }
-    const saudiPhoneRegex = /^(05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/;
+    const saudiPhoneRegex = /^05[0-9]{7,8}$/;
     if (!saudiPhoneRegex.test(formData.phoneNumber)) {
       newErrors.phoneNumber = 'يرجى إدخال رقم جوال صحيح (مثال: 05xxxxxxxx)';
       hasError = true;
