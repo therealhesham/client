@@ -335,7 +335,7 @@ export default function Profile() {
                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                    <SkillBadge icon={Utensils} label="الطبخ" level={homemaid.cookingLevel} />
                    <SkillBadge icon={Sparkles} label="التنظيف" level={homemaid.cleaningLevel} />
-                   <SkillBadge icon={Shirt} label="الغسيل" level={homemaid.laundryLevel} />
+                   <SkillBadge icon={Shirt} label="الغسيل" level={homemaid.washingLevel} />
                    <SkillBadge icon={Shirt} label="الكوي" level={homemaid.ironingLevel} />
                    <SkillBadge icon={Baby} label="الأطفال" level={homemaid.childcareLevel} />
                    <SkillBadge icon={User} label="كبار السن" level={homemaid.elderlycareLevel} />
