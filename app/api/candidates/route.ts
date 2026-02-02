@@ -25,42 +25,42 @@ export async function GET(req: NextRequest) {
   if (Name) filters.Name = { contains: Name.toLowerCase() };
 
   if (age) {
-  const ageNum = parseInt(age, 10);
-  const today = new Date();
+    const ageNum = parseInt(age, 10);
+    const today = new Date();
 
-  if (ageNum === 20) {
-    // العمر 20 - 29
-    const minBirthDate = new Date(today.getFullYear() - 30, today.getMonth(), today.getDate());
-    const maxBirthDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate());
-    filters.dateofbirth = { gte: minBirthDate, lte: maxBirthDate };
-  } 
-  else if (ageNum === 30) {
-    // العمر 30 - 39
-    const minBirthDate = new Date(today.getFullYear() - 40, today.getMonth(), today.getDate());
-    const maxBirthDate = new Date(today.getFullYear() - 30, today.getMonth(), today.getDate());
-    filters.dateofbirth = { gte: minBirthDate, lte: maxBirthDate };
-  } 
-  else if (ageNum === 40) {
-    // العمر 40 فما فوق
-    const maxBirthDate = new Date(today.getFullYear() - 40, today.getMonth(), today.getDate());
-    filters.dateofbirth = { lte: maxBirthDate };
-  } 
-  else {
-    // قيمة غير صحيحة
-    return NextResponse.json({ homemaids: [] }, { status: 200 });
+    if (ageNum === 20) {
+      // العمر 20 - 29
+      const minBirthDate = new Date(today.getFullYear() - 30, today.getMonth(), today.getDate());
+      const maxBirthDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate());
+      filters.dateofbirth = { gte: minBirthDate, lte: maxBirthDate };
+    }
+    else if (ageNum === 30) {
+      // العمر 30 - 39
+      const minBirthDate = new Date(today.getFullYear() - 40, today.getMonth(), today.getDate());
+      const maxBirthDate = new Date(today.getFullYear() - 30, today.getMonth(), today.getDate());
+      filters.dateofbirth = { gte: minBirthDate, lte: maxBirthDate };
+    }
+    else if (ageNum === 40) {
+      // العمر 40 فما فوق
+      const maxBirthDate = new Date(today.getFullYear() - 40, today.getMonth(), today.getDate());
+      filters.dateofbirth = { lte: maxBirthDate };
+    }
+    else {
+      // قيمة غير صحيحة
+      return NextResponse.json({ homemaids: [] }, { status: 200 });
+    }
   }
-}
 
   if (Passportnumber)
     filters.Passportnumber = {
       contains: Passportnumber.toLowerCase(),
     };
-    // {Country:{contains:}}
-    if (Nationality)
-      filters.office = {
-        Country:{contains:Nationality?.toLowerCase()},
-      };
-  
+  // {Country:{contains:}}
+  if (Nationality)
+    filters.office = {
+      Country: { contains: Nationality?.toLowerCase() },
+    };
+
   if (Religion) {
     if (Religion == "Islam - الإسلام")
       filters.Religion = {
@@ -79,60 +79,63 @@ export async function GET(req: NextRequest) {
     // أولًا: احسب العدد الكلي لجميع العاملات (قبل الفلترة)
     // تظهر فقط إذا كانت جميع طلباتها ملغاة أو ليس لها طلبات
     // لا تظهر إذا كان لديها طلب نشط أو مرفوض
-const totalCount = await prisma.homemaid.count({
-  where: { isApproved: true,
-    NewOrder: { 
-      every: {
-        OR: [
-          { HomemaidId: null },
-          { bookingstatus: { in: ["cancelled", "rejected"] } }
-        ]
-      }
-    } 
-  },
-});
+    const totalCount = await prisma.homemaid.count({
+      where: {
+        isApproved: true,
+        NewOrder: {
+          every: {
+            OR: [
+              { HomemaidId: null },
+              { bookingstatus: { in: ["cancelled", "rejected"] } }
+            ]
+          }
+        }
+      },
+    });
 
-// احسب عدد النتائج بعد الفلترة (للعرض في الرسالة)
-const filteredCount = await prisma.homemaid.count({
-  where: { isApproved: true,
-    NewOrder: { 
-      every: {
-        OR: [
-          { HomemaidId: null },
-          { bookingstatus: { in: ["cancelled", "rejected"] } }
-        ]
-      }
-    }, 
-    ...filters 
-  },
-});
-// ثانيًا: جلب النتائج بعد الفلترة
-const homemaids = await prisma.homemaid.findMany({
-  orderBy: { displayOrder: "asc" },
-  where: { isApproved: true,
-    NewOrder: {   
-      every: {
-        OR: [
-          { HomemaidId: null },
-          { bookingstatus: { in: ["cancelled", "rejected"] } }
-        ]
-      }
-    }, 
-    ...filters 
-  },
-  skip: (pageNumber - 1) * pageSize,
-  take: pageSize,
-});
+    // احسب عدد النتائج بعد الفلترة (للعرض في الرسالة)
+    const filteredCount = await prisma.homemaid.count({
+      where: {
+        isApproved: true,
+        NewOrder: {
+          every: {
+            OR: [
+              { HomemaidId: null },
+              { bookingstatus: { in: ["cancelled", "rejected"] } }
+            ]
+          }
+        },
+        ...filters
+      },
+    });
+    // ثانيًا: جلب النتائج بعد الفلترة
+    const homemaids = await prisma.homemaid.findMany({
+      orderBy: { displayOrder: "asc" }, include: { profession: true },
+      where: {
+        isApproved: true,
+        NewOrder: {
+          every: {
+            OR: [
+              { HomemaidId: null },
+              { bookingstatus: { in: ["cancelled", "rejected"] } }
+            ]
+          }
+        },
+        ...filters
+      },
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
+    });
 
-// ثالثًا: أعد إرسال البيانات + العدد الكلي
-return NextResponse.json(
-  {
-    homemaids,
-    totalCount,
-    filteredCount
-  },
-  { status: 200 }
-);
+    // ثالثًا: أعد إرسال البيانات + العدد الكلي
+    return NextResponse.json(
+      {
+        homemaids,
+        totalCount,
+        filteredCount
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching homemaids:", error);
     return NextResponse.json(
