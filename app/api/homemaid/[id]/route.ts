@@ -63,6 +63,39 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
 
 
+    // Navigation Checks
+    const whereBase = {
+      isApproved: true,
+      NewOrder: {
+        every: {
+          OR: [
+            { HomemaidId: null },
+            { bookingstatus: { in: ["cancelled", "rejected"] } }
+          ]
+        }
+      }
+    };
+
+    if (homemaid) {
+      const nextCount = await prisma.homemaid.count({
+        where: {
+          ...whereBase,
+          id: { gt: homemaidId }
+        }
+      });
+      const prevCount = await prisma.homemaid.count({
+        where: {
+          ...whereBase,
+          id: { lt: homemaidId }
+        }
+      });
+
+      // @ts-ignore
+      homemaid.hasNext = nextCount > 0;
+      // @ts-ignore
+      homemaid.hasPrev = prevCount > 0;
+    }
+
     return NextResponse.json(homemaid, { status: 200 });
   } catch (error) {
     console.error('Error fetching homemaid:', error);
@@ -161,12 +194,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         ages,
         officeName,
         experienceType,
-        PassportStart,        PassportEnd,
+        PassportStart, PassportEnd,
         ArabicLanguageLeveL,
         EnglishLanguageLevel,
         Salary,
         // OldPeopleCare,
-          laundryLevel,
+        laundryLevel,
         ironingLevel,
         cleaningLevel,
         cookingLevel,
