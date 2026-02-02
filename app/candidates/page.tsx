@@ -92,12 +92,12 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-100 hover:border-[#ECC383] transition-all duration-300 flex flex-col h-[540px] max-w-md mx-auto"
+      className="bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-100 hover:border-[#ECC383] transition-all duration-300 flex flex-col h-[660px] max-w-md mx-auto"
       whileHover={{ scale: 1.02, boxShadow: "0 20px 30px rgba(0,0,0,0.1)" }}
       dir="rtl"
     >
       {/* القسم العلوي: الصورة */}
-      <div className="relative w-full h-56 bg-gray-100">
+      <div className="relative w-full h-86 bg-gray-100">
         <img
           src={candidate?.Picture?.url ? candidate?.Picture?.url : candidate?.Picture}
           alt={`صورة ${candidate.Name}`}
