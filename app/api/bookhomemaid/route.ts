@@ -11,8 +11,8 @@ export async function POST(req: Request) {
         const {
             phone_number,
             fullName,
-            homemaidId
-
+            homemaidId,
+            residence
         } = await req.json();
         // Validate required fields, or handle with default/fallback values
         // const header = await headers();
@@ -23,11 +23,11 @@ export async function POST(req: Request) {
         // Insert into the database
         const newHomemaid = await prisma.neworder.create({
             data: {
-                typeOfContract:"recruitment",
+                typeOfContract: "recruitment",
                 bookingstatus: "new_order",
                 HomeMaid: { connect: { id: homemaidId } },
                 clientphonenumber: phone_number,
-                client: { connectOrCreate: { where: { phonenumber: phone_number }, create: { phonenumber: phone_number, fullname: fullName } } }
+                client: { connectOrCreate: { where: { phonenumber: phone_number }, create: { phonenumber: phone_number, fullname: fullName, city: residence } } }
             },
         });
 
