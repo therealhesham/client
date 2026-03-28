@@ -1,22 +1,12 @@
 //@ts-nocheck
 //@ts-ignore
-import nodemailer from "nodemailer";
+import { createHrDocTransporter, getSmtpFromAddress } from '../../lib/smtp';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function sendMail(email: string, message: string,name:String) {
   try {
-    const transporter = nodemailer.createTransport({
-      host: 'mail.rawaes.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: 'hrdoc@rawaes.com',
-        pass: 'a-f09JRnpZOk',
-      },
-      debug: true,
-      logger: true,
-    });
+    const transporter = createHrDocTransporter();
 
     // Verify SMTP connection
     await new Promise((resolve, reject) => {
@@ -32,7 +22,7 @@ async function sendMail(email: string, message: string,name:String) {
     });
 
     const mailOptions = {
-      from: 'hrdoc@rawaes.com', // Must match the authenticated user
+      from: getSmtpFromAddress(), // Must match the authenticated user
       to: `heshammoha231992@gmail.com,${email},hrdoc@rawaes.com`,
       subject: 'نموذج طلب تواصل من عميل',
       text: `Message from ${email}: ${message}`, // Include sender's email in the body

@@ -2,6 +2,7 @@
 import { PrismaClient } from '@prisma/client';
 import jwt from "jsonwebtoken"
 import { headers } from 'next/headers';
+import { createHrDocTransporter, getSmtpFromAddress } from '../../lib/smtp';
 const prisma = new PrismaClient();
 export async function POST(req: Request) {
     try {
@@ -34,6 +35,30 @@ export async function POST(req: Request) {
         try {
 
             await prisma.notifications.create({ data: { title: " تم حجز عاملة جديدة من الموقع الالكتروني", message: `تم حجز عاملة بواسطة ${fullName}` } })
+
+            const staff = await prisma.user.findMany({
+                where: {
+                    AND: [
+                        { email: { not: null } },
+                        { email: { not: '' } },
+                    ],
+                },
+                select: { email: true },
+            });
+            const toList = staff
+                .map((u: { email: string | null }) => u.email)
+                .filter((e: string | null): e is string => Boolean(e));
+            if (toList.length > 0) {
+                const transporter = createHrDocTransporter();
+                const subject = 'تم حجز عاملة جديدة من الموقع الإلكتروني';
+                const text = `تم حجز عاملة جديدة.\nالعميل: ${fullName}\nالجوال: ${phone_number}\nالمدينة: ${residence ?? ''}`;
+                await transporter.sendMail({
+                    from: getSmtpFromAddress(),
+                    to: toList.join(','),
+                    subject,
+                    text,
+                });
+            }
 
         } catch (error) {
             console.log(error)
