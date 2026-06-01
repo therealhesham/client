@@ -16,24 +16,6 @@ export async function GET(
     const order = await prisma.neworder.findUnique({
       where: { id: Number(id) },
       include: {
-        client: {
-          select: {
-            fullname: true,
-            phonenumber: true,
-            email: true,
-          },
-        },
-        HomeMaid: {
-          select: {
-            office: { select: { Country: true } },
-            id: true,
-            Name: true,
-            Passportnumber: true,
-            Religion: true,
-            Nationalitycopy: true,
-            officeName: true,
-          },
-        },
         arrivals: {
           select: {
             DateOfApplication: true,
@@ -70,20 +52,58 @@ export async function GET(
       );
     }
 
+    const [client, homemaidRaw] = await Promise.all([
+      order.clientID
+        ? prisma.client.findUnique({
+            where: { id: order.clientID },
+            select: { fullname: true, phonenumber: true, email: true },
+          })
+        : null,
+      order.HomemaidId
+        ? prisma.homemaid.findUnique({
+            where: { id: order.HomemaidId },
+            select: {
+              id: true,
+              Name: true,
+              Passportnumber: true,
+              Religion: true,
+              Nationalitycopy: true,
+              OfficeName: true,
+              officeID: true,
+            },
+          })
+        : null,
+    ]);
+
+    const homemaidOffice = homemaidRaw?.officeID
+      ? await prisma.offices.findUnique({
+          where: { id: homemaidRaw.officeID },
+          select: { Country: true },
+        })
+      : null;
+
+    const HomeMaid = homemaidRaw
+      ? {
+          ...homemaidRaw,
+          officeName: homemaidRaw.OfficeName,
+          office: homemaidOffice,
+        }
+      : null;
+
     const orderData = {
       orderId: order.id,
       bookingStatus: order.bookingstatus,
       clientInfo: {
-        name: order.client?.fullname || 'N/A',
-        phone: order.client?.phonenumber || 'N/A',
-        email: order.client?.email || 'N/A',
+        name: client?.fullname || 'N/A',
+        phone: client?.phonenumber || 'N/A',
+        email: client?.email || 'N/A',
       },
       homemaidInfo: {
-        name: order.HomeMaid?.Name || 'N/A',
-        religion: order.HomeMaid?.Religion || 'N/A',
-        passportNumber: order.HomeMaid?.Passportnumber || 'N/A',
-        nationality: order.HomeMaid?.office?.Country || 'N/A',
-        externalOffice: order.HomeMaid?.officeName || 'N/A',
+        name: HomeMaid?.Name || 'N/A',
+        religion: HomeMaid?.Religion || 'N/A',
+        passportNumber: HomeMaid?.Passportnumber || 'N/A',
+        nationality: HomeMaid?.office?.Country || 'N/A',
+        externalOffice: HomeMaid?.officeName || 'N/A',
       },
       applicationInfo: {
         applicationDate: order.createdAt?.toISOString().split('T')[0] || 'N/A',
@@ -101,7 +121,7 @@ export async function GET(
           : 'N/A',
       },
       externalOfficeInfo: {
-        officeName: order.HomeMaid?.officeName || 'N/A',
+        officeName: HomeMaid?.officeName || 'N/A',
         country: order.arrivals[0]?.office || 'N/A',
         externalMusanedContract: order.arrivals[0]?.externalmusanedContract || 'N/A',
       },
@@ -148,7 +168,7 @@ export async function GET(
       ticketUpload: {
         files: order.arrivals[0]?.ticketFile || null,
       },
-      nationality: order.HomeMaid?.office?.Country || 'N/A',
+      nationality: HomeMaid?.office?.Country || 'N/A',
       documentUpload: {
         files: order.arrivals[0]?.additionalfiles || null,
       },
@@ -356,7 +376,7 @@ export async function PATCH(
           if (updatedData['اسم المكتب الخارجي']) {
             await prisma.homemaid.update({
               where: { id: order.HomemaidId || 0 },
-              data: { officeName: updatedData['اسم المكتب الخارجي'] },
+              data: { OfficeName: updatedData['اسم المكتب الخارجي'] },
             });
           }
           if (updatedData['دولة المكتب الخارجي']) {

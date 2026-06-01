@@ -156,7 +156,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({ clientName: '', phoneNumber: '', email: '', residence: '' });
   const [fieldErrors, setFieldErrors] = useState({ clientName: '', phoneNumber: '', email: '', residence: '' });
   const [formError, setFormError] = useState<string | null>(null);
-  const [formSuccess, setFormSuccess] = useState<string | null>(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [position, setPosition] = useState("")
   // Navigation Handlers
   const [id, setid] = useState("");
@@ -235,13 +235,19 @@ export default function Profile() {
     if (isButtonDisabled) return;
     setIsModalOpen(true);
     setFormError(null);
-    setFormSuccess(null);
+    setIsSuccessModalOpen(false);
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
     setFormData({ clientName: '', phoneNumber: '', email: '', residence: '' });
     setFieldErrors({ clientName: '', phoneNumber: '', email: '', residence: '' });
+    setFormError(null);
+  };
+
+  const handleSuccessModalClose = () => {
+    setIsSuccessModalOpen(false);
+    setIsButtonDisabled(true);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -294,8 +300,8 @@ export default function Profile() {
       });
 
       if (response.status === 201) {
-        setFormSuccess('تم ارسال طلب الحجز بنجاح وسيتم التواصل معك قريبا');
-        setTimeout(() => handleModalClose(), 2000);
+        handleModalClose();
+        setIsSuccessModalOpen(true);
       }
     } catch (err) {
       setFormError('فشل في إرسال طلب الحجز. حاول مرة أخرى.');
@@ -614,7 +620,6 @@ export default function Profile() {
                 </div>
 
                 {formError && <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm text-center font-medium">{formError}</div>}
-                {formSuccess && <div className="p-3 bg-green-50 text-green-600 rounded-xl text-sm text-center font-medium flex items-center justify-center gap-2"><CheckCircle2 size={16} /> {formSuccess}</div>}
 
                 <div className="flex gap-3 pt-4">
                   <button type="submit" className="flex-1 bg-[#ECC383] text-[#003749] py-3.5 rounded-xl font-bold shadow-lg hover:bg-[#dcb374] transition-all active:scale-[0.98]">
@@ -625,6 +630,41 @@ export default function Profile() {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Modal */}
+      <AnimatePresence>
+        {isSuccessModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-[#003749]/60 backdrop-blur-sm flex items-center justify-center z-[110] p-4"
+            dir="rtl"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white rounded-[2rem] shadow-2xl max-w-md w-full p-8 text-center"
+            >
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-50 mb-5 border border-green-100">
+                <CheckCircle2 className="text-green-600 w-10 h-10" />
+              </div>
+              <h2 className="text-2xl font-bold text-[#003749] mb-2">تم استلام طلبك بنجاح</h2>
+              <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+                شكراً لك، تم تسجيل طلب الحجز وسيتواصل معك فريقنا في أقرب وقت.
+              </p>
+              <button
+                type="button"
+                onClick={handleSuccessModalClose}
+                className="w-full bg-[#ECC383] text-[#003749] py-3.5 rounded-xl font-bold shadow-lg hover:bg-[#dcb374] transition-all active:scale-[0.98] cursor-pointer"
+              >
+                حسناً
+              </button>
             </motion.div>
           </motion.div>
         )}
