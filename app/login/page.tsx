@@ -15,26 +15,21 @@ const myFont = localFont({
 });
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('+966');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    // دالة التحقق من ال API
-    const checkUserCredentials = async (emailInput, phoneInput) => {
+    const checkUserCredentials = async (phoneInput) => {
         try {
-            const response = await fetch(`/api/checkPhone`, { 
+            const response = await fetch(`/api/checkPhone`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
-                    email: emailInput, 
-                    phone: phoneInput 
-                }) 
+                body: JSON.stringify({ phone: phoneInput }),
             });
-            
+
             if (response.status === 200) return true;
             return false;
         } catch (error) {
@@ -43,49 +38,36 @@ export default function LoginPage() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-
-       // استخدام نفس دالة التحقق
-       if (!validateEmail(email)) {
-        return;
-    }
-        // --- نهاية كود التحقق من الإيميل ---
-
-        setLoading(true);
-
-        // تجهيز رقم الجوال (حذف المفتاح الدولي للبحث في قاعدة البيانات)
-        const actualPhoneNumber = phone.slice(4);
-
-        // التحقق من البيانات
-        const isValidUser = await checkUserCredentials(email, actualPhoneNumber);
-
-        if (isValidUser) {
-            // تخزين البيانات وتوجيه المستخدم مباشرة
-            localStorage.setItem('phone_number', actualPhoneNumber);
-            localStorage.setItem('email', email); 
-
-            router.replace('/myorders/' + actualPhoneNumber);
-        } else {
-            setError('البيانات غير صحيحة. تأكد من مطابقة البريد الإلكتروني ورقم الجوال.');
-            setLoading(false);
-        }
-    };
-
-    const validateEmail = (emailValue) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(emailValue)) {
-            setError('الرجاء إدخال بريد إلكتروني صحيح');
+    const validatePhone = (phoneValue) => {
+        const phoneRegex = /^5\d{8}$/;
+        if (!phoneRegex.test(phoneValue)) {
+            setError('الرجاء إدخال رقم جوال صحيح (9 أرقام تبدأ بـ 5)');
             return false;
         }
         return true;
     };
 
-    const handleBlur = () => {
-        // التحقق فقط إذا كان الحقل ليس فارغاً
-        if (email.length > 0) {
-            validateEmail(email);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        const actualPhoneNumber = phone.slice(4);
+
+        if (!validatePhone(actualPhoneNumber)) {
+            return;
+        }
+
+        setLoading(true);
+
+        const isValidUser = await checkUserCredentials(actualPhoneNumber);
+
+        if (isValidUser) {
+            localStorage.setItem('phone_number', actualPhoneNumber);
+
+            router.replace('/myorders/' + actualPhoneNumber);
+        } else {
+            setError('رقم الجوال غير مسجل. تأكد من إدخال رقم جوال الحجز الصحيح.');
+            setLoading(false);
         }
     };
 
@@ -125,29 +107,6 @@ export default function LoginPage() {
                     </motion.div>
 
                     <form onSubmit={handleSubmit} className="w-full space-y-4">
-                        
-                        {/* حقل البريد الإلكتروني */}
-                        <div>
-                            <label htmlFor="email" className="block text-lg font-medium text-gray-700 text-center mb-1">
-                                البريد الإلكتروني
-                            </label>
-                           <input
-    type="email"
-    id="email"
-    value={email}
-    // التعديل هنا: عند الكتابة نخفي الخطأ، وعند الخروج نتحقق
-    onChange={(e) => {
-        setEmail(e.target.value);
-        if(error) setError(''); 
-    }}
-    onBlur={handleBlur} // <--- هذا السطر الجديد المسؤول عن الفحص الفوري
-    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E5BC7E] text-center ${error ? 'border-red-500' : 'border-gray-300'}`}
-    required
-    placeholder="name@example.com"
-/>
-                        </div>
-
-                        {/* حقل رقم الجوال */}
                         <div>
                             <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center mb-1">
                                 رقم جوال الحجز
@@ -162,12 +121,13 @@ export default function LoginPage() {
                                 />
                                 <input
                                     type="tel"
+                                    id="phone"
                                     value={phone.slice(4)}
                                     onChange={(e) => {
                                         const input = e.target.value;
                                         if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
                                             setPhone('+966' + input);
-                                            if(error) setError('');
+                                            if (error) setError('');
                                         }
                                     }}
                                     className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none"
