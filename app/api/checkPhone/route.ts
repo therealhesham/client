@@ -4,16 +4,22 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
-        const { phone } = await req.json();
+        const { email, phone } = await req.json();
 
-        if (!phone) {
-            return new Response(JSON.stringify({ error: 'رقم الجوال مطلوب' }), { status: 400 });
+        if (!email || !phone) {
+            return new Response(JSON.stringify({ error: 'البيانات ناقصة' }), { status: 400 });
         }
 
-        const client = await prisma.client.findUnique({
-            where: { phonenumber: phone },
+        console.log(email, phone)
+        // البحث عن العميل الذي يطابق الايميل ورقم الجوال معاً
+        // ملاحظة: تأكد أن phone المرسل يطابق الصيغة المخزنة في الداتا بيس
+        const client = await prisma.client.findFirst({
+            where: {
+                email: email,
+                phonenumber: 0+phone
+            }
         });
-
+        console.log(client)
         if (client) {
             return new Response(JSON.stringify({ exists: true, clientId: client.id }), { status: 200 });
         } else {

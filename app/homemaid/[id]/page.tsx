@@ -63,6 +63,13 @@ const CVDetailsPage = () => {
   const [formData, setFormData] = useState({
     clientName: '',
     phoneNumber: '',
+    email: '',
+    residence: '',
+  });
+  const [formFieldErrors, setFormFieldErrors] = useState({
+    clientName: '',
+    phoneNumber: '',
+    email: '',
     residence: '',
   });
   const [formError, setFormError] = useState<string | null>(null);
@@ -115,7 +122,8 @@ const CVDetailsPage = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setFormData({ clientName: '', phoneNumber: '', residence: '' });
+    setFormData({ clientName: '', phoneNumber: '', email: '', residence: '' });
+    setFormFieldErrors({ clientName: '', phoneNumber: '', email: '', residence: '' });
     setFormError(null);
     setFormSuccess(null);
   };
@@ -123,6 +131,9 @@ const CVDetailsPage = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (formFieldErrors[name as keyof typeof formFieldErrors]) {
+      setFormFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
 
@@ -132,11 +143,41 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormFieldErrors({ clientName: '', phoneNumber: '', email: '', residence: '' });
+    setFormError(null);
+
+    const errors = { clientName: '', phoneNumber: '', email: '', residence: '' };
+    let hasError = false;
+
+    if (formData.clientName.trim().length < 3) {
+      errors.clientName = 'الاسم يجب أن يكون ثلاثي الحروف على الأقل';
+      hasError = true;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      errors.email = 'يرجى إدخال بريد إلكتروني صحيح';
+      hasError = true;
+    }
+    if (!formData.phoneNumber.trim()) {
+      errors.phoneNumber = 'يرجى إدخال رقم الجوال';
+      hasError = true;
+    }
+    if (!formData.residence.trim()) {
+      errors.residence = 'يرجى إدخال محل الإقامة';
+      hasError = true;
+    }
+
+    if (hasError) {
+      setFormFieldErrors(errors);
+      return;
+    }
+
     try {
       const response = await axios.post('/api/bookhomemaid', {
         homemaidId: homemaid?.id,
         fullName: formData.clientName,
         phone_number: formData.phoneNumber,
+        email: formData.email.trim(),
         residence: formData.residence,
       });
 
@@ -420,6 +461,24 @@ const verifyPhone = ()=>{ // verify phone number by sending otp
                         className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                         required
                       />
+                      {formFieldErrors.phoneNumber && <p className="text-red-500 text-xs mt-1">{formFieldErrors.phoneNumber}</p>}
+                    </div>
+                    <div className="mb-4">
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        البريد الإلكتروني
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="name@example.com"
+                        dir="ltr"
+                        className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
+                        required
+                      />
+                      {formFieldErrors.email && <p className="text-red-500 text-xs mt-1">{formFieldErrors.email}</p>}
                     </div>
                     <div className="mb-4">
                       <label htmlFor="residence" className="block text-sm font-medium text-gray-700">

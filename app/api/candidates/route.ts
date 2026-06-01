@@ -55,11 +55,13 @@ export async function GET(req: NextRequest) {
     filters.Passportnumber = {
       contains: Passportnumber.toLowerCase(),
     };
-  // {Country:{contains:}}
-  if (Nationality)
-    filters.office = {
-      Country: { contains: Nationality?.toLowerCase() },
-    };
+  if (Nationality) {
+    const matchingOffices = await prisma.offices.findMany({
+      where: { Country: { contains: Nationality.toLowerCase() } },
+      select: { id: true },
+    });
+    filters.officeID = { in: matchingOffices.map((o) => o.id) };
+  }
 
   if (Religion) {
     if (Religion == "Islam - الإسلام")
@@ -76,56 +78,59 @@ export async function GET(req: NextRequest) {
     ;
   }
   try {
-    // أولًا: احسب العدد الكلي لجميع العاملات (قبل الفلترة)
-    // تظهر فقط إذا كانت جميع طلباتها ملغاة أو ليس لها طلبات
-    // لا تظهر إذا كان لديها طلب نشط أو مرفوض
-    const totalCount = await prisma.homemaid.count({
+    // لا توجد علاقة (relation) بين homemaid و neworder في الـ schema،
+    // لذلك نحسب يدويًا العاملات اللاتي لديهن طلب "نشط" (مرتبط وغير ملغى/مرفوض)
+    // ثم نستبعدهن. الباقي = ليس لها طلب أو جميع طلباتها ملغاة/مرفوضة.
+    const blockingOrders = await prisma.neworder.findMany({
       where: {
-        isApproved: true,
-        NewOrder: {
-          every: {
-            OR: [
-              { HomemaidId: null },
-              { bookingstatus: { in: ["cancelled", "rejected"] } }
-            ]
-          }
-        }
+        HomemaidId: { not: null },
+        NOT: { bookingstatus: { in: ["cancelled", "rejected"] } }
       },
+      select: { HomemaidId: true }
+    });
+    const blockedIds = blockingOrders
+      .map((o) => o.HomemaidId)
+      .filter((id): id is number => id !== null);
+
+    const baseWhere = {
+      isApproved: true,
+      id: { notIn: blockedIds }
+    };
+
+    // أولًا: احسب العدد الكلي لجميع العاملات (قبل الفلترة)
+    const totalCount = await prisma.homemaid.count({
+      where: baseWhere,
     });
 
     // احسب عدد النتائج بعد الفلترة (للعرض في الرسالة)
     const filteredCount = await prisma.homemaid.count({
       where: {
-        isApproved: true,
-        NewOrder: {
-          every: {
-            OR: [
-              { HomemaidId: null },
-              { bookingstatus: { in: ["cancelled", "rejected"] } }
-            ]
-          }
-        },
-        ...filters
+        AND: [baseWhere, filters]
       },
     });
     // ثانيًا: جلب النتائج بعد الفلترة
-    const homemaids = await prisma.homemaid.findMany({
-      orderBy: { displayOrder: "asc" }, include: { profession: true },
+    const homemaidsRaw = await prisma.homemaid.findMany({
+      orderBy: { displayOrder: "asc" },
       where: {
-        isApproved: true,
-        NewOrder: {
-          every: {
-            OR: [
-              { HomemaidId: null },
-              { bookingstatus: { in: ["cancelled", "rejected"] } }
-            ]
-          }
-        },
-        ...filters
+        AND: [baseWhere, filters]
       },
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
     });
+
+    // لا توجد علاقة profession في موديل homemaid، لذلك نجلب المهن يدويًا عبر professionId
+    const professionIds = Array.from(new Set(
+      homemaidsRaw.map((m) => m.professionId).filter((v): v is number => v != null)
+    ));
+    const professions = professionIds.length > 0
+      ? await prisma.professions.findMany({ where: { id: { in: professionIds } } })
+      : [];
+    const professionMap = new Map(professions.map((p) => [p.id, p]));
+
+    const homemaids = homemaidsRaw.map((maid) => ({
+      ...maid,
+      profession: maid.professionId ? professionMap.get(maid.professionId) ?? null : null,
+    }));
 
     // ثالثًا: أعد إرسال البيانات + العدد الكلي
     return NextResponse.json(

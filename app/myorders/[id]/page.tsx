@@ -23,11 +23,14 @@ import {
   Download, // أيقونة التحميل الجديدة
   FileCode,
   Eye,
+  Phone,
+  Mail,
+  LogOut,
   ExternalLink // أيقونة عامة للملفات
 } from 'lucide-react';
 
 import localFont from "next/font/local";
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 // استيراد الناف بار من مساره الصحيح كما في كودك الأصلي
 import NavigationBar from "../../../app/components/navigation";
 
@@ -222,10 +225,17 @@ const OrderStepper = ({ status, order, customTimeline }) => {
   const isCancelled = currentStep === -1;
 
   if (isCancelled) {
+    const isRejected = status === 'rejected';
+    const reason = isRejected ? order?.ReasonOfRejection : order?.ReasonOfCancellation;
     return (
-      <div className="w-full py-6 bg-red-50 rounded-xl border border-red-100 flex flex-col items-center justify-center gap-2 text-red-600">
+      <div className="w-full py-6 px-4 bg-red-50 rounded-xl border border-red-100 flex flex-col items-center justify-center gap-2 text-red-600 text-center">
         <XCircle size={32} />
-        <span className="font-bold">هذا الطلب ملغي أو مرفوض</span>
+        <span className="font-bold">{isRejected ? 'تم رفض هذا الطلب' : 'تم إلغاء هذا الطلب'}</span>
+        {reason && (
+          <span className="text-sm text-red-500 font-medium">
+            السبب: {reason}
+          </span>
+        )}
       </div>
     );
   }
@@ -416,10 +426,17 @@ const OrderDocuments = ({ order }) => {
 // --- الصفحة الرئيسية ---
 export default function MyOrdersPage() {
   const params = useParams();
+  const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [clientInfo, setClientInfo] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const handleLogout = () => {
+    localStorage.removeItem('phone_number');
+    localStorage.removeItem('email');
+    router.replace('/login');
+  };
 
   // جلب البيانات الفعلي من الـ API
   const fetchMyOrders = async () => {
@@ -475,17 +492,25 @@ export default function MyOrdersPage() {
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-sm text-gray-500">
                   {/* تم تصحيح phonenumber هنا */}
-                  <span className="flex items-center gap-1.5"><span className="text-[#E5BC7E]">📱</span> {clientInfo.phonenumber}</span>
-                  {clientInfo.email && <span className="flex items-center gap-1.5"><span className="text-[#E5BC7E]">📧</span> {clientInfo.email}</span>}
+                  <span className="flex items-center gap-1.5"><Phone size={16} className="text-[#E5BC7E]" /> {clientInfo.phonenumber}</span>
+                  {clientInfo.email && <span className="flex items-center gap-1.5"><Mail size={16} className="text-[#E5BC7E]" /> {clientInfo.email}</span>}
                 </div>
               </div>
             </div>
             
-            <div className="flex gap-4 w-full md:w-auto justify-center md:justify-end">
+            <div className="flex gap-4 w-full md:w-auto justify-center md:justify-end items-center">
                <div className="bg-[#f8fcfd] border border-[#e1eef3] px-6 py-3 rounded-xl text-center min-w-[120px]">
                   <span className="block text-2xl font-bold mb-1" style={{ color: COLORS.primary }}>{orders.length}</span>
                   <span className="text-xs text-gray-500 font-medium">عدد الطلبات</span>
                </div>
+               <button
+                 type="button"
+                 onClick={handleLogout}
+                 className="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors text-sm font-medium cursor-pointer"
+               >
+                 <LogOut size={18} />
+                 خروج
+               </button>
             </div>
           </motion.div>
         )}

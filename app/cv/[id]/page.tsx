@@ -124,6 +124,23 @@ const SkillBadge = ({ icon: Icon, label, level }: { icon: any, label: string, le
   );
 };
 
+// تنظيف رقم الجوال من أحرف Unicode المخفية (مثل النسخ من واتساب) والمسافات
+const sanitizePhone = (value: string) =>
+  value
+    .replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff\s\-()]/g, '')
+    .replace(/[^\d]/g, '');
+
+const isValidSaudiPhone = (phone: string) => {
+  const cleaned = sanitizePhone(phone);
+  return /^(05\d{8}|5\d{8})$/.test(cleaned);
+};
+
+const normalizePhoneForSubmit = (phone: string) => {
+  const cleaned = sanitizePhone(phone);
+  if (/^5\d{8}$/.test(cleaned)) return `0${cleaned}`;
+  return cleaned;
+};
+
 export default function Profile() {
   const params = useParams();
   const router = useRouter();
@@ -136,8 +153,8 @@ export default function Profile() {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
   // Form States
-  const [formData, setFormData] = useState({ clientName: '', phoneNumber: '', residence: '' });
-  const [fieldErrors, setFieldErrors] = useState({ clientName: '', phoneNumber: '', residence: '' });
+  const [formData, setFormData] = useState({ clientName: '', phoneNumber: '', email: '', residence: '' });
+  const [fieldErrors, setFieldErrors] = useState({ clientName: '', phoneNumber: '', email: '', residence: '' });
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const [position, setPosition] = useState("")
@@ -223,13 +240,14 @@ export default function Profile() {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
-    setFormData({ clientName: '', phoneNumber: '', residence: '' });
-    setFieldErrors({ clientName: '', phoneNumber: '', residence: '' });
+    setFormData({ clientName: '', phoneNumber: '', email: '', residence: '' });
+    setFieldErrors({ clientName: '', phoneNumber: '', email: '', residence: '' });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const nextValue = name === 'phoneNumber' ? sanitizePhone(value) : value;
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
     if (fieldErrors[name as keyof typeof fieldErrors]) {
       setFieldErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -237,18 +255,22 @@ export default function Profile() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFieldErrors({ clientName: '', phoneNumber: '', residence: '' });
+    setFieldErrors({ clientName: '', phoneNumber: '', email: '', residence: '' });
     setFormError(null);
 
     let hasError = false;
-    const newErrors = { clientName: '', phoneNumber: '', residence: '' };
+    const newErrors = { clientName: '', phoneNumber: '', email: '', residence: '' };
 
     if (formData.clientName.trim().length < 3) {
       newErrors.clientName = 'الاسم يجب أن يكون ثلاثي الحروف على الأقل';
       hasError = true;
     }
-    const saudiPhoneRegex = /^05[0-9]{7,8}$/;
-    if (!saudiPhoneRegex.test(formData.phoneNumber)) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      newErrors.email = 'يرجى إدخال بريد إلكتروني صحيح';
+      hasError = true;
+    }
+    if (!isValidSaudiPhone(formData.phoneNumber)) {
       newErrors.phoneNumber = 'يرجى إدخال رقم جوال صحيح (مثال: 05xxxxxxxx)';
       hasError = true;
     }
@@ -266,7 +288,8 @@ export default function Profile() {
       const response = await axios.post('/api/bookhomemaid', {
         homemaidId: homemaid?.id,
         fullName: formData.clientName,
-        phone_number: formData.phoneNumber,
+        phone_number: normalizePhoneForSubmit(formData.phoneNumber),
+        email: formData.email.trim(),
         residence: formData.residence,
       });
 
@@ -561,6 +584,21 @@ export default function Profile() {
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm border-r border-gray-300 pr-3 h-5 flex items-center">SA</span>
                   </div>
                   {fieldErrors.phoneNumber && <p className="text-red-500 text-xs mt-1">{fieldErrors.phoneNumber}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">البريد الإلكتروني</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="name@example.com"
+                    dir="ltr"
+                    className={`w-full px-4 py-3 rounded-xl bg-gray-50 border outline-none transition-colors text-left
+                       ${fieldErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-100 focus:border-[#ECC383] focus:bg-white'}`}
+                  />
+                  {fieldErrors.email && <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
                 </div>
 
                 <div>
