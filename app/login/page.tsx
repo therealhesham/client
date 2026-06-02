@@ -4,20 +4,71 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
 import localFont from 'next/font/local';
+import {
+    Mail,
+    Phone,
+    ArrowLeft,
+    Loader2,
+    AlertCircle,
+    Sparkles,
+    ShieldCheck,
+    Clock,
+} from 'lucide-react';
 import NavigationBar from '../components/navigation';
 
-const myFont = localFont({
+const bodyFont = localFont({
     src: '/fonts/Almarai-Regular.ttf',
     weight: '500',
 });
 
+const displayFont = localFont({
+    src: '../fonts/Tajawal-Bold.ttf',
+    weight: '700',
+});
+
+const sanitizePhone = (value: string) =>
+    value
+        .replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff\s\-()]/g, '')
+        .replace(/[^\d]/g, '');
+
+const isValidSaudiPhone = (phone: string) => {
+    const cleaned = sanitizePhone(phone);
+    return /^(05\d{8}|5\d{8})$/.test(cleaned);
+};
+
+const normalizePhoneForLogin = (phone: string) => {
+    const cleaned = sanitizePhone(phone);
+    if (/^5\d{8}$/.test(cleaned)) return cleaned;
+    if (/^05\d{8}$/.test(cleaned)) return cleaned.slice(1);
+    return cleaned;
+};
+
+const fadeUp = {
+    hidden: { opacity: 0, y: 16 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: { delay: i * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+    }),
+};
+
+const highlights = [
+    { icon: Clock, text: 'متابعة لحظية لمسار طلبك' },
+    { icon: ShieldCheck, text: 'دخول آمن ببيانات الحجز' },
+    { icon: Sparkles, text: 'تجربة سلسة وواضحة' },
+];
+
 export default function LoginPage() {
     const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('+966');
+    const [phone, setPhone] = useState('');
     const [error, setError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [phoneError, setPhoneError] = useState('');
     const [loading, setLoading] = useState(false);
     const [isChecking, setIsChecking] = useState(true);
     const router = useRouter();
@@ -31,182 +82,309 @@ export default function LoginPage() {
         }
     }, [router]);
 
-    // دالة التحقق من ال API
     const checkUserCredentials = async (emailInput, phoneInput) => {
         try {
-            const response = await fetch(`/api/checkPhone`, { 
+            const response = await fetch('/api/checkPhone', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    email: emailInput, 
-                    phone: phoneInput 
-                }) 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailInput, phone: phoneInput }),
             });
-            
-            if (response.status === 200) return true;
-            return false;
-        } catch (error) {
-            console.error('Error checking credentials:', error);
+            return response.status === 200;
+        } catch (err) {
+            console.error('Error checking credentials:', err);
             return false;
         }
+    };
+
+    const validateEmail = (emailValue: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailValue.trim())) {
+            setEmailError('يرجى إدخال بريد إلكتروني صحيح');
+            return false;
+        }
+        setEmailError('');
+        return true;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setPhoneError('');
 
-       // استخدام نفس دالة التحقق
-       if (!validateEmail(email)) {
-        return;
-    }
-        // --- نهاية كود التحقق من الإيميل ---
+        const emailOk = validateEmail(email);
+        const phoneOk = isValidSaudiPhone(phone);
+        if (!phoneOk) {
+            setPhoneError('يرجى إدخال رقم جوال صحيح');
+        }
+        if (!emailOk || !phoneOk) return;
 
         setLoading(true);
-
-        // تجهيز رقم الجوال (حذف المفتاح الدولي للبحث في قاعدة البيانات)
-        const actualPhoneNumber = phone.slice(4);
-
-        // التحقق من البيانات
-        const isValidUser = await checkUserCredentials(email, actualPhoneNumber);
+        const actualPhoneNumber = normalizePhoneForLogin(phone);
+        const isValidUser = await checkUserCredentials(email.trim(), actualPhoneNumber);
 
         if (isValidUser) {
-            // تخزين البيانات وتوجيه المستخدم مباشرة
             localStorage.setItem('phone_number', actualPhoneNumber);
-            localStorage.setItem('email', email); 
-
+            localStorage.setItem('email', email.trim());
             router.replace('/myorders/' + actualPhoneNumber);
         } else {
-            setError('البيانات غير صحيحة. تأكد من مطابقة البريد الإلكتروني ورقم الجوال.');
+            setError('تعذّر التحقق. تأكد من مطابقة البريد ورقم الجوال المستخدمين عند الحجز.');
             setLoading(false);
         }
     };
 
-    const validateEmail = (emailValue) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(emailValue)) {
-            setError('الرجاء إدخال بريد إلكتروني صحيح');
-            return false;
-        }
-        return true;
-    };
-
-    const handleBlur = () => {
-        // التحقق فقط إذا كان الحقل ليس فارغاً
-        if (email.length > 0) {
-            validateEmail(email);
-        }
-    };
-
     if (isChecking) {
-        return null;
+        return (
+            <div className={`min-h-screen bg-[#fafbfc] ${bodyFont.className}`} dir="rtl">
+                <NavigationBar />
+                <div className="flex flex-col items-center justify-center min-h-screen pt-20 px-4">
+                    <motion.div
+                        animate={{ scale: [1, 1.04, 1], opacity: [0.5, 1, 0.5] }}
+                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                        className="w-14 h-14 rounded-2xl bg-[#003749]/5 flex items-center justify-center mb-5"
+                    >
+                        <Loader2 className="w-6 h-6 animate-spin text-[#C49E6A]" />
+                    </motion.div>
+                    <p className="text-[#003749]/45 text-sm tracking-wide">جاري التحقق...</p>
+                </div>
+            </div>
+        );
     }
 
+    const inputBase =
+        'w-full px-4 py-3.5 rounded-xl bg-white border border-gray-200 text-[#003749] text-sm placeholder:text-gray-400 outline-none transition-all duration-200 shadow-sm focus:border-[#C49E6A] focus:ring-2 focus:ring-[#C49E6A]/20 focus:bg-white';
+    const inputError = 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-200/40';
+    const labelClass = 'block text-sm font-bold text-[#003749] mb-2';
+
     return (
-        <div>
+        <div className={`min-h-screen bg-[#fafbfc] ${bodyFont.className}`} dir="rtl">
             <NavigationBar />
-            <div className={`min-h-screen flex items-center justify-center bg-gray-100 ${myFont.className}`}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: 'easeOut' }}
-                    className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center"
+
+            <div className="flex flex-col lg:flex-row min-h-screen pt-20">
+                {/* Brand panel — desktop (يمين في RTL) */}
+                <motion.aside
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="hidden lg:flex lg:w-[46%] xl:w-[42%] relative shrink-0"
                 >
-                    <motion.div
-                        initial={{ scale: 0.8 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.4 }}
-                        className="text-center mb-6"
-                    >
-                        {/* الشعار */}
-                        <svg className="w-48 h-48 mb-4" preserveAspectRatio="xMidYMid meet" data-bbox="3.999 3.999 192.002 192.004" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" data-type="ugc" role="presentation" aria-hidden="true">
-                            <g>
-                                <defs>
-                                    <linearGradient gradientUnits="userSpaceOnUse" y2="100" x2="196" y1="100" x1="4" id="23da6e02-e8bd-4f40-bb46-20f89387c16c_comp-lzbbhro9">
-                                        <stop stopColor="#8d6c49" offset="0"></stop>
-                                        <stop stopColor="#ebc181" offset="1"></stop>
-                                    </linearGradient>
-                                </defs>
-                                <path d="M100.05 196C49.09 196.38 4.2 155.01 4 100.08 3.82 49.46 44.32 4.24 99.93 4c53.09-.23 96.32 43.14 96.07 96.34-.26 53.78-43.91 95.86-95.95 95.66m-12.02-83.81c7.2 1.51 14.46 2.13 21.67.39 18.42-4.43 30.8-15.76 35.51-34.06 4.62-17.95-.49-33.73-13.92-46.6-2.12-2.03-4.72-3.57-7.1-5.34.04-3.83.14-7.66.11-11.49-.02-3.73-.07-3.75-3.72-4.56-12.07-2.65-24.19-3.17-36.38-.9-24.86 4.62-44.78 17.12-59.35 37.78-13.94 19.76-18.9 41.82-15.72 65.74 1.63 12.29 5.71 23.72 12.19 34.28.27.55.48 1.15.82 1.65 21.67 31.96 51.82 46.29 90.12 42.06 21.58-2.39 39.89-12.34 54.82-28.21 4.48-4.76 8.69-9.78 11.54-15.76 1.53-1.8 2.57-3.91 3.6-6.01 8.03-16.49 11.12-33.79 8.92-52.08-1.22-10.15-4.11-19.75-8.43-28.96-.32-.69-.38-1.74-1.65-1.82-1.16 4.65-2.21 9.3-3.49 13.89-5.06 18.17-12.5 35.3-22.45 51.33-5.4-2.38-10.76-4.82-16.66-5.84-4.11-.71-7.97-.17-11.28 2.21-6.7 4.83-14.13 7.29-22.28 8.01-9.42.84-18.39-.55-26.82-4.95 1.29-1.31 2.63-2.58 3.87-3.94 2.06-2.25 4.65-4.03 6.1-6.83Z" fill="url(#23da6e02-e8bd-4f40-bb46-20f89387c16c_comp-lzbbhro9)"></path>
-                                <path d="M78.07 122.95c8.44 4.39 17.4 5.79 26.83 4.95 8.15-.73 15.58-3.18 22.28-8.01 3.31-2.39 7.17-2.92 11.28-2.21 5.9 1.02 11.26 3.46 16.66 5.83 9.83 5.9 17.68 13.77 23.5 23.66-2.85 5.98-7.06 11-11.54 15.76-14.92 15.87-33.23 25.82-54.82 28.21-38.3 4.23-68.44-10.1-90.12-42.06-.34-.5-.55-1.1-.82-1.65.34-.51.7-1.01 1-1.54C31.4 130.26 45 121.07 62.6 117.51c3.35-.68 6.3-.17 9.08 1.82 1.99 1.42 4.01 2.85 6.38 3.63Z" fill="#ffffff"></path>
-                                <path d="M124.2 26.58c2.38 1.77 4.97 3.31 7.1 5.34 13.43 12.87 18.54 28.65 13.92 46.6-4.71 18.3-17.09 29.63-35.51 34.06-7.21 1.74-14.47 1.12-21.67-.39-1.06-.33-2.13-.64-3.18-1-17.04-5.88-31.37-21.46-31.64-43.57-.21-16.55 6.81-29.96 20.51-39.39 10.15-6.99 21.48-9.63 33.8-7.54 5.92 1.01 11.3 3.42 16.67 5.89" fill="#ffffff"></path>
-                                <path d="M124.2 26.58c-5.38-2.47-10.76-4.89-16.67-5.89-12.32-2.09-23.65.55-33.8 7.54-13.7 9.43-20.72 22.84-20.51 39.39.27 22.11 14.6 37.69 31.64 43.57 1.05.36 2.12.67 3.18 1-1.44 2.8-4.04 4.57-6.1 6.83-1.24 1.36-2.57 2.63-3.87 3.94-2.37-.79-4.39-2.21-6.38-3.63-2.78-1.99-5.73-2.49-9.08-1.82-17.59 3.57-31.19 12.75-40.28 28.38-.31.53-.67 1.03-1 1.54-6.48-10.57-10.56-22-12.19-34.28-3.18-23.92 1.78-45.98 15.72-65.74C39.43 26.75 59.35 14.25 84.21 9.63c12.19-2.27 24.31-1.75 36.38.9 3.65.8 3.7.83 3.72 4.56.02 3.83-.07 7.66-.11 11.49" fill="#003749"></path>
-                                <path d="M178.61 147.17c-5.82-9.89-13.67-17.76-23.5-23.66 9.95-16.03 17.39-33.16 22.45-51.33 1.28-4.59 2.33-9.24 3.49-13.89 1.26.08 1.33 1.14 1.65 1.82 4.31 9.21 7.2 18.81 8.43 28.96 2.21 18.28 Dot 18.28-.89 35.59-8.92 8.92-52.08-1.02 2.57-3.91 3.6-6.01Z" fill="#003749"></path>
-                            </g>
-                        </svg>
-                        <h1 className="text-2xl font-bold text-gray-800">تتبع الطلب</h1>
-                    </motion.div>
+                    {/* طبقات الخلفية فقط — بدون قص المحتوى */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#001820] via-[#002530] to-[#001520]" />
+                        <div
+                            className="absolute inset-0 opacity-[0.35]"
+                            style={{
+                                backgroundImage:
+                                    'radial-gradient(circle at 1px 1px, rgba(236,195,131,0.18) 1px, transparent 0)',
+                                backgroundSize: '28px 28px',
+                            }}
+                        />
+                        <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-[#ECC383]/10 blur-3xl" />
+                        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-[#ECC383]/5 blur-3xl" />
+                    </div>
 
-                    <form onSubmit={handleSubmit} className="w-full space-y-4">
-                        
-                        {/* حقل البريد الإلكتروني */}
+                    <div className={`relative flex flex-col gap-10 p-12 xl:p-16 pb-14 w-full min-h-[calc(100vh-5rem)] ${displayFont.className}`}>
                         <div>
-                            <label htmlFor="email" className="block text-lg font-medium text-gray-700 text-center mb-1">
-                                البريد الإلكتروني
-                            </label>
-                           <input
-    type="email"
-    id="email"
-    value={email}
-    // التعديل هنا: عند الكتابة نخفي الخطأ، وعند الخروج نتحقق
-    onChange={(e) => {
-        setEmail(e.target.value);
-        if(error) setError(''); 
-    }}
-    onBlur={handleBlur} // <--- هذا السطر الجديد المسؤول عن الفحص الفوري
-    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E5BC7E] text-center ${error ? 'border-red-500' : 'border-gray-300'}`}
-    required
-    placeholder="name@example.com"
-/>
-                        </div>
-
-                        {/* حقل رقم الجوال */}
-                        <div>
-                            <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center mb-1">
-                                رقم جوال الحجز
-                            </label>
-                            <div className="flex justify-center mt-2" dir="ltr">
-                                <input
-                                    type="text"
-                                    id="phone-966"
-                                    value={"+966"}
-                                    className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100 text-center"
-                                    readOnly
-                                />
-                                <input
-                                    type="tel"
-                                    value={phone.slice(4)}
-                                    onChange={(e) => {
-                                        const input = e.target.value;
-                                        if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
-                                            setPhone('+966' + input);
-                                            if(error) setError('');
-                                        }
-                                    }}
-                                    className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none"
-                                    placeholder="5XXXXXXXX"
-                                    maxLength={9}
-                                    required
-                                />
+                            <div className="inline-flex items-center gap-3 mb-10">
+                                <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center overflow-hidden">
+                                    <Image src="/banner.png" alt="" width={36} height={36} className="object-contain" />
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-white/90 text-sm font-bold tracking-wide">روانس للاستقدام</p>
+                                    <p className="text-[#ECC383]/70 text-[11px]">Rawaes Recruitment</p>
+                                </div>
                             </div>
+
+                            <h1 className="text-4xl xl:text-[2.75rem] font-bold text-white leading-[1.35] mb-5">
+                                تابع رحلة
+                                <span className="block text-[#ECC383] mt-1">استقدامك بكل وضوح</span>
+                            </h1>
+                            <p className="text-white/55 text-base leading-relaxed max-w-md">
+                                بوابة العملاء لتتبع الطلبات — أدخل بياناتك واطّلع على كل مرحلة من رحلة الاستقدام.
+                            </p>
                         </div>
 
-                        {error && (
-                            <p className="text-red-600 text-center text-sm font-bold bg-red-50 p-2 rounded">{error}</p>
-                        )}
+                        <ul className="space-y-5">
+                            {highlights.map(({ icon: Icon, text }, i) => (
+                                <motion.li
+                                    key={text}
+                                    custom={i}
+                                    initial="hidden"
+                                    animate="visible"
+                                    variants={fadeUp}
+                                    className="flex items-center gap-4 text-white/75"
+                                >
+                                    <span className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                                        <Icon size={17} className="text-[#ECC383]" strokeWidth={1.75} />
+                                    </span>
+                                    <span className="text-sm">{text}</span>
+                                </motion.li>
+                            ))}
+                        </ul>
 
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center disabled:opacity-50"
+                        <div className="h-px w-24 bg-gradient-to-l from-[#ECC383]/60 to-transparent mt-auto" />
+                    </div>
+                </motion.aside>
+
+                {/* Form panel */}
+                <div className="flex-1 flex items-center justify-center px-5 sm:px-8 py-10 lg:py-12 min-h-[calc(100vh-5rem)]">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                        className="w-full max-w-[420px]"
+                    >
+                        {/* Mobile logo */}
+                        <div className="lg:hidden flex flex-col items-center mb-10">
+                            <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-4">
+                                <Image src="/banner.png" alt="" width={44} height={44} className="object-contain" />
+                            </div>
+                            <h1 className={`text-2xl font-bold text-[#003749] ${displayFont.className}`}>تتبع طلبك</h1>
+                        </div>
+
+                        <div className="hidden lg:block mb-10">
+                            <p className={`text-xs uppercase tracking-[0.2em] text-[#C49E6A] mb-3 ${displayFont.className}`}>
+                                بوابة العملاء
+                            </p>
+                            <h2 className={`text-3xl font-bold text-[#003749] mb-2 ${displayFont.className}`}>
+                                مرحباً بعودتك
+                            </h2>
+                            <p className="text-gray-400 text-sm leading-relaxed">
+                                أدخل البريد ورقم الجوال المرتبطين بحجزك
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Email */}
+                            <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp}>
+                                <label htmlFor="email" className={labelClass}>
+                                    البريد الإلكتروني
+                                </label>
+                                <div className="relative" dir="ltr">
+                                    <Mail
+                                        size={18}
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#C49E6A] pointer-events-none"
+                                        strokeWidth={1.75}
+                                    />
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        value={email}
+                                        onChange={(e) => {
+                                            setEmail(e.target.value);
+                                            if (emailError) setEmailError('');
+                                            if (error) setError('');
+                                        }}
+                                        onBlur={() => email.length > 0 && validateEmail(email)}
+                                        placeholder="example@email.com"
+                                        dir="ltr"
+                                        autoComplete="email"
+                                        className={`${inputBase} text-left pl-11 ${emailError ? inputError : ''}`}
+                                        required
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1.5">نفس البريد الذي أدخلته عند حجز العاملة</p>
+                                {emailError && (
+                                    <p className="text-red-500 text-xs mt-2 flex items-center gap-1.5 font-medium">
+                                        <AlertCircle size={13} /> {emailError}
+                                    </p>
+                                )}
+                            </motion.div>
+
+                            {/* Phone */}
+                            <motion.div custom={1} initial="hidden" animate="visible" variants={fadeUp}>
+                                <label htmlFor="phone" className={labelClass}>
+                                    رقم جوال الحجز
+                                </label>
+                                <div
+                                    className={`flex rounded-xl overflow-hidden bg-white border shadow-sm transition-all duration-200 focus-within:border-[#C49E6A] focus-within:ring-2 focus-within:ring-[#C49E6A]/20 ${phoneError ? 'border-red-400 ring-2 ring-red-200/40' : 'border-gray-200'}`}
+                                    dir="ltr"
+                                >
+                                    <span className="flex items-center gap-1.5 px-3.5 py-3.5 bg-gray-50 border-r border-gray-200 text-gray-500 text-sm font-semibold shrink-0 select-none">
+                                        <Phone size={15} className="text-[#C49E6A]" strokeWidth={1.75} />
+                                        +966
+                                    </span>
+                                    <input
+                                        type="tel"
+                                        id="phone"
+                                        value={phone}
+                                        onChange={(e) => {
+                                            setPhone(sanitizePhone(e.target.value).slice(0, 10));
+                                            if (phoneError) setPhoneError('');
+                                            if (error) setError('');
+                                        }}
+                                        placeholder="05xxxxxxxx"
+                                        autoComplete="tel"
+                                        className="flex-1 px-4 py-3.5 bg-transparent border-0 outline-none text-[#003749] text-sm placeholder:text-gray-400"
+                                        required
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1.5">مثال: 0512345678</p>
+                                {phoneError && (
+                                    <p className="text-red-500 text-xs mt-2 flex items-center gap-1.5 font-medium">
+                                        <AlertCircle size={13} /> {phoneError}
+                                    </p>
+                                )}
+                            </motion.div>
+
+                            <AnimatePresence>
+                                {error && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="flex items-start gap-2.5 py-3 text-red-500/90 text-sm border-r-2 border-red-300 pr-3">
+                                            <AlertCircle size={16} className="shrink-0 mt-0.5" strokeWidth={1.75} />
+                                            <span>{error}</span>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            <motion.div custom={2} initial="hidden" animate="visible" variants={fadeUp}>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="group relative w-full overflow-hidden rounded-2xl py-4 font-bold text-[#003749] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-lg shadow-[#C49E6A]/20 hover:shadow-xl hover:shadow-[#C49E6A]/30 active:scale-[0.99]"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #ECC383 0%, #d4a96a 100%)',
+                                    }}
+                                >
+                                    <span className="relative z-10 flex items-center justify-center gap-2.5">
+                                        {loading ? (
+                                            <>
+                                                <Loader2 size={18} className="animate-spin" />
+                                                <span>جاري التحقق</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>متابعة الطلبات</span>
+                                                <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-1" />
+                                            </>
+                                        )}
+                                    </span>
+                                </button>
+                            </motion.div>
+                        </form>
+
+                        <motion.p
+                            custom={3}
+                            initial="hidden"
+                            animate="visible"
+                            variants={fadeUp}
+                            className="text-center text-xs text-gray-400 mt-10"
                         >
-                            {loading ? 'جاري التحقق...' : 'دخول'}
-                        </motion.button>
-                    </form>
-                </motion.div>
+                            ليس لديك طلب بعد؟{' '}
+                            <Link
+                                href="/candidates"
+                                className="text-[#003749]/70 font-semibold hover:text-[#C49E6A] transition-colors underline-offset-4 hover:underline"
+                            >
+                                استكشف المرشحات
+                            </Link>
+                        </motion.p>
+                    </motion.div>
+                </div>
             </div>
         </div>
     );
