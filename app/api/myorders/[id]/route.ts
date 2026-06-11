@@ -1,11 +1,33 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
+
+        // التحقق من وجود التوكن ومطابقته للرقم المطلوب
+        const cookieStore = await cookies();
+        const token = cookieStore.get('auth_token')?.value;
+
+        if (!token) {
+            return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
+        }
+
+        try {
+            const secret = process.env.JWT_SECRET || 'default_secret_fallback';
+            const decoded = jwt.verify(token, secret) as { phone: string };
+            
+            // التأكد أن الرقم المطلوب في الرابط يطابق الرقم المسجل في الجلسة
+            if (decoded.phone !== id) {
+                return NextResponse.json({ error: 'ليس لديك صلاحية لعرض هذه الطلبات' }, { status: 401 });
+            }
+        } catch (err) {
+            return NextResponse.json({ error: 'جلسة منتهية أو غير صالحة' }, { status: 401 });
+        }
 
         const findClient = await prisma.neworder.findMany({
             where: { 

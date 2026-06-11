@@ -15,77 +15,79 @@ const myFont = localFont({
 });
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('+966');
+    const [otp, setOtp] = useState('');
+    const [step, setStep] = useState(1);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    // دالة التحقق من ال API
-    const checkUserCredentials = async (emailInput, phoneInput) => {
-        try {
-            const response = await fetch(`/api/checkPhone`, { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    email: emailInput, 
-                    phone: phoneInput 
-                }) 
-            });
-            
-            if (response.status === 200) return true;
-            return false;
-        } catch (error) {
-            console.error('Error checking credentials:', error);
-            return false;
-        }
-    };
-
-    const handleSubmit = async (e) => {
+    const handleSendOtp = async (e) => {
         e.preventDefault();
         setError('');
-
-       // استخدام نفس دالة التحقق
-       if (!validateEmail(email)) {
-        return;
-    }
-        // --- نهاية كود التحقق من الإيميل ---
-
         setLoading(true);
 
-        // تجهيز رقم الجوال (حذف المفتاح الدولي للبحث في قاعدة البيانات)
         const actualPhoneNumber = phone.slice(4);
 
-        // التحقق من البيانات
-        const isValidUser = await checkUserCredentials(email, actualPhoneNumber);
+        if (!actualPhoneNumber || actualPhoneNumber.length < 8) {
+            setError('الرجاء إدخال رقم جوال صحيح');
+            setLoading(false);
+            return;
+        }
 
-        if (isValidUser) {
-            // تخزين البيانات وتوجيه المستخدم مباشرة
-            localStorage.setItem('phone_number', actualPhoneNumber);
-            localStorage.setItem('email', email); 
+        try {
+            const res = await fetch('/api/sendOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: actualPhoneNumber })
+            });
 
-            router.replace('/myorders/' + actualPhoneNumber);
-        } else {
-            setError('البيانات غير صحيحة. تأكد من مطابقة البريد الإلكتروني ورقم الجوال.');
+            const data = await res.json();
+
+            if (res.ok) {
+                setStep(2);
+            } else {
+                setError(data.error || 'حدث خطأ غير متوقع');
+            }
+        } catch (err) {
+            setError('تعذر الاتصال بالخادم');
+        } finally {
             setLoading(false);
         }
     };
 
-    const validateEmail = (emailValue) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(emailValue)) {
-            setError('الرجاء إدخال بريد إلكتروني صحيح');
-            return false;
-        }
-        return true;
-    };
+    const handleVerifyOtp = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
 
-    const handleBlur = () => {
-        // التحقق فقط إذا كان الحقل ليس فارغاً
-        if (email.length > 0) {
-            validateEmail(email);
+        const actualPhoneNumber = phone.slice(4);
+
+        if (!otp || otp.length < 4) {
+            setError('الرجاء إدخال رمز التحقق');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/verifyOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: actualPhoneNumber, otp })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem('phone_number', actualPhoneNumber);
+                router.replace('/myorders/' + actualPhoneNumber);
+            } else {
+                setError(data.error || 'رمز التحقق غير صحيح');
+            }
+        } catch (err) {
+            setError('تعذر الاتصال بالخادم');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -124,74 +126,103 @@ export default function LoginPage() {
                         <h1 className="text-2xl font-bold text-gray-800">تتبع الطلب</h1>
                     </motion.div>
 
-                    <form onSubmit={handleSubmit} className="w-full space-y-4">
-                        
-                        {/* حقل البريد الإلكتروني */}
-                        <div>
-                            <label htmlFor="email" className="block text-lg font-medium text-gray-700 text-center mb-1">
-                                البريد الإلكتروني
-                            </label>
-                           <input
-    type="email"
-    id="email"
-    value={email}
-    // التعديل هنا: عند الكتابة نخفي الخطأ، وعند الخروج نتحقق
-    onChange={(e) => {
-        setEmail(e.target.value);
-        if(error) setError(''); 
-    }}
-    onBlur={handleBlur} // <--- هذا السطر الجديد المسؤول عن الفحص الفوري
-    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E5BC7E] text-center ${error ? 'border-red-500' : 'border-gray-300'}`}
-    required
-    placeholder="name@example.com"
-/>
-                        </div>
+                    {step === 1 ? (
+                        <form onSubmit={handleSendOtp} className="w-full space-y-4">
+                            {/* حقل رقم الجوال */}
+                            <div>
+                                <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center mb-1">
+                                    رقم جوال الحجز
+                                </label>
+                                <div className="flex justify-center mt-2" dir="ltr">
+                                    <input
+                                        type="text"
+                                        id="phone-966"
+                                        value={"+966"}
+                                        className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100 text-center"
+                                        readOnly
+                                    />
+                                    <input
+                                        type="tel"
+                                        value={phone.slice(4)}
+                                        onChange={(e) => {
+                                            const input = e.target.value;
+                                            if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
+                                                setPhone('+966' + input);
+                                                if(error) setError('');
+                                            }
+                                        }}
+                                        className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none"
+                                        placeholder="5XXXXXXXX"
+                                        maxLength={9}
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                        {/* حقل رقم الجوال */}
-                        <div>
-                            <label htmlFor="phone" className="block text-lg font-medium text-gray-700 text-center mb-1">
-                                رقم جوال الحجز
-                            </label>
-                            <div className="flex justify-center mt-2" dir="ltr">
+                            {error && (
+                                <p className="text-red-600 text-center text-sm font-bold bg-red-50 p-2 rounded">{error}</p>
+                            )}
+
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center disabled:opacity-50"
+                            >
+                                {loading ? 'جاري الإرسال...' : 'إرسال رمز التحقق'}
+                            </motion.button>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleVerifyOtp} className="w-full space-y-4">
+                            <div>
+                                <label htmlFor="otp" className="block text-lg font-medium text-gray-700 text-center mb-1">
+                                    رمز التحقق المرسل لرقمك
+                                </label>
                                 <input
                                     type="text"
-                                    id="phone-966"
-                                    value={"+966"}
-                                    className="w-20 px-3 py-2 border border-gray-300 rounded-l-lg focus:outline-none bg-gray-100 text-center"
-                                    readOnly
-                                />
-                                <input
-                                    type="tel"
-                                    value={phone.slice(4)}
+                                    id="otp"
+                                    value={otp}
                                     onChange={(e) => {
-                                        const input = e.target.value;
-                                        if (/^\d*$/.test(input) && (input === '' || input[0] !== '0')) {
-                                            setPhone('+966' + input);
-                                            if(error) setError('');
-                                        }
+                                        setOtp(e.target.value);
+                                        if(error) setError(''); 
                                     }}
-                                    className="w-3/4 px-3 py-2 border border-gray-300 rounded-r-lg focus:outline-none"
-                                    placeholder="5XXXXXXXX"
-                                    maxLength={9}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E5BC7E] text-center ${error ? 'border-red-500' : 'border-gray-300'}`}
                                     required
+                                    placeholder="XXXX"
+                                    maxLength={4}
                                 />
                             </div>
-                        </div>
 
-                        {error && (
-                            <p className="text-red-600 text-center text-sm font-bold bg-red-50 p-2 rounded">{error}</p>
-                        )}
+                            {error && (
+                                <p className="text-red-600 text-center text-sm font-bold bg-red-50 p-2 rounded">{error}</p>
+                            )}
 
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center disabled:opacity-50"
-                        >
-                            {loading ? 'جاري التحقق...' : 'دخول'}
-                        </motion.button>
-                    </form>
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-[#E5BC7E] text-white py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors duration-300 text-center disabled:opacity-50"
+                            >
+                                {loading ? 'جاري التحقق...' : 'دخول'}
+                            </motion.button>
+
+                            <div className="text-center mt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setStep(1);
+                                        setOtp('');
+                                        setError('');
+                                    }}
+                                    className="text-sm text-gray-500 hover:text-gray-700 underline"
+                                >
+                                    تغيير رقم الجوال
+                                </button>
+                            </div>
+                        </form>
+                    )}
                 </motion.div>
             </div>
         </div>

@@ -421,11 +421,17 @@ export default function MyOrdersPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // جلب البيانات الفعلي من الـ API
   const fetchMyOrders = async () => {
     try {
       setLoading(true);
       const myOrders = await fetch(`/api/myorders/${params.id}`);
+      
+      // التوجيه لصفحة الدخول إذا لم تكن الجلسة صالحة (الرد 401 Unauthorized)
+      if (myOrders.status === 401) {
+          window.location.href = '/login';
+          return;
+      }
+      
       const data = await myOrders.json();
       setOrders(data.orders || []);
       setClientInfo(data.clientinfo);
