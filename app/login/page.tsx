@@ -17,7 +17,10 @@ import {
     Sparkles,
     ShieldCheck,
     Clock,
-    CheckCircle2
+    CheckCircle2,
+    FileText,
+    Plane,
+    Home
 } from 'lucide-react';
 import NavigationBar from '../components/navigation';
 
@@ -59,7 +62,6 @@ const fadeUp = {
 
 const highlights = [
     { icon: Clock, text: 'متابعة لحظية لمسار طلبك' },
-    { icon: ShieldCheck, text: 'دخول آمن بخاصية التحقق OTP' },
     { icon: Sparkles, text: 'تجربة سلسة وواضحة' },
 ];
 
@@ -73,6 +75,12 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
+    useEffect(() => {
+        const storedPhone = localStorage.getItem('phone_number');
+        if (storedPhone) {
+            router.replace('/myorders/' + storedPhone);
+        }
+    }, [router]);
     const handleSendOtp = async (e) => {
         e.preventDefault();
         setError('');
@@ -108,30 +116,31 @@ export default function LoginPage() {
         }
     };
 
-    const handleVerifyOtp = async (e) => {
-        e.preventDefault();
+    const handleVerifyOtp = async (e?: React.FormEvent, directOtp?: string) => {
+        if (e) e.preventDefault();
         setError('');
-        setLoading(true);
 
-        const actualPhoneNumber = normalizePhoneForLogin(phone);
-
-        if (!otp || otp.length < 4) {
+        const otpToUse = directOtp || otp;
+        if (!otpToUse || otpToUse.length < 4) {
             setError('الرجاء إدخال رمز التحقق بشكل صحيح');
-            setLoading(false);
             return;
         }
+
+        setLoading(true);
+        const actualPhoneNumber = normalizePhoneForLogin(phone);
 
         try {
             const res = await fetch('/api/verifyOtp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone: actualPhoneNumber, otp })
+                body: JSON.stringify({ phone: actualPhoneNumber, otp: otpToUse })
             });
 
             const data = await res.json();
 
             if (res.ok) {
                 localStorage.setItem('phone_number', actualPhoneNumber);
+                localStorage.setItem('item', 'true');
                 router.replace('/myorders/' + actualPhoneNumber);
             } else {
                 setError(data.error || 'رمز التحقق غير صحيح');
@@ -146,10 +155,18 @@ export default function LoginPage() {
     const inputBase =
         'w-full px-4 py-3.5 rounded-xl bg-white border border-gray-200 text-[#003749] text-sm placeholder:text-gray-400 outline-none transition-all duration-200 shadow-sm focus:border-[#C49E6A] focus:ring-2 focus:ring-[#C49E6A]/20 focus:bg-white text-center tracking-widest font-bold';
     const inputError = 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-200/40';
-    const labelClass = 'block text-sm font-bold text-[#003749] mb-2';
+    const labelClass = 'block text-sm font-bold text-[#C49E6A] mb-2';
 
     return (
-        <div className={`min-h-screen bg-[#fafbfc] ${bodyFont.className}`} dir="rtl">
+        <div className={`min-h-screen bg-[#fafbfc] relative ${bodyFont.className}`} dir="rtl">
+            {/* Mobile Decorative Background */}
+            <div className="fixed lg:hidden bottom-0 left-0 w-full h-[45vh] pointer-events-none z-0">
+                <div
+                    className="absolute inset-0 bg-gradient-to-tr from-[#002f3f] to-[#003749]"
+                    style={{ clipPath: 'polygon(0 90%, 100% 35%, 100% 100%, 0 100%)' }}
+                />
+            </div>
+
             <NavigationBar />
 
             <div className="flex flex-col lg:flex-row min-h-screen pt-20">
@@ -177,22 +194,17 @@ export default function LoginPage() {
 
                     <div className={`relative flex flex-col gap-10 p-12 xl:p-16 pb-14 w-full min-h-[calc(100vh-5rem)] ${displayFont.className}`}>
                         <div>
-                            <div className="inline-flex items-center gap-3 mb-10">
-                                <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center overflow-hidden">
-                                    <Image src="/banner.png" alt="" width={36} height={36} className="object-contain" />
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-white/90 text-sm font-bold tracking-wide">روانس للاستقدام</p>
-                                    <p className="text-[#ECC383]/70 text-[11px]">Rawaes Recruitment</p>
-                                </div>
+                            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#ECC383]/15 to-transparent text-[#ECC383] text-base font-bold mb-8 border border-[#ECC383]/20 shadow-sm">
+                                <Sparkles size={18} />
+                                <span>روائس للاستقدام تتيح لك</span>
                             </div>
 
-                            <h1 className="text-4xl xl:text-[2.75rem] font-bold text-white leading-[1.35] mb-5">
-                                تابع رحلة
-                                <span className="block text-[#ECC383] mt-1">استقدامك بكل وضوح</span>
+                            <h1 className="text-5xl xl:text-[3.5rem] font-bold text-white leading-[1.3] mb-6">
+                                تتبع طلبك
+                                <span className="block text-[#ECC383] mt-2">خطوة بخطوة</span>
                             </h1>
-                            <p className="text-white/55 text-base leading-relaxed max-w-md">
-                                بوابة العملاء لتتبع الطلبات — أدخل بياناتك واطّلع على كل مرحلة من رحلة الاستقدام بشكل آمن وموثوق.
+                            <p className="text-white/60 text-lg leading-relaxed max-w-md">
+                                بوابة العملاء لتتبع الطلبات — أدخل بياناتك واطّلع على كل مرحلة من رحلة الاستقدام.
                             </p>
                         </div>
 
@@ -219,7 +231,7 @@ export default function LoginPage() {
                 </motion.aside>
 
                 {/* Form panel */}
-                <div className="flex-1 flex items-center justify-center px-5 sm:px-8 py-10 lg:py-12 min-h-[calc(100vh-5rem)]">
+                <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-5 sm:px-8 pt-10 pb-20 lg:py-12 min-h-[calc(100vh-5rem)] relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -227,26 +239,32 @@ export default function LoginPage() {
                         className="w-full max-w-[420px]"
                     >
                         {/* Mobile Header & Tracking Illustration */}
-                        <div className="lg:hidden flex flex-col items-center mb-8">
-                            <h1 className={`text-[1.75rem] leading-tight text-center font-bold text-[#003749] mb-8 ${displayFont.className}`}>
-                                تتبع طلبك <span className="text-[#C49E6A]">خطوة بخطوة</span>
-                            </h1>
-                            
+                        <div className="lg:hidden flex flex-col items-center mb-8 w-full">
+                            <div className="text-center mb-10 mt-4">
+                                <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#ECC383]/20 to-transparent text-[#C49E6A] text-sm font-bold mb-4 border border-[#ECC383]/20">
+                                    <Sparkles size={15} />
+                                    <span>روائس للاستقدام تتيح لك</span>
+                                </div>
+                                <h1 className={`text-[2rem] leading-tight font-bold text-[#003749] ${displayFont.className}`}>
+                                    تتبع طلبك <span className="text-[#C49E6A]">خطوة بخطوة</span>
+                                </h1>
+                            </div>
+
                             <div className="w-full max-w-[280px] mb-2">
                                 <div className="relative flex items-center justify-between" dir="rtl">
                                     <div className="w-10 h-10 rounded-full bg-white shadow-md border border-[#003749]/10 flex items-center justify-center z-10 text-[#003749] relative">
                                         <FileText size={18} strokeWidth={2} />
                                     </div>
-                                    
+
                                     <div className="flex-1 h-px border-t-2 border-dashed border-[#C49E6A]/50 relative mx-2">
-                                        <Plane 
-                                            className="absolute top-1/2 left-1/2 text-[#C49E6A]" 
+                                        <Plane
+                                            className="absolute top-1/2 left-1/2 text-[#C49E6A]"
                                             style={{ transform: 'translate(-50%, -50%) rotate(-135deg)' }}
-                                            size={16} 
-                                            strokeWidth={2.5} 
+                                            size={16}
+                                            strokeWidth={2.5}
                                         />
                                     </div>
-                                    
+
                                     <div className="w-10 h-10 rounded-full bg-[#C49E6A] shadow-md shadow-[#C49E6A]/20 flex items-center justify-center z-10 text-white relative">
                                         <Home size={18} strokeWidth={2} />
                                     </div>
@@ -259,29 +277,26 @@ export default function LoginPage() {
                         </div>
 
                         <div className="hidden lg:block mb-10">
-                            <p className={`text-xs uppercase tracking-[0.2em] text-[#C49E6A] mb-3 ${displayFont.className}`}>
-                                بوابة العملاء
-                            </p>
                             <h2 className={`text-3xl font-bold text-[#003749] mb-6 ${displayFont.className}`}>
                                 تتبع طلبك <span className="text-[#C49E6A]">خطوة بخطوة</span>
                             </h2>
-                            
+
                             {/* Tracking Illustration Desktop */}
                             <div className="w-full max-w-[260px] mb-8">
                                 <div className="relative flex items-center justify-between" dir="rtl">
                                     <div className="w-12 h-12 rounded-full bg-white shadow-md border border-[#003749]/10 flex items-center justify-center z-10 text-[#003749] relative">
                                         <FileText size={20} strokeWidth={2} />
                                     </div>
-                                    
+
                                     <div className="flex-1 h-px border-t-2 border-dashed border-[#C49E6A]/50 relative mx-3">
-                                        <Plane 
-                                            className="absolute top-1/2 left-1/2 text-[#C49E6A]" 
+                                        <Plane
+                                            className="absolute top-1/2 left-1/2 text-[#C49E6A]"
                                             style={{ transform: 'translate(-50%, -50%) rotate(-135deg)' }}
-                                            size={18} 
-                                            strokeWidth={2.5} 
+                                            size={18}
+                                            strokeWidth={2.5}
                                         />
                                     </div>
-                                    
+
                                     <div className="w-12 h-12 rounded-full bg-[#C49E6A] shadow-lg shadow-[#C49E6A]/20 flex items-center justify-center z-10 text-white relative">
                                         <Home size={20} strokeWidth={2} />
                                     </div>
@@ -291,7 +306,7 @@ export default function LoginPage() {
                                     <span className="text-center w-12 text-[#C49E6A]">الوصول</span>
                                 </div>
                             </div>
-                            
+
                             <p className="text-gray-400 text-sm leading-relaxed">
                                 أدخل رقم الجوال المرتبط بحجزك ليتم إرسال رمز التحقق إليك
                             </p>
@@ -327,7 +342,6 @@ export default function LoginPage() {
                                             required
                                         />
                                     </div>
-                                    <p className="text-xs text-gray-400 mt-1.5 text-right">مثال: 0512345678</p>
                                     {phoneError && (
                                         <p className="text-red-500 text-xs mt-2 flex items-center gap-1.5 font-medium">
                                             <AlertCircle size={13} /> {phoneError}
@@ -393,8 +407,12 @@ export default function LoginPage() {
                                             id="otp"
                                             value={otp}
                                             onChange={(e) => {
-                                                setOtp(e.target.value.replace(/\D/g, '').slice(0, 4));
+                                                const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                setOtp(val);
                                                 if (error) setError('');
+                                                if (val.length === 4) {
+                                                    handleVerifyOtp(undefined, val);
+                                                }
                                             }}
                                             placeholder="XXXX"
                                             className={`${inputBase} ${error ? inputError : ''}`}
@@ -463,21 +481,25 @@ export default function LoginPage() {
                             </form>
                         )}
 
-                        <motion.p
-                            custom={3}
-                            initial="hidden"
-                            animate="visible"
-                            variants={fadeUp}
-                            className="text-center text-xs text-gray-400 mt-10"
-                        >
-                            ليس لديك طلب بعد؟{' '}
-                            <Link
-                                href="/candidates"
-                                className="text-[#003749]/70 font-semibold hover:text-[#C49E6A] transition-colors underline-offset-4 hover:underline"
+                        {step === 1 && (
+                            <motion.div
+                                custom={3}
+                                initial="hidden"
+                                animate="visible"
+                                variants={fadeUp}
+                                className="flex justify-center mt-10"
                             >
-                                استكشف المرشحات
-                            </Link>
-                        </motion.p>
+                                <div className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white/80 backdrop-blur-md rounded-full shadow-sm border border-white/50 text-xs text-[#003749] font-medium">
+                                    ليس لديك طلب بعد؟{' '}
+                                    <Link
+                                        href="/candidates"
+                                        className="text-[#C49E6A] font-bold hover:text-[#003749] transition-colors underline-offset-4 hover:underline"
+                                    >
+                                        استكشف المرشحات
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        )}
                     </motion.div>
                 </div>
             </div>

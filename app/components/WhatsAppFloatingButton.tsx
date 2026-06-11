@@ -59,7 +59,7 @@ export default function WhatsAppFloatingButton() {
         href={currentLink}
         target="_blank"
         rel="noopener noreferrer"
-        className="relative group"
+        className="relative group block outline-none border-none focus:outline-none focus:ring-0"
       >
         {/* الأيقونة الأساسية */}
         <div className={`bg-[#25D366] w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 ${isMorning ? 'animate-pulse' : ''}`}>

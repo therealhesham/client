@@ -39,7 +39,9 @@ export default function NavigationBar() {
     const [isSigned, setIsSigned] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-const pathname = usePathname()
+    const pathname = usePathname();
+    const router = useRouter();
+    
     useEffect(() => {
         const item = localStorage.getItem("item");
         const Phone = localStorage.getItem("phone_number");
@@ -50,6 +52,17 @@ const pathname = usePathname()
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
+    };
+
+    const handleLogout = async () => {
+        localStorage.removeItem("item");
+        localStorage.removeItem("phone_number");
+        localStorage.removeItem("email");
+        setIsSigned(false);
+        try {
+            await fetch('/api/logout', { method: 'POST' });
+        } catch (e) {}
+        router.replace('/login');
     };
 
     return (
@@ -101,14 +114,22 @@ const pathname = usePathname()
                             </motion.div>
                         ))}
                       {isSigned ? (
-                            <Link
-                                style={{ color: "RGB(196, 158, 106)" }}
-                                href={'/myorders/' + phone}
-                                className="relative hover:text-gray-600 transition-colors duration-300 group"
-                            >
-                                تتبع الطلب
-                                <span className="absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
-                            </Link>
+                            <div className="flex items-center gap-4">
+                                <Link
+                                    style={{ color: "RGB(196, 158, 106)" }}
+                                    href={'/myorders/' + phone}
+                                    className="relative hover:text-gray-600 transition-colors duration-300 group"
+                                >
+                                    تتبع الطلب
+                                    <span className="absolute top-11 left-0 w-0 h-[4px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="text-red-500 hover:text-red-600 transition-colors duration-300 text-sm font-bold"
+                                >
+                                    تسجيل الخروج
+                                </button>
+                            </div>
                         ) : (
                             <Link
                                 style={{ color: "RGB(196, 158, 106)" }}
@@ -150,15 +171,26 @@ const pathname = usePathname()
                         </Link>
                     ))}
                     {isSigned ? (
-                        <Link
-                            style={{ color: "RGB(196, 158, 106)" }}
-                            href={'/myorders/' + phone}
-                            className="relative py-2 hover:text-gray-600 transition-colors duration-300 group"
-                            onClick={toggleMenu}
-                        >
-                            تتبع الطلب
-                            <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
-                        </Link>
+                        <>
+                            <Link
+                                style={{ color: "RGB(196, 158, 106)" }}
+                                href={'/myorders/' + phone}
+                                className="relative py-2 hover:text-gray-600 transition-colors duration-300 group"
+                                onClick={toggleMenu}
+                            >
+                                تتبع الطلب
+                                <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-[rgb(1,55,73)] transition-all duration-500 group-hover:w-full"></span>
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    toggleMenu();
+                                    handleLogout();
+                                }}
+                                className="relative py-2 text-red-500 hover:text-red-600 transition-colors duration-300 text-right font-bold"
+                            >
+                                تسجيل الخروج
+                            </button>
+                        </>
                     ) : (
                         <Link
                             style={{ color: "RGB(196, 158, 106)" }}

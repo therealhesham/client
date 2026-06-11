@@ -435,6 +435,7 @@ export default function MyOrdersPage() {
   const handleLogout = () => {
     localStorage.removeItem('phone_number');
     localStorage.removeItem('email');
+    localStorage.removeItem('item');
     // Call the logout API to clear the cookie as well
     fetch('/api/logout', { method: 'POST' }).finally(() => {
         router.replace('/login');
