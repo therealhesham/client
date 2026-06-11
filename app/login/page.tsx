@@ -17,10 +17,7 @@ import {
     Sparkles,
     ShieldCheck,
     Clock,
-    CheckCircle2,
-    FileText,
-    Plane,
-    Home
+    CheckCircle2
 } from 'lucide-react';
 import NavigationBar from '../components/navigation';
 
@@ -70,7 +67,7 @@ export default function LoginPage() {
     const [phone, setPhone] = useState('');
     const [otp, setOtp] = useState('');
     const [step, setStep] = useState(1);
-    
+
     const [error, setError] = useState('');
     const [phoneError, setPhoneError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -229,33 +226,36 @@ export default function LoginPage() {
                         transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
                         className="w-full max-w-[420px]"
                     >
-                        {/* Mobile logo & Tracking Illustration */}
+                        {/* Mobile Header & Tracking Illustration */}
                         <div className="lg:hidden flex flex-col items-center mb-8">
-                            <div className="mb-6">
-                                <Image src="/banner.png" alt="Rawaes" width={140} height={140} className="object-contain drop-shadow-md" />
-                            </div>
+                            <h1 className={`text-[1.75rem] leading-tight text-center font-bold text-[#003749] mb-8 ${displayFont.className}`}>
+                                تتبع طلبك <span className="text-[#C49E6A]">خطوة بخطوة</span>
+                            </h1>
                             
-                            <div className="w-full max-w-[280px] mb-8">
-                                <div className="relative flex items-center justify-between" dir="ltr">
+                            <div className="w-full max-w-[280px] mb-2">
+                                <div className="relative flex items-center justify-between" dir="rtl">
                                     <div className="w-10 h-10 rounded-full bg-white shadow-md border border-[#003749]/10 flex items-center justify-center z-10 text-[#003749] relative">
                                         <FileText size={18} strokeWidth={2} />
                                     </div>
                                     
                                     <div className="flex-1 h-px border-t-2 border-dashed border-[#C49E6A]/50 relative mx-2">
-                                        <Plane className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#C49E6A]" size={16} strokeWidth={2.5} />
+                                        <Plane 
+                                            className="absolute top-1/2 left-1/2 text-[#C49E6A]" 
+                                            style={{ transform: 'translate(-50%, -50%) rotate(-135deg)' }}
+                                            size={16} 
+                                            strokeWidth={2.5} 
+                                        />
                                     </div>
                                     
                                     <div className="w-10 h-10 rounded-full bg-[#C49E6A] shadow-md shadow-[#C49E6A]/20 flex items-center justify-center z-10 text-white relative">
                                         <Home size={18} strokeWidth={2} />
                                     </div>
                                 </div>
-                                <div className="flex justify-between mt-2 text-[10px] font-bold text-gray-400" dir="ltr">
+                                <div className="flex justify-between mt-2 text-[10px] font-bold text-gray-400" dir="rtl">
                                     <span className="text-center w-10">الطلب</span>
                                     <span className="text-center w-10 text-[#C49E6A]">الوصول</span>
                                 </div>
                             </div>
-                            
-                            <h1 className={`text-2xl font-bold text-[#003749] ${displayFont.className}`}>تتبع طلبك</h1>
                         </div>
 
                         <div className="hidden lg:block mb-10">
@@ -263,27 +263,32 @@ export default function LoginPage() {
                                 بوابة العملاء
                             </p>
                             <h2 className={`text-3xl font-bold text-[#003749] mb-6 ${displayFont.className}`}>
-                                مرحباً بعودتك
+                                تتبع طلبك <span className="text-[#C49E6A]">خطوة بخطوة</span>
                             </h2>
                             
                             {/* Tracking Illustration Desktop */}
                             <div className="w-full max-w-[260px] mb-8">
-                                <div className="relative flex items-center justify-between" dir="ltr">
+                                <div className="relative flex items-center justify-between" dir="rtl">
                                     <div className="w-12 h-12 rounded-full bg-white shadow-md border border-[#003749]/10 flex items-center justify-center z-10 text-[#003749] relative">
                                         <FileText size={20} strokeWidth={2} />
                                     </div>
                                     
                                     <div className="flex-1 h-px border-t-2 border-dashed border-[#C49E6A]/50 relative mx-3">
-                                        <Plane className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#C49E6A]" size={18} strokeWidth={2.5} />
+                                        <Plane 
+                                            className="absolute top-1/2 left-1/2 text-[#C49E6A]" 
+                                            style={{ transform: 'translate(-50%, -50%) rotate(-135deg)' }}
+                                            size={18} 
+                                            strokeWidth={2.5} 
+                                        />
                                     </div>
                                     
                                     <div className="w-12 h-12 rounded-full bg-[#C49E6A] shadow-lg shadow-[#C49E6A]/20 flex items-center justify-center z-10 text-white relative">
                                         <Home size={20} strokeWidth={2} />
                                     </div>
                                 </div>
-                                <div className="flex justify-between mt-3 text-[11px] font-bold text-gray-400" dir="ltr">
-                                    <span className="text-center w-12">إنشاء الطلب</span>
-                                    <span className="text-center w-12 text-[#C49E6A]">وصول العاملة</span>
+                                <div className="flex justify-between mt-3 text-[11px] font-bold text-gray-400" dir="rtl">
+                                    <span className="text-center w-12">الطلب</span>
+                                    <span className="text-center w-12 text-[#C49E6A]">الوصول</span>
                                 </div>
                             </div>
                             
