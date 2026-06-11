@@ -17,7 +17,10 @@ import {
     Sparkles,
     ShieldCheck,
     Clock,
-    CheckCircle2
+    CheckCircle2,
+    FileText,
+    Plane,
+    Home
 } from 'lucide-react';
 import NavigationBar from '../components/navigation';
 
@@ -226,11 +229,32 @@ export default function LoginPage() {
                         transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
                         className="w-full max-w-[420px]"
                     >
-                        {/* Mobile logo */}
-                        <div className="lg:hidden flex flex-col items-center mb-10">
-                            <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-4">
-                                <Image src="/banner.png" alt="" width={44} height={44} className="object-contain" />
+                        {/* Mobile logo & Tracking Illustration */}
+                        <div className="lg:hidden flex flex-col items-center mb-8">
+                            <div className="mb-6">
+                                <Image src="/banner.png" alt="Rawaes" width={140} height={140} className="object-contain drop-shadow-md" />
                             </div>
+                            
+                            <div className="w-full max-w-[280px] mb-8">
+                                <div className="relative flex items-center justify-between" dir="ltr">
+                                    <div className="w-10 h-10 rounded-full bg-white shadow-md border border-[#003749]/10 flex items-center justify-center z-10 text-[#003749] relative">
+                                        <FileText size={18} strokeWidth={2} />
+                                    </div>
+                                    
+                                    <div className="flex-1 h-px border-t-2 border-dashed border-[#C49E6A]/50 relative mx-2">
+                                        <Plane className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#C49E6A]" size={16} strokeWidth={2.5} />
+                                    </div>
+                                    
+                                    <div className="w-10 h-10 rounded-full bg-[#C49E6A] shadow-md shadow-[#C49E6A]/20 flex items-center justify-center z-10 text-white relative">
+                                        <Home size={18} strokeWidth={2} />
+                                    </div>
+                                </div>
+                                <div className="flex justify-between mt-2 text-[10px] font-bold text-gray-400" dir="ltr">
+                                    <span className="text-center w-10">الطلب</span>
+                                    <span className="text-center w-10 text-[#C49E6A]">الوصول</span>
+                                </div>
+                            </div>
+                            
                             <h1 className={`text-2xl font-bold text-[#003749] ${displayFont.className}`}>تتبع طلبك</h1>
                         </div>
 
@@ -238,9 +262,31 @@ export default function LoginPage() {
                             <p className={`text-xs uppercase tracking-[0.2em] text-[#C49E6A] mb-3 ${displayFont.className}`}>
                                 بوابة العملاء
                             </p>
-                            <h2 className={`text-3xl font-bold text-[#003749] mb-2 ${displayFont.className}`}>
+                            <h2 className={`text-3xl font-bold text-[#003749] mb-6 ${displayFont.className}`}>
                                 مرحباً بعودتك
                             </h2>
+                            
+                            {/* Tracking Illustration Desktop */}
+                            <div className="w-full max-w-[260px] mb-8">
+                                <div className="relative flex items-center justify-between" dir="ltr">
+                                    <div className="w-12 h-12 rounded-full bg-white shadow-md border border-[#003749]/10 flex items-center justify-center z-10 text-[#003749] relative">
+                                        <FileText size={20} strokeWidth={2} />
+                                    </div>
+                                    
+                                    <div className="flex-1 h-px border-t-2 border-dashed border-[#C49E6A]/50 relative mx-3">
+                                        <Plane className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#C49E6A]" size={18} strokeWidth={2.5} />
+                                    </div>
+                                    
+                                    <div className="w-12 h-12 rounded-full bg-[#C49E6A] shadow-lg shadow-[#C49E6A]/20 flex items-center justify-center z-10 text-white relative">
+                                        <Home size={20} strokeWidth={2} />
+                                    </div>
+                                </div>
+                                <div className="flex justify-between mt-3 text-[11px] font-bold text-gray-400" dir="ltr">
+                                    <span className="text-center w-12">إنشاء الطلب</span>
+                                    <span className="text-center w-12 text-[#C49E6A]">وصول العاملة</span>
+                                </div>
+                            </div>
+                            
                             <p className="text-gray-400 text-sm leading-relaxed">
                                 أدخل رقم الجوال المرتبط بحجزك ليتم إرسال رمز التحقق إليك
                             </p>
