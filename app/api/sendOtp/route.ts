@@ -55,9 +55,16 @@ export async function POST(req: Request) {
             return new Response(JSON.stringify({ error: 'يرجى الانتظار دقيقة قبل طلب رمز جديد' }), { status: 429 });
         }
 
+        const possiblePhones = [phone];
+        if (phone.startsWith('0')) {
+            possiblePhones.push(phone.substring(1));
+        } else {
+            possiblePhones.push('0' + phone);
+        }
+
         const client = await prisma.client.findFirst({
             where: {
-                phonenumber: phone 
+                phonenumber: { in: possiblePhones }
             }
         });
 
