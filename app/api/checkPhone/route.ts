@@ -10,15 +10,16 @@ export async function POST(req: Request) {
             return new Response(JSON.stringify({ error: 'البيانات ناقصة' }), { status: 400 });
         }
 
+        console.log(email, phone)
         // البحث عن العميل الذي يطابق الايميل ورقم الجوال معاً
         // ملاحظة: تأكد أن phone المرسل يطابق الصيغة المخزنة في الداتا بيس
         const client = await prisma.client.findFirst({
             where: {
                 email: email,
-                phonenumber: phone 
+                phonenumber: 0+phone
             }
         });
-
+        console.log(client)
         if (client) {
             return new Response(JSON.stringify({ exists: true, clientId: client.id }), { status: 200 });
         } else {
