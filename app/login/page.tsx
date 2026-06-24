@@ -158,9 +158,9 @@ export default function LoginPage() {
     const labelClass = 'block text-sm font-bold text-[#C49E6A] mb-2';
 
     return (
-        <div className={`min-h-screen bg-[#fafbfc] relative ${bodyFont.className}`} dir="rtl">
+        <div className={`min-h-screen bg-[#fafbfc] relative overflow-hidden ${bodyFont.className}`} dir="rtl">
             {/* Mobile Decorative Background */}
-            <div className="fixed lg:hidden bottom-0 left-0 w-full h-[45vh] pointer-events-none z-0">
+            <div className="absolute lg:hidden bottom-0 left-0 w-full h-[45vh] pointer-events-none z-0">
                 <div
                     className="absolute inset-0 bg-gradient-to-tr from-[#002f3f] to-[#003749]"
                     style={{ clipPath: 'polygon(0 90%, 100% 35%, 100% 100%, 0 100%)' }}
@@ -231,7 +231,7 @@ export default function LoginPage() {
                 </motion.aside>
 
                 {/* Form panel */}
-                <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-5 sm:px-8 pt-10 pb-20 lg:py-12 min-h-[calc(100vh-5rem)] relative z-10">
+                <div className="flex-1 flex flex-col justify-start lg:justify-center items-center px-5 sm:px-8 pt-10 pb-24 lg:py-12 min-h-[calc(100vh-5rem)] relative z-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -419,6 +419,9 @@ export default function LoginPage() {
                                             required
                                             maxLength={4}
                                             dir="ltr"
+                                            autoComplete="one-time-code"
+                                            inputMode="numeric"
+                                            pattern="\d*"
                                         />
                                     </div>
                                     <p className="text-xs text-gray-400 mt-1.5 text-center">أدخل الرمز المكون من 4 أرقام</p>

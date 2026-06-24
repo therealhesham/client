@@ -36,7 +36,7 @@ async function getBlockedHomemaidIds() {
 async function enrichHomemaid(homemaid: Record<string, unknown>, homemaidId: number) {
   const [weeklyStatuses, office, newOrders, sessions, maidLogs, housedWorkers] =
     await Promise.all([
-      prisma.weeklyStatus.findMany({ where: { homeMaid_id: homemaidId } }),
+      prisma.weeklystatus.findMany({ where: { homeMaid_id: homemaidId } }),
       homemaid.officeID
         ? prisma.offices.findUnique({ where: { id: homemaid.officeID as number } })
         : null,
@@ -55,7 +55,7 @@ async function enrichHomemaid(homemaid: Record<string, unknown>, homemaidId: num
   const housedWorkerIds = housedWorkers.map((h) => h.id);
   const checkIns =
     housedWorkerIds.length > 0
-      ? await prisma.checkIn.findMany({
+      ? await prisma.checkin.findMany({
           where: { housedWorkerId: { in: housedWorkerIds } },
         })
       : [];

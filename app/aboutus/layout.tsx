@@ -8,15 +8,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
+    <div lang="en">
+      <div
         // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
 <Suspense>
     
         {children}
         </Suspense>
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

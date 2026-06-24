@@ -12,6 +12,22 @@ export async function GET(req: NextRequest) {
   const Nationality = url.searchParams.get("Nationality");
   const page = url.searchParams.get("page");
   const Religion = url.searchParams.get("religion");
+  const maritalStatus = url.searchParams.get("maritalStatus");
+  const minAge = url.searchParams.get("minAge");
+  const maxAge = url.searchParams.get("maxAge");
+  const educationLevel = url.searchParams.get("educationLevel");
+  const experienceLevel = url.searchParams.get("experienceLevel");
+  const arabicLanguage = url.searchParams.get("arabicLanguage");
+  const englishLanguage = url.searchParams.get("englishLanguage");
+  const salary = url.searchParams.get("salary");
+  const heightRange = url.searchParams.get("heightRange");
+  const weightRange = url.searchParams.get("weightRange");
+  const skill_مهارة_الغسيل = url.searchParams.get("skill_مهارة الغسيل");
+  const skill_مهارة_الطبخ = url.searchParams.get("skill_مهارة الطبخ");
+  const skill_مهارة_الكوي = url.searchParams.get("skill_مهارة الكوي");
+  const skill_مهارة_التنظيف = url.searchParams.get("skill_مهارة التنظيف");
+  const skill_مهارة_العناية_بالاطفال = url.searchParams.get("skill_مهارة العناية بالاطفال");
+  const skill_مهارة_رعاية_كبار_السن = url.searchParams.get("skill_مهارة رعاية كبار السن");
 
   const pageSize = 12;
   const pageNumber = parseInt(page as string, 10) || 1;
@@ -56,11 +72,7 @@ export async function GET(req: NextRequest) {
       contains: Passportnumber.toLowerCase(),
     };
   if (Nationality) {
-    const matchingOffices = await prisma.offices.findMany({
-      where: { Country: { contains: Nationality.toLowerCase() } },
-      select: { id: true },
-    });
-    filters.officeID = { in: matchingOffices.map((o) => o.id) };
+    filters.Nationalitycopy = { contains: Nationality };
   }
 
   if (Religion) {
@@ -77,6 +89,81 @@ export async function GET(req: NextRequest) {
     }
     ;
   }
+
+  if (maritalStatus) filters.maritalstatus = { contains: maritalStatus };
+  
+  if (minAge || maxAge) {
+    const today = new Date();
+    const dateFilter: any = {};
+    if (minAge) {
+      const minAgeNum = parseInt(minAge, 10);
+      const maxDate = new Date(today.getFullYear() - minAgeNum, today.getMonth(), today.getDate());
+      dateFilter.lte = maxDate;
+    }
+    if (maxAge) {
+      const maxAgeNum = parseInt(maxAge, 10);
+      const minDate = new Date(today.getFullYear() - maxAgeNum, today.getMonth(), today.getDate());
+      dateFilter.gte = minDate;
+    }
+    filters.dateofbirth = { ...filters.dateofbirth, ...dateFilter };
+  }
+
+  if (educationLevel) filters.Education = { contains: educationLevel };
+
+  if (experienceLevel) {
+    if (experienceLevel === "novice") filters.Experience = { contains: "بدون خبرة" };
+    else if (experienceLevel === "intermediate") filters.Experience = { contains: "متوسطة" };
+    else if (experienceLevel === "experienced") filters.Experience = { contains: "جيدة" };
+    else if (experienceLevel === "expert") filters.Experience = { contains: "ممتازة" };
+  }
+
+  const langMapping: Record<string, string> = {
+    "لا تجيد": "لا تجيد",
+    "مبتدئ": "مبتدأ",
+    "جيد": "جيد",
+    "جيد جدًا": "جيد جداً",
+    "ممتاز": "ممتاز"
+  };
+
+  if (arabicLanguage && langMapping[arabicLanguage]) {
+    filters.ArabicLanguageLevel = { contains: langMapping[arabicLanguage] };
+  }
+
+  if (englishLanguage && langMapping[englishLanguage]) {
+    filters.EnglishLanguageLevel = { contains: langMapping[englishLanguage] };
+  }
+
+  if (salary) filters.Salary = { contains: salary };
+
+  if (heightRange) {
+    if (heightRange === "170+") filters.height = { gte: 170 };
+    else {
+      const [min, max] = heightRange.split("-").map(Number);
+      filters.height = { gte: min, lte: max };
+    }
+  }
+
+  if (weightRange) {
+    if (weightRange === "70+") filters.weight = { gte: 70 };
+    else {
+      const [min, max] = weightRange.split("-").map(Number);
+      filters.weight = { gte: min, lte: max };
+    }
+  }
+
+  const skillMapping: Record<string, string> = {
+    "مبتدئ": "مبتدأ",
+    "جيد": "جيد",
+    "جيد جدًا": "جيد جداً",
+    "ممتاز": "ممتاز"
+  };
+
+  if (skill_مهارة_الغسيل && skillMapping[skill_مهارة_الغسيل]) filters.LaundryLevel = { contains: skillMapping[skill_مهارة_الغسيل] };
+  if (skill_مهارة_الطبخ && skillMapping[skill_مهارة_الطبخ]) filters.CookingLevel = { contains: skillMapping[skill_مهارة_الطبخ] };
+  if (skill_مهارة_الكوي && skillMapping[skill_مهارة_الكوي]) filters.IroningLevel = { contains: skillMapping[skill_مهارة_الكوي] };
+  if (skill_مهارة_التنظيف && skillMapping[skill_مهارة_التنظيف]) filters.CleaningLevel = { contains: skillMapping[skill_مهارة_التنظيف] };
+  if (skill_مهارة_العناية_بالاطفال && skillMapping[skill_مهارة_العناية_بالاطفال]) filters.BabySitterLevel = { contains: skillMapping[skill_مهارة_العناية_بالاطفال] };
+  if (skill_مهارة_رعاية_كبار_السن && skillMapping[skill_مهارة_رعاية_كبار_السن]) filters.elderlycareLevel = { contains: skillMapping[skill_مهارة_رعاية_كبار_السن] };
   try {
     // لا توجد علاقة (relation) بين homemaid و neworder في الـ schema،
     // لذلك نحسب يدويًا العاملات اللاتي لديهن طلب "نشط" (مرتبط وغير ملغى/مرفوض)

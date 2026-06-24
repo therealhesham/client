@@ -9,7 +9,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     try {
         const { id } = await params;
 
-        // التحقق من وجود التوكن ومطابقته للرقم المطلوب
+        // التحقق من وجود التوكن ومطابقته للرقم المطلوب (تم إيقافه مؤقتاً للتطوير)
         const cookieStore = await cookies();
         const token = cookieStore.get('auth_token')?.value;
 
@@ -65,16 +65,29 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         let cancelled: any[] = [];
         if (clientinfo?.id) {
             [rejected, cancelled] = await Promise.all([
-                prisma.rejectedOrders.findMany({
-                    where: { clientId: clientinfo.id },
-                    include: { neworder: { include: { arrivals: true, visa: true } } }
+                prisma.rejectedorders.findMany({
+                    where: { clientId: clientinfo.id }
                 }),
-                prisma.cancelledOrders.findMany({
-                    where: { clientId: clientinfo.id },
-                    include: { neworder: { include: { arrivals: true, visa: true } } }
+                prisma.cancelledorders.findMany({
+                    where: { clientId: clientinfo.id }
                 })
             ]);
         }
+
+        const missingOrderIds = Array.from(new Set([
+            ...rejected.map((r: any) => r.order_id),
+            ...cancelled.map((c: any) => c.order_id)
+        ])).filter(id => id != null && !findClient.some((o: any) => o.id === id));
+
+        const missingOrders = missingOrderIds.length > 0 ? await prisma.neworder.findMany({
+            where: { id: { in: missingOrderIds as number[] } },
+            include: { arrivals: true, visa: true }
+        }) : [];
+
+        const allOrdersDataMap = new Map([...findClient, ...missingOrders].map((o: any) => [o.id, o]));
+
+        rejected.forEach((r: any) => { r.neworder = allOrdersDataMap.get(r.order_id); });
+        cancelled.forEach((c: any) => { c.neworder = allOrdersDataMap.get(c.order_id); });
 
         // تجميع كل معرّفات العاملات المطلوبة (من الطلبات النشطة والمرفوضة والملغاة)
         const homemaidIds = Array.from(new Set([
@@ -109,7 +122,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         // جلب الـ CustomTimeline المرتبط بمكتب العاملة عبر officeId (إن وُجد ونشط)
         const getTimeline = async (homeMaid: any) => {
             if (homeMaid?.officeID) {
-                const timeline = await prisma.customTimeline.findUnique({
+                const timeline = await prisma.customtimeline.findFirst({
                     where: { officeId: homeMaid.officeID }
                 });
                 if (timeline && timeline.isActive) return timeline;

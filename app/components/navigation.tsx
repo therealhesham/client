@@ -66,7 +66,7 @@ export default function NavigationBar() {
     };
 
     return (
-        <header className={`bg-white shadow-md fixed w-full z-10 ${myFont.className}`} dir='rtl'>
+        <header className={`bg-white shadow-md fixed w-full z-50 ${myFont.className}`} dir='rtl'>
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 {/* Logo */}
                 <div className="text-2xl font-bold">

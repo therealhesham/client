@@ -196,6 +196,15 @@ export default function CandidatesPage() {
     message: "",
   });
   const [isAdvancedModalOpen, setIsAdvancedModalOpen] = useState(false);
+  const [advancedNationality, setAdvancedNationality] = useState<string>("");
+  const [advancedReligion, setAdvancedReligion] = useState<string>("");
+  const [maritalStatus, setMaritalStatus] = useState<string>("");
+  const [minAge, setMinAge] = useState<string>("");
+  const [maxAge, setMaxAge] = useState<string>("");
+  const [educationLevel, setEducationLevel] = useState<string>("");
+  const [arabicLanguage, setArabicLanguage] = useState<string>("");
+  const [englishLanguage, setEnglishLanguage] = useState<string>("");
+  const [salary, setSalary] = useState<string>("");
   const [experienceLevel, setExperienceLevel] = useState<string | null>(null);
   const [skillRatings, setSkillRatings] = useState<Record<string, string>>({});
   const [selectedHeightRange, setSelectedHeightRange] = useState<string>("");
@@ -216,8 +225,23 @@ export default function CandidatesPage() {
       const queryParams = new URLSearchParams();
       if (search) queryParams.append("Name", search);
       if (nationalityFilter) queryParams.append("Nationality", nationalityFilter);
+      if (advancedNationality && advancedNationality !== "جميع الجنسيات") queryParams.append("Nationality", advancedNationality);
       if (ageFilter) queryParams.append("age", ageFilter);
+      if (minAge) queryParams.append("minAge", minAge);
+      if (maxAge) queryParams.append("maxAge", maxAge);
       if (religionFilter) queryParams.append("religion", religionFilter);
+      if (advancedReligion) queryParams.append("religion", advancedReligion);
+      if (maritalStatus && maritalStatus !== "جميع الحالات") queryParams.append("maritalStatus", maritalStatus);
+      if (educationLevel && educationLevel !== "جميع المستويات" && educationLevel !== "أي تعليم") queryParams.append("educationLevel", educationLevel);
+      if (experienceLevel) queryParams.append("experienceLevel", experienceLevel);
+      if (arabicLanguage && arabicLanguage !== "الكل") queryParams.append("arabicLanguage", arabicLanguage);
+      if (englishLanguage && englishLanguage !== "الكل") queryParams.append("englishLanguage", englishLanguage);
+      if (salary) queryParams.append("salary", salary);
+      if (selectedHeightRange) queryParams.append("heightRange", selectedHeightRange);
+      if (selectedWeightRange) queryParams.append("weightRange", selectedWeightRange);
+      Object.entries(skillRatings).forEach(([skill, level]) => {
+        queryParams.append(`skill_${skill}`, level);
+      });
       queryParams.append("page", page.toString());
 
       const response = await fetch(`/api/candidates?${queryParams.toString()}`);
@@ -667,7 +691,7 @@ export default function CandidatesPage() {
                           </svg>
                           اختر الجنسية المفضلة
                         </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
+                        <select value={advancedNationality} onChange={(e) => setAdvancedNationality(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
                           <option>جميع الجنسيات</option>
                           <option>الفلبين</option>
                           <option>إثيوبيا</option>
@@ -689,11 +713,11 @@ export default function CandidatesPage() {
                         </label>
                         <div className="flex gap-4">
                           <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="religion" className="text-[#ECC383]" />
+                            <input type="radio" name="religion" className="text-[#ECC383]" checked={advancedReligion === "Islam - الإسلام"} onChange={() => setAdvancedReligion("Islam - الإسلام")} />
                             <span className="text-gray-700">مسلمة</span>
                           </label>
                           <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="religion" className="text-[#ECC383]" />
+                            <input type="radio" name="religion" className="text-[#ECC383]" checked={advancedReligion === "Non-Muslim"} onChange={() => setAdvancedReligion("Non-Muslim")} />
                             <span className="text-gray-700">غير مسلمة</span>
                           </label>
                         </div>
@@ -707,7 +731,7 @@ export default function CandidatesPage() {
                           </svg>
                           الحالة الاجتماعية
                         </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
+                        <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
                           <option>جميع الحالات</option>
                           <option>عازبة</option>
                           <option>متزوجة</option>
@@ -735,8 +759,8 @@ export default function CandidatesPage() {
                           نطاق العمر
                         </label>
                         <div className="grid grid-cols-2 gap-4">
-                          <input type="number" placeholder="من" className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none" />
-                          <input type="number" placeholder="إلى" className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none" />
+                          <input type="number" placeholder="من" value={minAge} onChange={(e) => setMinAge(e.target.value)} className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none" />
+                          <input type="number" placeholder="إلى" value={maxAge} onChange={(e) => setMaxAge(e.target.value)} className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none" />
                         </div>
                       </div>
 
@@ -803,7 +827,7 @@ export default function CandidatesPage() {
                           </svg>
                           المستوى التعليمي
                         </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
+                        <select value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
                           <option>جميع المستويات</option>
                           <option>ابتدائي</option>
                           <option>متوسط</option>
@@ -873,7 +897,7 @@ export default function CandidatesPage() {
                           </svg>
                           اللغة العربية
                         </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
+                        <select value={arabicLanguage} onChange={(e) => setArabicLanguage(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
                           <option>الكل</option>
                           <option>لا تجيد</option>
                           <option>مبتدئ</option>
@@ -891,7 +915,7 @@ export default function CandidatesPage() {
                           </svg>
                           اللغة الإنجليزية
                         </label>
-                        <select className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
+                        <select value={englishLanguage} onChange={(e) => setEnglishLanguage(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
                           <option>الكل</option>
                           <option>لا تجيد</option>
                           <option>مبتدئ</option>
@@ -910,12 +934,9 @@ export default function CandidatesPage() {
                           الراتب الشهري (ريال)
                         </label>
                         <select
+                          value={salary}
+                          onChange={(e) => setSalary(e.target.value)}
                           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition"
-                          onChange={(e) => {
-                            const selectedValue = e.target.value;
-                            console.log("القيمة المرسلة:", selectedValue); // مثال: "900"
-                            // استخدم القيمة في الفلترة
-                          }}
                         >
                           <option value="">بدون تحديد</option>
                           <option value="900">900 ﷼</option>
@@ -947,7 +968,6 @@ export default function CandidatesPage() {
                         "مهارة التنظيف",
                         "مهارة العناية بالاطفال",
                         "مهارة رعاية كبار السن",
-                        "مهارة القيادة",
                       ].map((skill) => (
                         <div key={skill} className="mb-5 last:mb-0">
                           <label className="block text-sm font-medium text-gray-700 mb-2">{skill}</label>
@@ -994,11 +1014,8 @@ export default function CandidatesPage() {
                     </button>
                     <button
                       onClick={() => {
-                        // alert("تم تطبيق الفلاتر!");
+                        fetchCandidates();
                         setIsAdvancedModalOpen(false);
-
-
-
                       }}
                       className="px-6 py-3 bg-[#ECC383] text-white rounded-xl font-medium hover:bg-[#012f3f] transition-shadow shadow-md hover:shadow-lg"
                     >

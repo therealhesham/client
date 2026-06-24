@@ -71,6 +71,7 @@ export async function POST(req: Request) {
         try {
             await prisma.notifications.create({
                 data: {
+                    id: crypto.randomUUID(),
                     title: ' تم حجز عاملة جديدة من الموقع الالكتروني',
                     message: `تم حجز عاملة بواسطة ${fullName}`,
                 },

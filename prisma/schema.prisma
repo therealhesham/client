@@ -9,121 +9,59 @@ datasource db {
 }
 
 model homemaid {
-  id                     Int               @id @default(autoincrement())
-  OfficeName             String?           @db.VarChar(100)
-  Externalofficecopy     String?           @db.VarChar(40)
-  Name                   String?           @db.VarChar(1024)
-  Nationalitycopy        String?           @db.VarChar(1024)
-  Religion               String?           @db.VarChar(1024)
-  maritalstatus          String?           @db.VarChar(1024)
+  id                     Int       @id @default(autoincrement())
+  OfficeName             String?   @db.VarChar(100)
+  Externalofficecopy     String?   @db.VarChar(40)
+  Name                   String?   @db.VarChar(1024)
+  Nationalitycopy        String?   @db.VarChar(1024)
+  Religion               String?   @db.VarChar(1024)
+  maritalstatus          String?   @db.VarChar(1024)
   children               Int?
   weight                 Int?
   height                 Int?
-  Education              String?           @db.VarChar(27)
-  Experience             String?           @db.VarChar(1024)
-  ExperienceYears        String?           @db.VarChar(1024)
-  ExperiencePlaces       String?           @db.VarChar(51)
-  Passportnumber         String?           @db.VarChar(1024)
-  PassportEnd            DateTime?         @db.DateTime(0)
-  PassportStart          DateTime?         @db.DateTime(0)
-  OldPeopleCare          Int?              @db.TinyInt
-  ArabicLanguageLevel    String?           @db.VarChar(522)
-  EnglishLanguageLevel   String?           @db.VarChar(522)
-  Salary                 String?           @db.VarChar(20)
-  LaundryLevel           String?           @db.VarChar(522)
-  IroningLevel           String?           @db.VarChar(522)
-  CleaningLevel          String?           @db.VarChar(522)
-  CookingLevel           String?           @db.VarChar(522)
-  SewingLevel            String?           @db.VarChar(522)
-  BabySitterLevel        String?           @db.VarChar(522)
-  dateofbirth            DateTime?         @db.DateTime(0)
-  ages                   String?           @db.VarChar(1024)
-  clientphonenumber      String?           @db.VarChar(19)
-  phone                  String?           @db.VarChar(1024)
+  Education              String?   @db.VarChar(27)
+  Experience             String?   @db.VarChar(1024)
+  ExperienceYears        String?   @db.VarChar(1024)
+  ExperiencePlaces       String?   @db.VarChar(51)
+  Passportnumber         String?   @db.VarChar(1024)
+  PassportEnd            DateTime? @db.DateTime(0)
+  PassportStart          DateTime? @db.DateTime(0)
+  OldPeopleCare          Int?      @db.TinyInt
+  ArabicLanguageLevel    String?   @db.VarChar(522)
+  EnglishLanguageLevel   String?   @db.VarChar(522)
+  Salary                 String?   @db.VarChar(20)
+  LaundryLevel           String?   @db.VarChar(522)
+  IroningLevel           String?   @db.VarChar(522)
+  CleaningLevel          String?   @db.VarChar(522)
+  CookingLevel           String?   @db.VarChar(522)
+  SewingLevel            String?   @db.VarChar(522)
+  BabySitterLevel        String?   @db.VarChar(522)
+  dateofbirth            DateTime? @db.DateTime(0)
+  ages                   String?   @db.VarChar(1024)
+  clientphonenumber      String?   @db.VarChar(19)
+  phone                  String?   @db.VarChar(1024)
   officeID               Int?
   Picture                Json?
   Nationality            Json?
   age                    Int?
   flag                   Json?
-  bookingstatus          String?           @db.VarChar(1024)
-  experienceType         String?           @db.VarChar(100)
+  bookingstatus          String?   @db.VarChar(1024)
+  experienceType         String?   @db.VarChar(100)
   FullPicture            Json?
   professionId           Int?
-  displayOrder           Int               @default(0)
-  job                    String?           @db.VarChar(32)
-  createdAt              DateTime          @default(now()) @db.DateTime(0)
-  updatedAt              DateTime          @default(now()) @updatedAt @db.Timestamp(0)
-  isExternal             Boolean           @default(false)
-  Passportphoto          String?           @db.VarChar(522)
+  displayOrder           Int       @default(0)
+  job                    String?   @db.VarChar(32)
+  createdAt              DateTime  @default(now()) @db.DateTime(0)
+  updatedAt              DateTime  @default(now()) @updatedAt @db.Timestamp(0)
+  isExternal             Boolean   @default(false)
+  Passportphoto          String?   @db.VarChar(522)
   transferSponsorShipsId Int?
-  washingLevel           String?           @db.VarChar(100)
-  childcareLevel         String?           @db.VarChar(100)
-  elderlycareLevel       String?           @db.VarChar(100)
-  isApproved             Boolean           @default(false)
-  contractType           String            @default("recruitment") @db.VarChar(124)
-  notes                  String?           @db.VarChar(255)
-  Client                 Client[]
-  cancelledOrders        cancelledOrders[]
-  inHouseLocation        inHouseLocation[]
-  rejectedOrders         rejectedOrders[]
-
-  @@index([professionId])
-  @@index([bookingstatus(length: 768)], map: "idx_homemaid_bookingstatus")
-  @@index([Name(length: 768)], map: "idx_homemaid_name")
-  @@index([Passportnumber(length: 768)], map: "idx_homemaid_passport")
-  @@index([phone(length: 768)], map: "idx_homemaid_phone")
-  @@index([officeID], map: "officeid")
-}
-
-model DeliveryDetails {
-  id             Int       @id @default(autoincrement())
-  deliveryDate   DateTime? @db.DateTime(0)
-  deliveryTime   String?   @db.VarChar(100)
-  deliveryFile   String?   @db.VarChar(255)
-  deliveryNotes  String?   @db.VarChar(255)
-  cost           Decimal?  @db.Decimal(10, 2)
-  newOrderId     Int?
-  isDelivered    Boolean?  @default(false)
-  userId         Int?
-  createdAt      DateTime? @default(now()) @db.DateTime(0)
-  updatedAt      DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  completionDate DateTime? @default(now()) @db.DateTime(0)
-  neworder       neworder? @relation(fields: [newOrderId], references: [id], map: "fk_deliverydetails_neworder")
-  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_deliverydetails_user")
-
-  @@index([deliveryDate], map: "idx_deliverydetails_date")
-  @@index([isDelivered], map: "idx_deliverydetails_isdelivered")
-  @@index([newOrderId], map: "idx_deliverydetails_neworder")
-  @@index([userId], map: "idx_deliverydetails_user")
-}
-
-model Role {
-  id          Int       @id @default(autoincrement())
-  name        String    @unique(map: "name")
-  permissions Json?
-  createdAt   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt   DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  order       Int?
-}
-
-model User {
-  phonenumber        String?           @unique @db.VarChar(19)
-  id                 Int               @id @default(autoincrement())
-  admin              Boolean?          @default(false)
-  pictureurl         String?           @db.LongText
-  username           String            @unique(map: "username")
-  password           String
-  role               String?
-  idnumber           Int?              @unique
-  roleId             Int?
-  createdAt          DateTime          @default(now()) @db.DateTime(0)
-  updatedAt          DateTime          @default(now()) @updatedAt @db.DateTime(0)
-  email              String?
-  assignedComplaints Complaint[]       @relation("ComplaintAssignedTo")
-  createdComplaints  Complaint[]       @relation("ComplaintCreatedBy")
-  DeliveryDetails    DeliveryDetails[]
-
-  @@index([username], map: "idx_username")
+  washingLevel           String?   @db.VarChar(100)
+  childcareLevel         String?   @db.VarChar(100)
+  elderlycareLevel       String?   @db.VarChar(100)
+  isApproved             Boolean   @default(false)
+  contractType           String    @default("recruitment") @db.VarChar(124)
+  notes                  String?   @db.VarChar(255)
 }
 
 model tasks {
@@ -151,49 +89,18 @@ model tasks {
   completionNotes String?   @db.VarChar(500)
   parentTaskId    Int?
   notificationsId Int?
-
-  @@index([parentTaskId], map: "fk_tasks_parentTaskId")
-  @@index([assignedBy])
-  @@index([notificationsId], map: "tasks_notificationsId_fkey")
-  @@index([userId], map: "userId")
-}
-
-model weeklyStatus {
-  id          Int       @id @default(autoincrement())
-  homeMaid_id Int
-  status      String?   @db.VarChar(255)
-  date        DateTime? @db.DateTime(0)
-  createdAt   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt   DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  employee    String?   @db.VarChar(255)
-
-  @@index([homeMaid_id], map: "homeMaid_id")
 }
 
 model notifications {
-  id        Int       @id @default(autoincrement())
-  message   String?   @db.VarChar(255)
-  createdAt DateTime? @default(now()) @db.DateTime(0)
-  updatedAt DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  isRead    Boolean?  @default(false)
-  userId    String?   @db.VarChar(100)
-  title     String    @db.VarChar(55)
-  type      String?   @db.VarChar(32)
-  taskId    Int?      @unique
+  id                String    @id @db.VarChar(50)
+  user_id           String?   @db.VarChar(50)
+  title             String?   @db.VarChar(150)
+  message           String?   @db.Text
+  notification_type String?   @db.VarChar(50)
+  is_unread         Boolean?  @default(true)
+  created_at        DateTime? @default(now()) @db.Timestamp(0)
 
-  @@index([id], map: "idx_notifications_id")
-  @@index([userId], map: "userId")
-}
-
-model NotificationRead {
-  id             Int      @id @default(autoincrement())
-  notificationId Int
-  userId         String
-  readAt         DateTime @default(now()) @db.DateTime(0)
-
-  @@unique([notificationId, userId])
-  @@index([notificationId], map: "idx_notificationId")
-  @@index([userId], map: "idx_userId")
+  @@index([user_id], map: "user_id")
 }
 
 model officemssages {
@@ -206,62 +113,20 @@ model officemssages {
   officeName String?
   sender     String?   @db.VarChar(255)
   type       String    @db.VarChar(32)
-
-  @@index([officeName], map: "fk_officeName")
-}
-
-model Template {
-  id            Int       @id @default(autoincrement())
-  title         String    @db.VarChar(255)
-  content       String    @db.Text
-  type          String    @db.VarChar(100)
-  createdAt     DateTime? @default(now()) @db.DateTime(0)
-  updatedAt     DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  dynamicFields String?   @db.Text
-  defaultValues String?   @db.Text
 }
 
 model offices {
-  id                        Int             @id @default(autoincrement())
-  office                    String?         @unique(map: "office") @db.VarChar(512)
-  Country                   String?         @db.VarChar(512)
+  id                        Int      @id @default(autoincrement())
+  office                    String?  @unique(map: "office") @db.VarChar(512)
+  Country                   String?  @db.VarChar(512)
   phoneNumber               String?
-  password                  String?         @db.VarChar(255)
-  office_id                 String?         @db.VarChar(255)
-  url                       String?         @db.VarChar(512)
+  password                  String?  @db.VarChar(255)
+  office_id                 String?  @db.VarChar(255)
+  url                       String?  @db.VarChar(512)
   musanadFinancialRecordsId Int?
   email                     String?
-  language                  String          @default("eng") @db.VarChar(151)
-  commission                Decimal?        @default(0.000000000000000000000000000000)
-  CustomTimeline            CustomTimeline?
-
-  @@index([musanadFinancialRecordsId], map: "offices_musanadFinancialRecordsId_fkey")
-}
-
-model Client {
-  id                Int                 @id @default(autoincrement())
-  isUser            Boolean?
-  fullname          String?
-  notes_date        DateTime?           @db.DateTime(0)
-  email             String?             @unique(map: "email")
-  phonenumber       String?             @unique(map: "phonenumber") @db.VarChar(15)
-  password          String?             @db.VarChar(255)
-  HomeMaidRecod     Int?
-  Source            String?
-  createdAt         DateTime?           @default(now()) @db.DateTime(0)
-  nationalId        String?             @db.VarChar(30)
-  city              String?             @db.VarChar(100)
-  address           String?             @db.VarChar(100)
-  AccountSystemLogs AccountSystemLogs[]
-  HomeMaid          homemaid?           @relation(fields: [HomeMaidRecod], references: [id], map: "fk_client_homemaid")
-  arrivals          arrivallist[]
-  cancelledOrders   cancelledOrders[]
-  externalHomedmaid externalHomedmaid[]
-  rejectedOrders    rejectedOrders[]
-
-  @@index([email], map: "idx_client_email")
-  @@index([HomeMaidRecod], map: "idx_client_homemaid")
-  @@index([phonenumber], map: "idx_client_phonenumber")
+  language                  String   @default("eng") @db.VarChar(151)
+  commission                Decimal? @default(0.000000000000000000000000000000)
 }
 
 model notes {
@@ -270,35 +135,6 @@ model notes {
   clientID  Int?
   createdAt DateTime @default(now()) @db.DateTime(0)
   updatedAt DateTime @updatedAt @db.DateTime(0)
-
-  @@index([clientID], map: "notes_clientID_fkey")
-}
-
-model cashLogs {
-  id        Int       @id @default(autoincrement())
-  Status    String?   @db.VarChar(255)
-  createdAt DateTime? @default(now()) @db.DateTime(0)
-  updatedAt DateTime? @updatedAt @db.DateTime(0)
-  userId    String?   @db.VarChar(255)
-  cashID    Int?
-
-  @@index([cashID], map: "cashID")
-  @@index([userId], map: "userId")
-}
-
-model systemUserLogs {
-  id            Int       @id @default(autoincrement())
-  actionType    String?   @db.VarChar(255)
-  beneficiary   String?   @db.VarChar(255)
-  action        String?   @db.VarChar(255)
-  BeneficiaryId Int?
-  pageRoute     String?   @db.VarChar(255)
-  createdAt     DateTime? @default(now()) @db.DateTime(0)
-  updatedAt     DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  userId        Int
-  details       String    @db.VarChar(1024)
-
-  @@index([userId], map: "userId")
 }
 
 model logs {
@@ -310,93 +146,59 @@ model logs {
   reason     String?   @db.Text
   userId     String?   @db.VarChar(255)
   homemaidId Int?
-
-  @@index([homemaidId], map: "homemaidId")
-  @@index([userId], map: "userId")
-}
-
-model Session {
-  id                Int                 @id @default(autoincrement())
-  reason            String
-  date              DateTime?           @db.DateTime(0)
-  result            String?             @db.Text
-  idnumber          Int
-  createdAt         DateTime?           @default(now()) @db.DateTime(0)
-  updatedAt         DateTime?           @default(now()) @updatedAt @db.DateTime(0)
-  time              String?             @db.Text
-  externalHomedmaid externalHomedmaid[]
-
-  @@index([idnumber], map: "idnumber")
-}
-
-model Rating {
-  id        Int       @id @default(autoincrement())
-  idOrder   Int?
-  isRated   Boolean?  @default(false)
-  reason    String?   @db.VarChar(255)
-  createdAt DateTime? @default(now()) @db.DateTime(0)
-  updatedAt DateTime? @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([idOrder], map: "idOrder")
 }
 
 model neworder {
-  id                       Int               @id @default(autoincrement())
-  ClientName               String?           @db.VarChar(255)
-  PhoneNumber              String?           @db.VarChar(15)
+  id                       Int           @id @default(autoincrement())
+  ClientName               String?       @db.VarChar(255)
+  PhoneNumber              String?       @db.VarChar(15)
   clientID                 Int?
-  HomemaidId               Int?              @unique(map: "HomemaidId")
-  Nationalitycopy          String?           @db.VarChar(255)
-  Name                     String?           @db.VarChar(255)
-  Religion                 String?           @db.VarChar(255)
-  Passportnumber           String?           @db.VarChar(255)
-  clientphonenumber        String?           @db.VarChar(255)
+  HomemaidId               Int?
+  Nationalitycopy          String?       @db.VarChar(255)
+  Name                     String?       @db.VarChar(255)
+  Religion                 String?       @db.VarChar(255)
+  Passportnumber           String?       @db.VarChar(255)
+  clientphonenumber        String?       @db.VarChar(255)
   Picture                  Json?
-  ExperienceYears          String?           @db.VarChar(255)
-  maritalstatus            String?           @db.VarChar(255)
-  Experience               String?           @db.VarChar(255)
-  dateofbirth              String?           @db.VarChar(255)
+  ExperienceYears          String?       @db.VarChar(255)
+  maritalstatus            String?       @db.VarChar(255)
+  Experience               String?       @db.VarChar(255)
+  dateofbirth              String?       @db.VarChar(255)
   Nationality              Json?
   age                      Int?
   flag                     Json?
-  phone                    String?           @db.VarChar(15)
-  bookingstatus            String?           @db.VarChar(255)
-  ages                     String?           @db.VarChar(255)
-  createdAt                DateTime?         @default(now())
-  updatedAt                DateTime?         @updatedAt
-  updatedBy                String?           @db.VarChar(255)
-  ReasonOfRejection        String?           @db.VarChar(255)
+  phone                    String?       @db.VarChar(15)
+  bookingstatus            String?       @db.VarChar(255)
+  ages                     String?       @db.VarChar(255)
+  createdAt                DateTime?     @default(now())
+  updatedAt                DateTime?     @updatedAt
+  updatedBy                String?       @db.VarChar(255)
+  ReasonOfRejection        String?       @db.VarChar(255)
   HomemaidIdCopy           Int?
-  nationalId               String?           @db.VarChar(30)
-  profileStatus            String?           @db.VarChar(255)
-  isHidden                 Boolean           @default(false)
-  typeOfContract           String            @default("recruitment") @db.VarChar(23)
-  PaymentMethod            String?           @db.VarChar(32)
+  nationalId               String?       @db.VarChar(30)
+  profileStatus            String?       @db.VarChar(255)
+  isHidden                 Boolean       @default(false)
+  typeOfContract           String        @default("recruitment") @db.VarChar(23)
+  PaymentMethod            String?       @db.VarChar(32)
   Installments             Int?
   Total                    Float?
-  isContractEnded          Boolean           @default(false)
-  orderDocument            String?           @db.VarChar(522)
-  contract                 String?           @db.VarChar(522)
-  isAvailable              Boolean           @default(true)
+  isContractEnded          Boolean       @default(false)
+  orderDocument            String?       @db.VarChar(522)
+  contract                 String?       @db.VarChar(522)
+  isAvailable              Boolean       @default(true)
   paid                     Float?
-  notes                    String?           @db.VarChar(255)
+  notes                    String?       @db.VarChar(255)
   DeliveryDetailsId        Int?
   clientAccountStatementId Int?
   visaId                   Int?
-  ReasonOfCancellation     String?           @db.VarChar(255)
-  foreignLaborApproval     Boolean?          @default(false)
-  travelPermit             String?           @db.VarChar(255)
+  ReasonOfCancellation     String?       @db.VarChar(255)
+  foreignLaborApproval     Boolean?      @default(false)
+  travelPermit             String?       @db.VarChar(255)
   medicalCheckFile         String?
-  DeliveryDetails          DeliveryDetails[]
+  clientBookingStatus      String?       @default("new_order") @db.VarChar(255)
   arrivals                 arrivallist[]
-  cancelledOrders          cancelledOrders[]
-  visa                     visa?             @relation(fields: [visaId], references: [id])
-  rejectedOrders           rejectedOrders[]
-  tickets_details          tickets_details[]
+  visa                     visa?         @relation(fields: [visaId], references: [id])
 
-  @@index([clientAccountStatementId], map: "fk_neworder_ClientAccountStatement")
-  @@index([DeliveryDetailsId], map: "fk_neworder_DeliveryDetails")
-  @@index([clientID], map: "neworder_clientID_fkey")
   @@index([visaId])
 }
 
@@ -411,32 +213,15 @@ model visa {
   createdAt   DateTime?  @default(now()) @db.DateTime(0)
   updatedAt   DateTime?  @default(now()) @updatedAt @db.DateTime(0)
   orders      neworder[]
-
-  @@index([clientID], map: "fk_visa_client")
-}
-
-model inHouseLocation {
-  id         Int       @id @default(autoincrement())
-  location   String    @db.VarChar(255)
-  createdAt  DateTime? @default(now()) @db.DateTime(0)
-  updatedAt  DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  quantity   Int?      @default(0)
-  supervisor Int?
-  homemaid   homemaid? @relation(fields: [supervisor], references: [id], onUpdate: NoAction, map: "fk_inhouse_supervisor")
-
-  @@index([supervisor], map: "fk_inhouse_supervisor")
-  @@index([location], map: "idx_location")
 }
 
 model emaillist {
   id         Int       @id @default(autoincrement())
   email      String?
   department String?
-  createdAt  DateTime? @default(now()) @db.DateTime(0)
-  updatedAt  DateTime? @default(now()) @updatedAt @db.DateTime(0)
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
   userId     Int?
-
-  @@index([userId], map: "userId")
 }
 
 model arrivallist {
@@ -444,16 +229,15 @@ model arrivallist {
   SponsorName                 String?
   InternalmusanedContract     String?
   SponsorIdnumber             Int?
-  SponsorPhoneNumber          String?
+  SponsorPhoneNumber          String?   @db.VarChar(15)
   PassportNumber              String?
   KingdomentryDate            DateTime?
-  DayDate                     DateTime  @default(now())
+  DayDate                     DateTime? @default(now())
   WorkDuration                String?
   Cost                        String?
   HomemaIdnumber              Int?
   HomemaidName                String?
   Notes                       String?
-  ArrivalCity                 String?
   DateOfApplication           DateTime?
   MusanadDuration             String?
   ExternalDateLinking         DateTime?
@@ -462,27 +246,64 @@ model arrivallist {
   EmbassySealing              DateTime?
   BookinDate                  DateTime?
   GuaranteeDurationEnd        DateTime?
-  medicalCheckFile            String?   @db.VarChar(200)
-  ticketFile                  String?   @db.VarChar(200)
-  visaIssuanceDate            DateTime? @db.DateTime(0)
-  receivingFile               String?   @db.VarChar(200)
-  approvalPayment             String?   @db.VarChar(200)
+  medicalCheckFile            String?
+  ticketFile                  String?
+  visaIssuanceDate            DateTime?
+  receivingFile               String?
+  approvalPayment             String?
   additionalfiles             Json?
   OrderId                     Int?
   externalmusanedContract     String?
   externalmusanadcontractfile String?
   externalOfficeStatus        String?   @db.VarChar(25)
-  finaldestination            String?
   DeliveryDate                DateTime?
   ExternalStatusByoffice      String?
   DeliveryFile                String?
   externalOfficeFile          String?
-  deparatureDate              DateTime?
-  finalDestinationDate        DateTime?
   office                      String?
   visaNumber                  String?
   nationalidNumber            String?   @db.VarChar(25)
   KingdomentryTime            String?   @db.VarChar(30)
+  createdAt                   DateTime? @default(now())
+  updatedAt                   DateTime? @updatedAt
+  travelPermit                String?
+  travelPermitDate            DateTime?
+  foreignLaborApproval        Boolean?  @default(false)
+  foreignLaborApprovalDate    DateTime?
+  medicalCheckDate            DateTime?
+  internalReason              String?
+  externalReason              String?
+  deparatureCityCountry       String?
+  deparatureCityCountryDate   DateTime?
+  deparatureCityCountryTime   String?
+  internaldeparatureCity      String?
+  internaldeparatureDate      DateTime?
+  internaldeparatureTime      String?
+  internalArrivalCity         String?
+  internalArrivalCityDate     DateTime?
+  internalArrivalCityTime     String?   @db.VarChar(30)
+  externaldeparatureCity      String?
+  externaldeparatureDate      DateTime?
+  externaldeparatureTime      String?
+  externalArrivalCity         String?
+  externalArrivalCityDate     DateTime?
+  externalArrivalCityTime     String?   @db.VarChar(30)
+  startWorkingDate            DateTime?
+  endWorkingDate              DateTime?
+  guaranteeStatus             String?   @db.VarChar(100)
+  deparatureTicketFile        String?   @db.VarChar(255)
+  internalTicketFile          String?   @db.VarChar(255)
+  /// ///
+  VisaFile                    String?   @db.VarChar(522)
+  receiptMethod               String?   @db.VarChar(50)
+  externalTicketFile          String?   @db.VarChar(255)
+  arrivalSaudiAirport         String?
+  customTimelineStages        Json?
+  deliveryOfficer             String?
+  ArrivalCity                 String?
+  finaldestination            String?
+  deparatureDate              DateTime?
+  finalDestinationDate        DateTime?
   deparatureTime              String?   @db.VarChar(30)
   finalDestinationTime        String?   @db.VarChar(30)
   startWoringDate             DateTime?
@@ -490,50 +311,11 @@ model arrivallist {
   ArrivalOutSaudiCity         String?   @db.VarChar(100)
   DeparatureFromSaudiDate     DateTime?
   DeparatureFromSaudiTime     String?   @db.VarChar(100)
-  createdAt                   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt                   DateTime? @updatedAt @db.DateTime(0)
-  travelPermit                String?   @db.VarChar(522)
-  travelPermitDate            DateTime? @db.DateTime(0)
-  foreignLaborApproval        Boolean   @default(false)
-  foreignLaborApprovalDate    DateTime? @db.DateTime(0)
-  medicalCheckDate            DateTime? @db.DateTime(0)
-  internalReason              String?   @db.VarChar(255)
-  externalReason              String?   @db.VarChar(255)
-  deparatureCityCountry       String?   @db.VarChar(255)
-  deparatureCityCountryDate   DateTime? @db.DateTime(0)
-  deparatureCityCountryTime   String?   @db.VarChar(150)
-  internaldeparatureCity      String?   @db.VarChar(255)
-  internaldeparatureDate      DateTime? @db.DateTime(0)
-  internaldeparatureTime      String?   @db.VarChar(100)
-  internalArrivalCity         String?   @db.VarChar(255)
-  internalArrivalCityDate     DateTime? @db.DateTime(0)
-  internalArrivalCityTime     String?   @db.VarChar(255)
-  externaldeparatureCity      String?   @db.VarChar(90)
-  externaldeparatureDate      DateTime? @db.DateTime(0)
-  externaldeparatureTime      String?   @db.VarChar(100)
-  externalArrivalCity         String?   @db.VarChar(255)
-  externalArrivalCityDate     DateTime? @db.DateTime(0)
-  externalArrivalCityTime     String?   @db.VarChar(100)
-  startWorkingDate            DateTime? @db.DateTime(0)
-  endWorkingDate              DateTime? @db.DateTime(0)
-  guaranteeStatus             String?   @db.VarChar(255)
-  deparatureTicketFile        String?   @db.VarChar(522)
-  internalTicketFile          String?   @db.VarChar(255)
-  /// ///
-  VisaFile                    String?   @db.VarChar(522)
-  receiptMethod               String?   @db.VarChar(50)
-  externalTicketFile          String?   @db.VarChar(512)
-  arrivalSaudiAirport         String?   @db.VarChar(255)
-  customTimelineStages        Json?
   Order                       neworder? @relation(fields: [OrderId], references: [id])
-  Sponsor                     Client?   @relation(fields: [SponsorIdnumber], references: [id])
+  Sponsor                     client?   @relation(fields: [SponsorIdnumber], references: [id])
 
-  @@index([KingdomentryDate], map: "KingdomentryDate")
   @@index([OrderId], map: "OrderId")
   @@index([OrderId], map: "OrderId_2")
-  @@index([PassportNumber], map: "PassportNumber")
-  @@index([SponsorName], map: "SponsorName")
-  @@index([arrivalSaudiAirport], map: "arrivalSaudiAirport")
   @@index([SponsorIdnumber], map: "arrivallist_SponsorIdnumber_fkey")
 }
 
@@ -541,34 +323,6 @@ model minimumm {
   id        Int       @id @default(autoincrement())
   amount    Decimal?  @db.Decimal(10, 2)
   createdAt DateTime? @default(now()) @db.DateTime(0)
-}
-
-model transferSponsorShips {
-  id                      Int       @id @default(autoincrement())
-  HomeMaidId              Int?
-  NewClientId             Int?
-  OldClientId             Int?
-  EntryDate               DateTime? @db.DateTime(0)
-  Cost                    Decimal?  @db.Decimal(10, 2)
-  Paid                    Decimal?  @db.Decimal(10, 2)
-  ExperimentStart         DateTime? @db.DateTime(0)
-  ExperimentEnd           DateTime? @db.DateTime(0)
-  ExperimentDuration      String?   @db.VarChar(100)
-  TransferOperationNumber String?   @db.VarChar(100)
-  ContractDate            DateTime? @db.DateTime(0)
-  ExperimentRate          String?   @db.VarChar(255)
-  Notes                   String?   @db.Text
-  WorkDuration            String?   @db.VarChar(255)
-  NationalID              String?   @db.VarChar(255)
-  TransferingDate         String?   @db.VarChar(255)
-  file                    String?   @db.VarChar(255)
-  transferStage           String?   @db.VarChar(255)
-  createdAt               DateTime? @default(now()) @db.DateTime(0)
-  updatedAt               DateTime? @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([HomeMaidId])
-  @@index([NewClientId])
-  @@index([OldClientId])
 }
 
 model professions {
@@ -586,70 +340,34 @@ model transactions {
   amount           Decimal?  @db.Decimal(10, 2)
   transaction_type String?   @db.VarChar(255)
   transaction_date DateTime? @default(now()) @db.DateTime(0)
-
-  @@index([order_id], map: "order_id")
 }
 
 model housedworker {
-  id                      Int                 @id @default(autoincrement())
-  homeMaid_id             Int?                @unique(map: "homeMaid_id")
-  Details                 String?             @db.VarChar(255)
-  houseentrydate          DateTime?           @db.DateTime(0)
-  transaction_type        String?             @db.VarChar(255)
-  deliveryDate            DateTime?           @db.DateTime(0)
-  employee                String?             @db.VarChar(100)
-  Reason                  String?             @db.VarChar(255)
+  id                      Int                @id @default(autoincrement())
+  homeMaid_id             Int?               @unique(map: "homeMaid_id")
+  Details                 String?            @db.VarChar(255)
+  houseentrydate          DateTime?          @db.DateTime(0)
+  transaction_type        String?            @db.VarChar(255)
+  deliveryDate            DateTime?          @db.DateTime(0)
+  employee                String?            @db.VarChar(100)
+  Reason                  String?            @db.VarChar(255)
   checkIns_id             Int?
-  status                  String?             @db.VarChar(100)
-  isActive                Boolean             @default(true)
-  deparatureReason        String?             @db.VarChar(100)
-  deparatureHousingDate   DateTime?           @db.DateTime(0)
+  status                  String?            @db.VarChar(100)
+  isActive                Boolean            @default(true)
+  deparatureReason        String?            @db.VarChar(100)
+  deparatureHousingDate   DateTime?          @db.DateTime(0)
   transferSponsorshipData Json?
-  createdAt               DateTime?           @default(now()) @db.Timestamp(0)
-  updatedAt               DateTime?           @default(now()) @updatedAt @db.Timestamp(0)
+  createdAt               DateTime?          @default(now()) @db.Timestamp(0)
+  updatedAt               DateTime?          @default(now()) @updatedAt @db.Timestamp(0)
   location_id             Int
-  isHasEntitlements       Boolean?            @default(false)
-  entitlementsCost        Decimal?            @db.Decimal(10, 2)
-  entitlementReason       String?             @db.VarChar(255)
-  isExternal              Boolean             @default(false)
+  isHasEntitlements       Boolean?           @default(false)
+  entitlementsCost        Decimal?           @db.Decimal(10, 2)
+  entitlementReason       String?            @db.VarChar(255)
+  isExternal              Boolean            @default(false)
   externalHomedmaidId     Int?
-  HousedWorkerNotes       HousedWorkerNotes[]
-  externalHomedmaid       externalHomedmaid?  @relation(fields: [externalHomedmaidId], references: [id])
+  externalHomedmaid       externalhomedmaid? @relation(fields: [externalHomedmaidId], references: [id])
 
   @@index([externalHomedmaidId])
-}
-
-model CheckIn {
-  id              Int       @id @default(autoincrement())
-  housedWorkerId  Int?
-  breakfastOption String?   @db.VarChar(255)
-  breakfastNotes  String?   @db.VarChar(255)
-  lunchOption     String?   @db.VarChar(255)
-  lunchNotes      String?   @db.VarChar(255)
-  supperOption    String?   @db.VarChar(255)
-  supperNotes     String?   @db.VarChar(255)
-  complaint       String?   @db.VarChar(255)
-  createdAt       DateTime? @default(now()) @db.DateTime(0)
-  updatedAt       DateTime? @updatedAt @db.DateTime(0)
-  cost            String?   @db.VarChar(255)
-  lunchCost       Int?
-  breakfastCost   Int?
-  supperCost      Int?
-  CheckDate       DateTime? @db.DateTime(0)
-  isActive        Boolean   @default(true)
-  DailyCost       Decimal?  @db.Decimal(10, 0)
-
-  @@index([housedWorkerId], map: "housedWorkerId")
-}
-
-model Cash {
-  id               Int       @id @default(autoincrement())
-  createdAt        DateTime? @default(now()) @db.DateTime(0)
-  updatedAt        DateTime? @updatedAt @db.DateTime(0)
-  amount           Decimal?  @db.Decimal(10, 2)
-  transaction_type String?   @db.VarChar(100)
-  Month            String?   @db.VarChar(100)
-  Year             String?   @db.VarChar(100)
 }
 
 model income {
@@ -659,41 +377,102 @@ model income {
   amount           Decimal?  @db.Decimal(10, 2)
   transaction_type String?   @db.VarChar(255)
   transaction_date DateTime? @default(now()) @db.DateTime(0)
-
-  @@index([order_id], map: "order_id")
 }
 
-/// Income statement entry for admin page
-model IncomeStatement {
-  id             Int      @id @default(autoincrement())
-  date           DateTime @db.DateTime(0)
-  subCategory_id Int
-  amount         Decimal  @default(0.00) @db.Decimal(12, 2)
-  notes          String?  @db.VarChar(255)
-  createdAt      DateTime @default(now()) @db.DateTime(0)
-  updatedAt      DateTime @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([createdAt], map: "idx_createdAt")
-  @@index([date], map: "idx_date")
-  @@index([subCategory_id], map: "idx_subCategory_id")
+model admins {
+  id       Int    @id @default(autoincrement())
+  username String @unique(map: "username") @db.VarChar(50)
+  password String @db.VarChar(255)
 }
 
-model mainCategory {
-  id          Int     @id @default(autoincrement())
-  name        String  @db.VarChar(255)
-  mathProcess String? @db.VarChar(50)
+model display_order_sequence {
+  id             Int       @id @default(autoincrement())
+  sequence_value Int       @default(0)
+  updated_at     DateTime? @default(now()) @db.Timestamp(0)
 }
 
-model subCategory {
-  id              Int     @id @default(autoincrement())
-  name            String  @db.VarChar(255)
-  mainCategory_id Int
-  values          String? @db.Text
-
-  @@index([mainCategory_id], map: "fk_subcategory_mainCategory")
+model links {
+  id           Int       @id @default(autoincrement())
+  original_url String    @db.VarChar(255)
+  short_code1  String    @unique(map: "short_code1") @db.VarChar(10)
+  short_code2  String    @unique(map: "short_code2") @db.VarChar(10)
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  utm_source   String?   @db.VarChar(255)
+  utm_medium   String?   @db.VarChar(255)
+  utm_campaign String?   @db.VarChar(255)
+  utm_term     String?   @db.VarChar(255)
+  utm_content  String?   @db.VarChar(255)
 }
 
-model AutomaticEmployee {
+model percentage {
+  id               Int      @id @default(autoincrement())
+  malePercentage   Decimal? @db.Decimal(10, 2)
+  femalePercentage Decimal? @db.Decimal(10, 2)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now())
+}
+
+model tickets_details {
+  id                Int       @id @default(autoincrement())
+  order_id          Int?
+  createdAt         DateTime? @default(now()) @db.DateTime(0)
+  updatedAt         DateTime? @default(now()) @db.DateTime(0)
+  ticketFile        String?   @db.VarChar(1024)
+  reference_id      String?   @db.VarChar(1024)
+  airlines          String?   @db.VarChar(1024)
+  flight_number     String?   @db.VarChar(1024)
+  departure_date    DateTime? @db.DateTime(0)
+  departure_time    String?   @db.VarChar(1024)
+  arrival_date      DateTime? @db.DateTime(0)
+  arrival_time      String?   @db.VarChar(1024)
+  departure_airport String?   @db.VarChar(1024)
+  arrival_airport   String?   @db.VarChar(1024)
+}
+
+model accountsystemlogs {
+  id             Int       @id @default(autoincrement())
+  action         String?
+  actionNotes    String?
+  actionType     String?
+  actionStatus   String?
+  actionAmount   Decimal?
+  actionClientId Int?
+  actionUserId   Int?
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime?
+
+  @@index([actionClientId], map: "idx_actionClientId")
+  @@index([actionUserId], map: "idx_actionUserId")
+}
+
+model attachments {
+  id             String    @id @db.VarChar(50)
+  case_id        String?   @db.VarChar(50)
+  transaction_id String?   @db.VarChar(50)
+  name           String    @db.VarChar(255)
+  file_type      String?   @db.VarChar(50)
+  file_size      String?   @db.VarChar(50)
+  file_url       String?   @db.Text
+  uploaded_at    DateTime? @default(now()) @db.Timestamp(0)
+  violation_id   String?   @db.VarChar(50)
+
+  @@index([case_id], map: "case_id")
+  @@index([violation_id], map: "idx_violation_id")
+}
+
+model audit_logs {
+  id            String    @id @db.VarChar(50)
+  user_id       String?   @db.VarChar(50)
+  user_name     String?   @db.VarChar(100)
+  action_type   String?   @db.VarChar(100)
+  details       String?   @db.Text
+  log_timestamp DateTime? @default(now()) @db.DateTime(0)
+  user_role     String?   @db.VarChar(50)
+
+  @@index([user_id], map: "user_id")
+}
+
+model automaticemployee {
   id                Int      @id @default(autoincrement())
   name              String?
   age               String?
@@ -706,8 +485,8 @@ model AutomaticEmployee {
   passportStartDate String?
   passportEndDate   String?
   contractDuration  String?
-  weight            String?
-  height            String?
+  weight            Int?
+  height            Int?
   salary            String?
   lang_english      String?  @db.VarChar(50)
   lang_arabic       String?  @db.VarChar(50)
@@ -719,285 +498,128 @@ model AutomaticEmployee {
   profileImage      String?  @db.VarChar(500)
   fullImage         String?  @db.VarChar(500)
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @default(now()) @updatedAt
+  updatedAt         DateTime
 }
 
-model foreignOfficeFinancial {
-  id             Int       @id @default(autoincrement())
-  date           DateTime  @db.DateTime(0)
-  clientName     String    @db.VarChar(255)
-  contractNumber String?   @db.VarChar(255)
-  payment        String?   @db.VarChar(255)
-  description    String?   @db.VarChar(500)
-  credit         Decimal?  @default(0.00) @db.Decimal(18, 2)
-  debit          Decimal?  @default(0.00) @db.Decimal(18, 2)
-  balance        Decimal?  @default(0.00) @db.Decimal(18, 2)
-  invoice        String?   @db.VarChar(500)
-  officeId       Int
-  createdAt      DateTime? @default(now()) @db.DateTime(0)
-  updatedAt      DateTime? @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([officeId], map: "fk_foreignOfficeFinancial_offices")
-}
-
-model ClientAccountStatement {
+model cancelledorders {
   id                   Int       @id @default(autoincrement())
-  clientId             Int
-  contractNumber       String?   @db.VarChar(255)
-  officeName           String?   @db.VarChar(255)
-  totalRevenue         Decimal?  @default(0.00) @db.Decimal(18, 2)
-  totalExpenses        Decimal?  @default(0.00) @db.Decimal(18, 2)
-  netAmount            Decimal?  @default(0.00) @db.Decimal(18, 2)
-  contractStatus       String?   @db.VarChar(100)
-  notes                String?   @db.VarChar(500)
-  createdAt            DateTime? @default(now()) @db.DateTime(0)
-  updatedAt            DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  orderId              Int?
-  commissionPercentage Decimal?  @db.Decimal(10, 0)
-  masandTransferAmount Decimal?  @db.Decimal(10, 0)
-  attachment           String?   @db.VarChar(500)
-
-  @@index([clientId], map: "fk_ClientAccountStatement_Client")
-  @@index([orderId], map: "fk_ClientAccountStatement_orderId")
+  order_id             Int
+  HomeMaidId           Int?
+  ReasonOfCancellation String?   @db.VarChar(2048)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime
+  clientId             Int?
+  CancellationDate     DateTime?
 }
 
-model ClientAccountEntry {
-  id           Int       @id @default(autoincrement())
-  statementId  Int
-  date         DateTime  @db.DateTime(0)
-  description  String    @db.VarChar(500)
-  debit        Decimal?  @default(0.00) @db.Decimal(18, 2)
-  credit       Decimal?  @default(0.00) @db.Decimal(18, 2)
-  balance      Decimal?  @default(0.00) @db.Decimal(18, 2)
-  entryType    String?   @db.VarChar(100)
-  createdAt    DateTime? @default(now()) @db.DateTime(0)
-  updatedAt    DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  isEditable   Boolean?
-  displayOrder Int?
-
-  @@index([statementId], map: "fk_ClientAccountEntry_Statement")
+model cases {
+  id                String    @id @db.VarChar(50)
+  case_no           String    @unique(map: "case_no") @db.VarChar(50)
+  court_type        String?   @db.VarChar(150)
+  case_type         String?   @db.VarChar(150)
+  first_party       String?   @db.VarChar(255)
+  second_party      String?   @db.VarChar(255)
+  status            String?   @db.VarChar(50)
+  next_session_date DateTime? @db.Date
+  next_session_time DateTime? @db.Time(0)
+  created_at        DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at        DateTime? @db.Timestamp(0)
+  final_judgment    String?   @db.Text
+  execution_status  String?   @db.VarChar(255)
+  execution_notes   String?   @db.Text
 }
 
-model EmployeeCash {
+model cash {
   id               Int       @id @default(autoincrement())
-  employeeId       Int?
-  cashNumber       String?   @db.VarChar(100)
-  receivedAmount   Decimal   @default(0.000000) @db.Decimal(19, 6)
-  expenseAmount    Decimal   @default(0.000000) @db.Decimal(19, 6)
-  remainingBalance Decimal   @default(0.000000) @db.Decimal(19, 6)
-  description      String?   @db.VarChar(500)
-  attachment       String?   @db.VarChar(255)
-  transactionDate  DateTime? @default(now()) @db.DateTime(0)
-  createdAt        DateTime? @default(now()) @db.DateTime(0)
-  updatedAt        DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  isTemporary      Boolean?  @default(false)
-
-  @@index([employeeId], map: "fk_employee_cash")
+  createdAt        DateTime? @default(now())
+  updatedAt        DateTime?
+  amount           Decimal?
+  transaction_type String?   @db.VarChar(100)
+  Month            String?   @db.VarChar(100)
+  Year             String?   @db.VarChar(100)
 }
 
-model Employee {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(255)
-  position    String?   @db.VarChar(255)
-  department  String?   @db.VarChar(255)
-  phoneNumber String?   @db.VarChar(20)
-  email       String?   @db.VarChar(255)
-  nationalId  String?   @db.VarChar(20)
-  address     String?   @db.VarChar(500)
-  hireDate    DateTime? @db.DateTime(0)
-  salary      Decimal?  @default(0.00) @db.Decimal(15, 2)
-  isActive    Boolean?  @default(true)
-  notes       String?   @db.VarChar(1000)
-  createdAt   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt   DateTime? @default(now()) @updatedAt @db.DateTime(0)
+model cashlogs {
+  id        Int       @id @default(autoincrement())
+  Status    String?   @db.VarChar(255)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime?
+  userId    String?
+  cashID    Int?
 }
 
-model EmployeeCashDetail {
-  id          Int       @id @default(autoincrement())
-  employeeId  Int
-  date        DateTime? @default(now()) @db.DateTime(0)
-  month       String?   @db.VarChar(50)
-  mainAccount String?   @db.VarChar(255)
-  subAccount  String?   @db.VarChar(255)
-  client      String?   @db.VarChar(255)
-  debit       Decimal   @default(0.000000) @db.Decimal(19, 6)
-  credit      Decimal   @default(0.000000) @db.Decimal(19, 6)
-  balance     Decimal   @default(0.000000) @db.Decimal(19, 6)
-  description String?   @db.VarChar(500)
-  attachment  String?   @db.VarChar(255)
-  createdAt   DateTime? @default(now()) @db.DateTime(0)
-  updatedAt   DateTime? @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([employeeId], map: "fk_employee_cash_detail")
+model checkin {
+  id              Int       @id @default(autoincrement())
+  housedWorkerId  Int
+  breakfastOption String?   @db.VarChar(255)
+  breakfastNotes  String?   @db.VarChar(255)
+  lunchOption     String?   @db.VarChar(255)
+  lunchNotes      String?   @db.VarChar(255)
+  supperOption    String?   @db.VarChar(255)
+  supperNotes     String?   @db.VarChar(255)
+  complaint       String?   @db.VarChar(255)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
+  cost            String?
+  lunchCost       Int?
+  breakfastCost   Int?
+  supperCost      Int?
+  CheckDate       DateTime?
+  isActive        Boolean?  @default(true)
+  DailyCost       Decimal?
 }
 
-model MusanadFinancialRecord {
-  id             Int      @id @default(autoincrement())
-  clientId       Int?
-  clientName     String   @db.VarChar(255)
-  officeId       Int?
-  officeName     String   @db.VarChar(255)
-  orderId        Int?
-  orderNumber    String?  @db.VarChar(100)
-  nationality    String   @db.VarChar(100)
-  workerName     String?  @db.VarChar(255)
-  orderDate      DateTime @db.DateTime(0)
-  transferDate   DateTime @db.DateTime(0)
-  transferNumber String   @db.VarChar(100)
-  revenue        Decimal  @default(0.00) @db.Decimal(15, 2)
-  expenses       Decimal  @default(0.00) @db.Decimal(15, 2)
-  netAmount      Decimal  @default(0.00) @db.Decimal(15, 2)
-  status         String   @default("in_process") @db.VarChar(50)
-  notes          String?  @db.VarChar(1000)
-  createdBy      String?  @db.VarChar(100)
-  updatedBy      String?  @db.VarChar(100)
-  createdAt      DateTime @default(now()) @db.DateTime(0)
-  updatedAt      DateTime @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([clientId], map: "idx_clientId")
-  @@index([officeId], map: "idx_officeId")
-  @@index([orderDate], map: "idx_orderDate")
-  @@index([orderId], map: "idx_orderId")
-  @@index([status], map: "idx_status")
-  @@index([transferDate], map: "idx_transferDate")
+model client {
+  id            Int           @id @default(autoincrement())
+  isUser        Boolean?
+  fullname      String?
+  notes_date    DateTime?
+  email         String?       @unique(map: "email")
+  phonenumber   String?       @unique(map: "phonenumber") @db.VarChar(15)
+  password      String?
+  HomeMaidRecod Int?
+  Source        String?
+  createdAt     DateTime?     @default(now())
+  nationalId    String?       @db.VarChar(30)
+  city          String?       @db.VarChar(100)
+  address       String?       @db.VarChar(100)
+  arrivals      arrivallist[]
 }
 
-model TaxDeclaration {
-  id            Int      @id @default(autoincrement())
-  period        String   @db.VarChar(50)
-  year          Int
-  month         Int
-  status        String   @default("draft") @db.VarChar(50)
-  taxableSales  Decimal  @default(0.00) @db.Decimal(15, 2)
-  zeroRateSales Decimal  @default(0.00) @db.Decimal(15, 2)
-  adjustments   Decimal  @default(0.00) @db.Decimal(15, 2)
-  taxValue      Decimal  @default(0.00) @db.Decimal(15, 2)
-  createdBy     String?  @db.VarChar(100)
-  updatedBy     String?  @db.VarChar(100)
-  createdAt     DateTime @default(now()) @db.DateTime(0)
-  updatedAt     DateTime @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([status], map: "idx_status")
-  @@index([year, month], map: "idx_year_month")
+model clientaccountentry {
+  id           Int      @id @default(autoincrement())
+  statementId  Int
+  date         DateTime
+  description  String   @db.VarChar(500)
+  debit        Decimal  @default(0.000000000000000000000000000000)
+  credit       Decimal  @default(0.000000000000000000000000000000)
+  balance      Decimal  @default(0.000000000000000000000000000000)
+  entryType    String?  @db.VarChar(100)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  isEditable   Boolean?
+  displayOrder Int?     @default(0)
 }
 
-model TaxSalesRecord {
-  id                Int             @id @default(autoincrement())
-  taxDeclarationId  Int?
-  salesDetailId     Int?
-  category          String          @db.VarChar(255)
-  description       String          @db.VarChar(500)
-  amount            Decimal         @default(0.00) @db.Decimal(15, 2)
-  adjustment        Decimal         @default(0.00) @db.Decimal(15, 2)
-  total             Decimal         @default(0.00) @db.Decimal(15, 2)
-  taxRate           Decimal         @default(15.00) @db.Decimal(5, 2)
-  customerId        Int?
-  customerName      String?         @db.VarChar(255)
-  date              DateTime?       @default(now()) @db.DateTime(0)
-  salesBeforeTax    Decimal?        @default(0.00) @db.Decimal(10, 2)
-  taxValue          Decimal?        @default(0.00) @db.Decimal(10, 2)
-  salesIncludingTax Decimal?        @default(0.00) @db.Decimal(10, 2)
-  paymentMethod     String?         @db.VarChar(255)
-  attachment        String?         @db.VarChar(500)
-  createdAt         DateTime        @default(now()) @db.DateTime(0)
-  updatedAt         DateTime        @default(now()) @updatedAt @db.DateTime(0)
-  TaxSalesDetail    TaxSalesDetail? @relation(fields: [salesDetailId], references: [id])
-
-  @@index([salesDetailId])
-  @@index([customerId], map: "idx_customerId")
-  @@index([date], map: "idx_date")
-  @@index([taxDeclarationId], map: "idx_taxDeclarationId")
+model clientaccountstatement {
+  id                   Int      @id @default(autoincrement())
+  clientId             Int
+  contractNumber       String?  @db.VarChar(255)
+  officeName           String?  @db.VarChar(255)
+  totalRevenue         Decimal  @default(0.000000000000000000000000000000)
+  totalExpenses        Decimal  @default(0.000000000000000000000000000000)
+  netAmount            Decimal  @default(0.000000000000000000000000000000)
+  contractStatus       String?  @db.VarChar(100)
+  notes                String?  @db.VarChar(500)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+  orderId              Int?
+  commissionPercentage Decimal? @default(0.000000000000000000000000000000)
+  masandTransferAmount Decimal? @default(0.000000000000000000000000000000)
+  attachment           String?  @db.VarChar(500)
 }
 
-model TaxPurchaseRecord {
-  id                    Int                @id @default(autoincrement())
-  taxDeclarationId      Int?
-  purchaseDetailId      Int?
-  supplierId            Int?
-  category              String             @db.VarChar(255)
-  description           String             @db.VarChar(500)
-  amount                Decimal            @default(0.00) @db.Decimal(15, 2)
-  adjustment            Decimal            @default(0.00) @db.Decimal(15, 2)
-  total                 Decimal            @default(0.00) @db.Decimal(15, 2)
-  taxRate               Decimal            @default(15.00) @db.Decimal(5, 2)
-  supplierName          String?            @db.VarChar(255)
-  date                  DateTime?          @default(now()) @db.DateTime(0)
-  status                String?            @db.VarChar(255)
-  invoiceNumber         String?            @db.VarChar(255)
-  supplyType            String?            @db.VarChar(255)
-  purchasesBeforeTax    Decimal?           @default(0.00) @db.Decimal(10, 2)
-  taxValue              Decimal?           @default(0.00) @db.Decimal(10, 2)
-  purchasesIncludingTax Decimal?           @default(0.00) @db.Decimal(10, 2)
-  attachment            String?            @db.VarChar(500)
-  createdAt             DateTime           @default(now()) @db.DateTime(0)
-  updatedAt             DateTime           @default(now()) @updatedAt @db.DateTime(0)
-  TaxPurchaseDetail     TaxPurchaseDetail? @relation(fields: [purchaseDetailId], references: [id])
-  TaxSupplier           TaxSupplier?       @relation(fields: [supplierId], references: [id])
-
-  @@index([purchaseDetailId])
-  @@index([supplierId])
-  @@index([date], map: "idx_date")
-  @@index([taxDeclarationId], map: "idx_taxDeclarationId")
-}
-
-model TaxVATRecord {
-  id               Int      @id @default(autoincrement())
-  taxDeclarationId Int
-  category         String   @db.VarChar(255)
-  description      String   @db.VarChar(500)
-  amount           Decimal  @default(0.00) @db.Decimal(15, 2)
-  adjustment       Decimal  @default(0.00) @db.Decimal(15, 2)
-  total            Decimal  @default(0.00) @db.Decimal(15, 2)
-  createdAt        DateTime @default(now()) @db.DateTime(0)
-  updatedAt        DateTime @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([taxDeclarationId], map: "idx_taxDeclarationId")
-}
-
-model OfficeSlaRule {
-  id         Int       @id @default(autoincrement())
-  officeName String    @db.VarChar(255)
-  stage      String    @db.VarChar(100)
-  days       Int
-  createdAt  DateTime? @default(now()) @db.DateTime(0)
-  updatedAt  DateTime? @default(now()) @updatedAt @db.DateTime(0)
-
-  @@index([officeName, stage], map: "idx_OfficeSlaRule_office_stage")
-  @@index([officeName], map: "idx_officeName")
-  @@index([stage], map: "idx_stage")
-}
-
-model AccountSystemLogs {
-  id             Int       @id @default(autoincrement())
-  action         String?   @db.VarChar(255)
-  actionNotes    String?   @db.VarChar(255)
-  actionType     String?   @db.VarChar(255)
-  actionStatus   String?   @db.VarChar(255)
-  actionAmount   Decimal?  @db.Decimal(10, 2)
-  actionClientId Int?
-  actionUserId   Int?
-  createdAt      DateTime? @default(now()) @db.DateTime(0)
-  updatedAt      DateTime? @default(now()) @updatedAt @db.DateTime(0)
-  actionClient   Client?   @relation(fields: [actionClientId], references: [id], onUpdate: NoAction, map: "AccountSystemLogs_ibfk_1")
-
-  @@index([actionClientId], map: "idx_actionClientId")
-  @@index([actionUserId], map: "idx_actionUserId")
-}
-
-model CustomTimeline {
-  id        Int      @id @default(autoincrement())
-  name      String?  @db.VarChar(255)
-  stages    Json
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now()) @db.DateTime(0)
-  updatedAt DateTime @default(now()) @updatedAt @db.DateTime(0)
-  officeId  Int      @unique
-  offices   offices  @relation(fields: [officeId], references: [id], onDelete: Cascade)
-
-  @@index([officeId])
-}
-
-model Complaint {
+model complaint {
   id              Int       @id @default(autoincrement())
   title           String?   @db.VarChar(255)
   description     String?   @db.Text
@@ -1006,18 +628,113 @@ model Complaint {
   createdById     Int
   assignedToId    Int?
   resolutionNotes String?   @db.Text
-  resolvedAt      DateTime? @db.DateTime(0)
-  createdAt       DateTime  @default(now()) @db.DateTime(0)
-  updatedAt       DateTime  @default(now()) @updatedAt @db.DateTime(0)
-  assignedTo      User?     @relation("ComplaintAssignedTo", fields: [assignedToId], references: [id], map: "fk_complaint_assigned_to")
-  createdBy       User      @relation("ComplaintCreatedBy", fields: [createdById], references: [id], onDelete: Cascade, map: "fk_complaint_created_by")
+  resolvedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime
 
   @@index([assignedToId], map: "fk_complaint_assigned_to")
   @@index([createdById], map: "fk_complaint_created_by")
   @@index([status], map: "idx_complaint_status")
 }
 
-model FemalWorker {
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model customtimeline {
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  stages    Json
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  officeId  Int
+}
+
+model deliverydetails {
+  id             Int       @id @default(autoincrement())
+  deliveryDate   DateTime?
+  deliveryTime   String?   @db.VarChar(100)
+  deliveryFile   String?   @db.VarChar(255)
+  deliveryNotes  String?   @db.VarChar(255)
+  cost           Decimal?
+  newOrderId     Int?
+  isDelivered    Boolean?  @default(false)
+  userId         Int?
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime?
+  completionDate DateTime? @default(now())
+}
+
+model employee {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  position    String?   @db.VarChar(255)
+  department  String?   @db.VarChar(255)
+  phoneNumber String?   @db.VarChar(20)
+  email       String?   @db.VarChar(255)
+  nationalId  String?   @db.VarChar(20)
+  address     String?   @db.VarChar(500)
+  hireDate    DateTime?
+  salary      Decimal?  @default(0.000000000000000000000000000000)
+  isActive    Boolean   @default(true)
+  notes       String?   @db.VarChar(1000)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+}
+
+model employeecash {
+  id               Int      @id @default(autoincrement())
+  employeeId       Int?
+  cashNumber       String?  @db.VarChar(100)
+  receivedAmount   Decimal  @default(0.000000000000000000000000000000)
+  expenseAmount    Decimal  @default(0.000000000000000000000000000000)
+  remainingBalance Decimal  @default(0.000000000000000000000000000000)
+  description      String?  @db.VarChar(500)
+  attachment       String?  @db.VarChar(255)
+  transactionDate  DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+  isTemporary      Boolean  @default(false)
+}
+
+model employeecashdetail {
+  id          Int      @id @default(autoincrement())
+  employeeId  Int
+  date        DateTime @default(now())
+  month       String?  @db.VarChar(50)
+  mainAccount String?  @db.VarChar(255)
+  subAccount  String?  @db.VarChar(255)
+  client      String?  @db.VarChar(255)
+  debit       Decimal  @default(0.000000000000000000000000000000)
+  credit      Decimal  @default(0.000000000000000000000000000000)
+  balance     Decimal  @default(0.000000000000000000000000000000)
+  description String?  @db.VarChar(500)
+  attachment  String?  @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model externalhomedmaid {
+  id                Int            @id @default(autoincrement())
+  name              String?        @db.VarChar(100)
+  nationality       String?        @db.VarChar(100)
+  nationalitySource String?        @db.VarChar(100)
+  passportNumber    String?        @db.VarChar(100)
+  passportStartDate String?        @db.VarChar(100)
+  passportEndDate   String?        @db.VarChar(100)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime
+  sessionId         Int?
+  type              String?        @db.VarChar(50)
+  dateofbirth       DateTime?
+  phone             String?        @db.VarChar(20)
+  clientId          Int?
+  session           session?       @relation(fields: [sessionId], references: [id], onDelete: Cascade, map: "externalHomedmaid_sessionId_fkey")
+  housedworker      housedworker[]
+
+  @@index([sessionId], map: "externalHomedmaid_sessionId_idx")
+}
+
+model femalworker {
   id                      Int      @id @default(autoincrement())
   clientname              String
   insurance               String
@@ -1041,19 +758,96 @@ model FemalWorker {
   notes                   String
 }
 
-model HousedWorkerNotes {
-  id             Int          @id @default(autoincrement())
-  housedWorkerId Int
-  notes          String?      @db.Text
-  createdAt      DateTime?    @default(now()) @db.DateTime(0)
-  updatedAt      DateTime?    @default(now()) @db.DateTime(0)
-  employee       String?      @db.VarChar(100)
-  housedworker   housedworker @relation(fields: [housedWorkerId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_housed_worker_notes")
-
-  @@index([housedWorkerId], map: "fk_housed_worker_notes")
+model foreignofficefinancial {
+  id             Int      @id @default(autoincrement())
+  date           DateTime
+  clientName     String   @db.VarChar(255)
+  contractNumber String?  @db.VarChar(255)
+  payment        String?  @db.VarChar(255)
+  description    String?  @db.VarChar(500)
+  credit         Decimal  @default(0.000000000000000000000000000000)
+  debit          Decimal  @default(0.000000000000000000000000000000)
+  balance        Decimal  @default(0.000000000000000000000000000000)
+  invoice        String?  @db.VarChar(500)
+  officeId       Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
 }
 
-model MaleWorker {
+model housedworkernotes {
+  id             Int       @id @default(autoincrement())
+  housedWorkerId Int
+  notes          String?   @db.Text
+  createdAt      DateTime? @default(now()) @db.DateTime(0)
+  updatedAt      DateTime? @default(now()) @db.DateTime(0)
+  employee       String?   @db.VarChar(100)
+}
+
+model incomestatement {
+  id             Int      @id @default(autoincrement())
+  date           DateTime @db.DateTime(0)
+  subCategory_id Int
+  amount         Decimal  @default(0.00) @db.Decimal(12, 2)
+  notes          String?  @db.VarChar(255)
+  createdAt      DateTime @default(now()) @db.DateTime(0)
+  updatedAt      DateTime @default(now()) @db.DateTime(0)
+}
+
+model inhouselocation {
+  id         Int       @id @default(autoincrement())
+  location   String    @db.VarChar(255)
+  createdAt  DateTime? @default(now()) @db.DateTime(0)
+  updatedAt  DateTime? @default(now()) @db.DateTime(0)
+  quantity   Int?      @default(0)
+  supervisor Int?
+}
+
+model investor_history {
+  id           String    @id @db.VarChar(50)
+  investor_id  String?   @db.VarChar(50)
+  author_id    String?   @db.VarChar(50)
+  author_name  String?   @db.VarChar(100)
+  history_date DateTime? @db.DateTime(0)
+  note         String?   @db.Text
+
+  @@index([investor_id], map: "investor_id")
+}
+
+model investors {
+  id                            String    @id @db.VarChar(50)
+  name                          String    @db.VarChar(255)
+  investor_national_id          String    @unique(map: "investor_national_id") @db.VarChar(50)
+  last_update_at                DateTime? @db.DateTime(0)
+  next_followup_at              DateTime? @db.Date
+  total_contracts               Int?      @default(0)
+  defaulted_investor_count      Int?      @default(0)
+  active_contracts_count        Int?      @default(0)
+  defaulted_establishment_count Int?      @default(0)
+  last_call_notes               String?   @db.Text
+  follower_id                   String?   @db.VarChar(50)
+  deleted_at                    DateTime? @db.Timestamp(0)
+
+  @@index([follower_id], map: "fk_investors_follower")
+}
+
+model lawyer_fees {
+  id           String    @id @db.VarChar(50)
+  contract_no  String    @db.VarChar(100)
+  national_id  String    @db.VarChar(50)
+  amount       Decimal   @db.Decimal(15, 2)
+  execution_no String?   @db.VarChar(100)
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  updated_at   DateTime? @default(now()) @db.Timestamp(0)
+  deleted_at   DateTime? @db.Timestamp(0)
+}
+
+model maincategory {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(255)
+  mathProcess String? @db.VarChar(50)
+}
+
+model maleworker {
   id                      Int      @id @default(autoincrement())
   clientname              String
   insurance               String
@@ -1078,40 +872,304 @@ model MaleWorker {
   notes                   String
 }
 
-model TaxPurchaseDetail {
+model musanadfinancialrecord {
+  id             Int      @id @default(autoincrement())
+  clientId       Int?
+  clientName     String   @db.VarChar(255)
+  officeId       Int?
+  officeName     String   @db.VarChar(255)
+  orderId        Int?
+  orderNumber    String?  @db.VarChar(100)
+  nationality    String   @db.VarChar(100)
+  workerName     String?  @db.VarChar(255)
+  orderDate      DateTime @db.DateTime(0)
+  transferDate   DateTime @db.DateTime(0)
+  transferNumber String   @db.VarChar(100)
+  revenue        Decimal  @default(0.00) @db.Decimal(15, 2)
+  expenses       Decimal  @default(0.00) @db.Decimal(15, 2)
+  netAmount      Decimal  @default(0.00) @db.Decimal(15, 2)
+  status         String   @default("in_process") @db.VarChar(50)
+  notes          String?  @db.VarChar(1000)
+  createdBy      String?  @db.VarChar(100)
+  updatedBy      String?  @db.VarChar(100)
+  createdAt      DateTime @default(now()) @db.DateTime(0)
+  updatedAt      DateTime @default(now()) @db.DateTime(0)
+
+  @@index([clientId], map: "idx_clientId")
+  @@index([officeId], map: "idx_officeId")
+  @@index([orderDate], map: "idx_orderDate")
+  @@index([orderId], map: "idx_orderId")
+  @@index([status], map: "idx_status")
+  @@index([transferDate], map: "idx_transferDate")
+}
+
+model notificationread {
+  id             Int      @id @default(autoincrement())
+  notificationId Int
+  userId         String
+  readAt         DateTime @default(now()) @db.DateTime(0)
+
+  @@unique([notificationId, userId], map: "NotificationRead_notificationId_userId_key")
+  @@index([notificationId], map: "idx_notificationId")
+  @@index([userId], map: "idx_userId")
+}
+
+model officeslarule {
+  id         Int       @id @default(autoincrement())
+  officeName String    @db.VarChar(255)
+  stage      String    @db.VarChar(100)
+  days       Int
+  createdAt  DateTime? @default(now()) @db.DateTime(0)
+  updatedAt  DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([officeName], map: "idx_officeName")
+  @@index([stage], map: "idx_stage")
+}
+
+model personal_tasks {
+  id          String                   @id @db.VarChar(50)
+  user_id     String?                  @db.VarChar(50)
+  title       String                   @db.VarChar(255)
+  description String?                  @db.Text
+  due_date    DateTime?                @db.Date
+  priority    personal_tasks_priority? @default(MEDIUM)
+  status      personal_tasks_status?   @default(PENDING)
+  created_at  DateTime?                @default(now()) @db.Timestamp(0)
+  deleted_at  DateTime?                @db.Timestamp(0)
+
+  @@index([user_id], map: "user_id")
+}
+
+model rating {
+  id        Int       @id @default(autoincrement())
+  idOrder   Int?
+  isRated   Boolean?  @default(false)
+  reason    String?   @db.VarChar(255)
+  stars     Int?
+  createdAt DateTime? @default(now()) @db.DateTime(0)
+  updatedAt DateTime? @default(now()) @db.DateTime(0)
+}
+
+model rejectedorders {
+  id                Int       @id @default(autoincrement())
+  order_id          Int
+  HomeMaidId        Int?
+  ReasonOfRejection String?   @db.VarChar(2048)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now())
+  clientId          Int?
+  RejectionDate     DateTime?
+}
+
+model role {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique(map: "name")
+  permissions Json?
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+  updatedAt   DateTime? @default(now()) @db.DateTime(0)
+  order       Int?
+}
+
+model role_permissions {
+  role_id    String @db.VarChar(50)
+  permission String @db.VarChar(100)
+
+  @@id([role_id, permission])
+}
+
+model roles {
+  id          String    @id @db.VarChar(50)
+  name        String    @db.VarChar(100)
+  description String?   @db.Text
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model session {
+  id                Int                 @id @default(autoincrement())
+  reason            String
+  date              DateTime?           @db.DateTime(0)
+  result            String?             @db.Text
+  idnumber          Int
+  createdAt         DateTime?           @default(now()) @db.DateTime(0)
+  updatedAt         DateTime?           @default(now()) @db.DateTime(0)
+  time              String?             @db.Text
+  externalhomedmaid externalhomedmaid[]
+}
+
+model sessions {
+  id            String    @id @db.VarChar(50)
+  case_id       String?   @db.VarChar(50)
+  session_order String?   @db.VarChar(100)
+  date          DateTime? @db.Date
+  time          DateTime? @db.Time(0)
+  note          String?   @db.Text
+  outcome       String?   @db.Text
+  deleted_at    DateTime? @db.Timestamp(0)
+
+  @@index([case_id], map: "case_id")
+}
+
+model subcategory {
+  id              Int     @id @default(autoincrement())
+  name            String  @db.VarChar(255)
+  mainCategory_id Int
+  values          String? @db.Text
+}
+
+model systemuserlogs {
+  id            Int       @id @default(autoincrement())
+  actionType    String?   @db.VarChar(255)
+  beneficiary   String?   @db.VarChar(255)
+  action        String?   @db.VarChar(255)
+  BeneficiaryId Int?
+  pageRoute     String?   @db.VarChar(255)
+  createdAt     DateTime? @default(now()) @db.DateTime(0)
+  updatedAt     DateTime? @default(now()) @db.DateTime(0)
+  userId        Int
+  details       String    @db.VarChar(1024)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model taxdeclaration {
+  id            Int      @id @default(autoincrement())
+  period        String   @db.VarChar(50)
+  year          Int
+  month         Int
+  status        String   @default("draft") @db.VarChar(50)
+  taxableSales  Decimal  @default(0.00) @db.Decimal(15, 2)
+  zeroRateSales Decimal  @default(0.00) @db.Decimal(15, 2)
+  adjustments   Decimal  @default(0.00) @db.Decimal(15, 2)
+  taxValue      Decimal  @default(0.00) @db.Decimal(15, 2)
+  createdBy     String?  @db.VarChar(100)
+  updatedBy     String?  @db.VarChar(100)
+  createdAt     DateTime @default(now()) @db.DateTime(0)
+  updatedAt     DateTime @default(now()) @db.DateTime(0)
+
+  @@index([status], map: "idx_status")
+  @@index([year, month], map: "idx_year_month")
+}
+
+model taxpurchasedetail {
   id                Int                 @id @default(autoincrement())
   name              String              @db.VarChar(255)
   displayOrder      Int                 @default(0)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now())
-  TaxPurchaseRecord TaxPurchaseRecord[]
+  taxpurchaserecord taxpurchaserecord[]
 
-  @@index([displayOrder])
+  @@index([displayOrder], map: "TaxPurchaseDetail_displayOrder_idx")
 }
 
-model TaxSalesDetail {
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model taxpurchaserecord {
+  id                    Int                @id @default(autoincrement())
+  taxDeclarationId      Int?
+  purchaseDetailId      Int?
+  supplierId            Int?
+  category              String             @db.VarChar(255)
+  description           String             @db.VarChar(500)
+  amount                Decimal            @default(0.00) @db.Decimal(15, 2)
+  adjustment            Decimal            @default(0.00) @db.Decimal(15, 2)
+  total                 Decimal            @default(0.00) @db.Decimal(15, 2)
+  taxRate               Decimal            @default(15.00) @db.Decimal(5, 2)
+  supplierName          String?            @db.VarChar(255)
+  date                  DateTime?          @default(now()) @db.DateTime(0)
+  status                String?            @db.VarChar(255)
+  invoiceNumber         String?            @db.VarChar(255)
+  supplyType            String?            @db.VarChar(255)
+  purchasesBeforeTax    Decimal?           @default(0.00) @db.Decimal(10, 2)
+  taxValue              Decimal?           @default(0.00) @db.Decimal(10, 2)
+  purchasesIncludingTax Decimal?           @default(0.00) @db.Decimal(10, 2)
+  attachment            String?            @db.VarChar(500)
+  createdAt             DateTime           @default(now()) @db.DateTime(0)
+  updatedAt             DateTime           @default(now()) @db.DateTime(0)
+  taxpurchasedetail     taxpurchasedetail? @relation(fields: [purchaseDetailId], references: [id], map: "TaxPurchaseRecord_purchaseDetailId_fkey")
+  taxsupplier           taxsupplier?       @relation(fields: [supplierId], references: [id], map: "TaxPurchaseRecord_supplierId_fkey")
+
+  @@index([purchaseDetailId], map: "TaxPurchaseRecord_purchaseDetailId_idx")
+  @@index([supplierId], map: "TaxPurchaseRecord_supplierId_idx")
+  @@index([date], map: "idx_date")
+  @@index([taxDeclarationId], map: "idx_taxDeclarationId")
+}
+
+model taxsalesdetail {
   id             Int              @id @default(autoincrement())
   name           String           @db.VarChar(255)
   displayOrder   Int              @default(0)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now())
-  TaxSalesRecord TaxSalesRecord[]
+  taxsalesrecord taxsalesrecord[]
 
-  @@index([displayOrder])
+  @@index([displayOrder], map: "TaxSalesDetail_displayOrder_idx")
 }
 
-model TaxSupplier {
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model taxsalesrecord {
+  id                Int             @id @default(autoincrement())
+  taxDeclarationId  Int?
+  salesDetailId     Int?
+  category          String          @db.VarChar(255)
+  description       String          @db.VarChar(500)
+  amount            Decimal         @default(0.00) @db.Decimal(15, 2)
+  adjustment        Decimal         @default(0.00) @db.Decimal(15, 2)
+  total             Decimal         @default(0.00) @db.Decimal(15, 2)
+  taxRate           Decimal         @default(15.00) @db.Decimal(5, 2)
+  customerId        Int?
+  customerName      String?         @db.VarChar(255)
+  date              DateTime?       @default(now()) @db.DateTime(0)
+  salesBeforeTax    Decimal?        @default(0.00) @db.Decimal(10, 2)
+  taxValue          Decimal?        @default(0.00) @db.Decimal(10, 2)
+  salesIncludingTax Decimal?        @default(0.00) @db.Decimal(10, 2)
+  paymentMethod     String?         @db.VarChar(255)
+  attachment        String?         @db.VarChar(500)
+  createdAt         DateTime        @default(now()) @db.DateTime(0)
+  updatedAt         DateTime        @default(now()) @db.DateTime(0)
+  taxsalesdetail    taxsalesdetail? @relation(fields: [salesDetailId], references: [id], map: "TaxSalesRecord_salesDetailId_fkey")
+
+  @@index([salesDetailId], map: "TaxSalesRecord_salesDetailId_idx")
+  @@index([customerId], map: "idx_customerId")
+  @@index([date], map: "idx_date")
+  @@index([taxDeclarationId], map: "idx_taxDeclarationId")
+}
+
+model taxsupplier {
   id                Int                 @id @default(autoincrement())
   name              String              @db.VarChar(255)
   displayOrder      Int                 @default(0)
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @default(now())
-  TaxPurchaseRecord TaxPurchaseRecord[]
+  taxpurchaserecord taxpurchaserecord[]
 
-  @@index([displayOrder])
+  @@index([displayOrder], map: "TaxSupplier_displayOrder_idx")
 }
 
-model Transfer {
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model taxvatrecord {
+  id               Int      @id @default(autoincrement())
+  taxDeclarationId Int
+  category         String   @db.VarChar(255)
+  description      String   @db.VarChar(500)
+  amount           Decimal  @default(0.00) @db.Decimal(15, 2)
+  adjustment       Decimal  @default(0.00) @db.Decimal(15, 2)
+  total            Decimal  @default(0.00) @db.Decimal(15, 2)
+  createdAt        DateTime @default(now()) @db.DateTime(0)
+  updatedAt        DateTime @default(now()) @db.DateTime(0)
+
+  @@index([taxDeclarationId], map: "idx_taxDeclarationId")
+}
+
+model template {
+  id            Int       @id @default(autoincrement())
+  title         String    @db.VarChar(255)
+  content       String    @db.Text
+  type          String    @db.VarChar(100)
+  createdAt     DateTime? @default(now()) @db.DateTime(0)
+  updatedAt     DateTime? @default(now()) @db.DateTime(0)
+  dynamicFields String?   @db.Text
+  defaultValues String?   @db.Text
+}
+
+model transfer {
   id                        Int       @id @default(autoincrement())
   client                    String?
   mobilenumber              String?
@@ -1137,115 +1195,64 @@ model Transfer {
   notes                     String?
 }
 
-model admins {
-  id       Int    @id @default(autoincrement())
-  username String @unique(map: "username") @db.VarChar(50)
-  password String @db.VarChar(255)
+model transfersponsorships {
+  id                      Int       @id @default(autoincrement())
+  HomeMaidId              Int?
+  NewClientId             Int?
+  OldClientId             Int?
+  EntryDate               DateTime? @db.DateTime(0)
+  Cost                    Decimal?  @db.Decimal(10, 2)
+  Paid                    Decimal?  @db.Decimal(10, 2)
+  ExperimentStart         DateTime? @db.DateTime(0)
+  ExperimentEnd           DateTime? @db.DateTime(0)
+  ExperimentDuration      String?   @db.VarChar(100)
+  TransferOperationNumber String?   @db.VarChar(100)
+  ContractDate            DateTime? @db.DateTime(0)
+  ExperimentRate          String?   @db.VarChar(255)
+  Notes                   String?   @db.Text
+  WorkDuration            String?   @db.VarChar(255)
+  NationalID              String?   @db.VarChar(255)
+  TransferingDate         String?   @db.VarChar(255)
+  file                    String?   @db.VarChar(255)
+  transferStage           String?   @db.VarChar(255)
+  createdAt               DateTime? @default(now()) @db.DateTime(0)
+  updatedAt               DateTime? @default(now()) @db.DateTime(0)
 }
 
-model cancelledOrders {
-  id                   Int       @id @default(autoincrement())
-  order_id             Int
-  HomeMaidId           Int?
-  ReasonOfCancellation String?   @db.VarChar(2048)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @default(now())
-  clientId             Int?
-  CancellationDate     DateTime?
-  homemaid             homemaid? @relation(fields: [HomeMaidId], references: [id], map: "fk_cancelledOrders_HomeMaidId")
-  Client               Client?   @relation(fields: [clientId], references: [id], map: "fk_cancelledOrders_clientId")
-  neworder             neworder  @relation(fields: [order_id], references: [id], map: "fk_cancelledOrders_order_id")
-
-  @@index([HomeMaidId], map: "idx_cancelledOrders_HomeMaidId")
-  @@index([clientId], map: "idx_cancelledOrders_clientId")
-  @@index([order_id], map: "idx_cancelledOrders_order_id")
+model user {
+  phonenumber String?  @unique(map: "User_phonenumber_key") @db.VarChar(19)
+  id          Int      @id @default(autoincrement())
+  admin       Boolean? @default(false)
+  pictureurl  String?  @db.LongText
+  username    String   @unique(map: "username")
+  password    String
+  role        String?
+  idnumber    Int?     @unique(map: "User_idnumber_key")
+  roleId      Int?
+  createdAt   DateTime @default(now()) @db.DateTime(0)
+  updatedAt   DateTime @default(now()) @db.DateTime(0)
+  email       String?
 }
 
-model display_order_sequence {
-  id             Int       @id @default(autoincrement())
-  sequence_value Int       @default(0)
-  updated_at     DateTime? @default(now()) @db.Timestamp(0)
+model weeklystatus {
+  id          Int       @id @default(autoincrement())
+  homeMaid_id Int
+  status      String?   @db.VarChar(255)
+  date        DateTime? @db.DateTime(0)
+  createdAt   DateTime? @default(now()) @db.DateTime(0)
+  updatedAt   DateTime? @default(now()) @db.DateTime(0)
+  employee    String?   @db.VarChar(255)
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model externalHomedmaid {
-  id                Int            @id @default(autoincrement())
-  name              String?        @db.VarChar(100)
-  nationality       String?        @db.VarChar(100)
-  nationalitySource String?        @db.VarChar(100)
-  passportNumber    String?        @db.VarChar(100)
-  passportStartDate String?        @db.VarChar(100)
-  passportEndDate   String?        @db.VarChar(100)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @default(now())
-  sessionId         Int?
-  type              String?        @db.VarChar(50)
-  dateofbirth       DateTime?      @db.DateTime(0)
-  phone             String?        @db.VarChar(20)
-  clientId          Int?
-  Client            Client?        @relation(fields: [clientId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_externalHomedmaid_Client")
-  Session           Session?       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  housedworker      housedworker[]
-
-  @@index([clientId], map: "FK_externalHomedmaid_Client")
-  @@index([sessionId])
+enum personal_tasks_priority {
+  LOW    @map("منخفضة")
+  MEDIUM @map("متوسطة")
+  HIGH   @map("عالية")
+  URGENT @map("عاجل")
 }
 
-model links {
-  id           Int       @id @default(autoincrement())
-  original_url String    @db.VarChar(255)
-  short_code1  String    @unique(map: "short_code1") @db.VarChar(10)
-  short_code2  String    @unique(map: "short_code2") @db.VarChar(10)
-  created_at   DateTime? @default(now()) @db.Timestamp(0)
-  utm_source   String?   @db.VarChar(255)
-  utm_medium   String?   @db.VarChar(255)
-  utm_campaign String?   @db.VarChar(255)
-  utm_term     String?   @db.VarChar(255)
-  utm_content  String?   @db.VarChar(255)
-}
-
-model percentage {
-  id               Int      @id @default(autoincrement())
-  malePercentage   Decimal? @db.Decimal(10, 2)
-  femalePercentage Decimal? @db.Decimal(10, 2)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @default(now())
-}
-
-model rejectedOrders {
-  id                Int       @id @default(autoincrement())
-  order_id          Int
-  HomeMaidId        Int?
-  ReasonOfRejection String?   @db.VarChar(2048)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @default(now())
-  clientId          Int?
-  RejectionDate     DateTime?
-  homemaid          homemaid? @relation(fields: [HomeMaidId], references: [id], map: "fk_rejectedOrders_HomeMaidId")
-  Client            Client?   @relation(fields: [clientId], references: [id], map: "fk_rejectedOrders_clientId")
-  neworder          neworder  @relation(fields: [order_id], references: [id], map: "fk_rejectedOrders_order_id")
-
-  @@index([HomeMaidId], map: "idx_rejectedOrders_HomeMaidId")
-  @@index([clientId], map: "idx_rejectedOrders_clientId")
-  @@index([order_id], map: "idx_rejectedOrders_order_id")
-}
-
-model tickets_details {
-  id                Int       @id @default(autoincrement())
-  order_id          Int?
-  createdAt         DateTime? @default(now()) @db.DateTime(0)
-  updatedAt         DateTime? @default(now()) @db.DateTime(0)
-  ticketFile        String?   @db.VarChar(1024)
-  reference_id      String?   @db.VarChar(1024)
-  airlines          String?   @db.VarChar(1024)
-  flight_number     String?   @db.VarChar(1024)
-  departure_date    DateTime? @db.DateTime(0)
-  departure_time    String?   @db.VarChar(1024)
-  arrival_date      DateTime? @db.DateTime(0)
-  arrival_time      String?   @db.VarChar(1024)
-  departure_airport String?   @db.VarChar(1024)
-  arrival_airport   String?   @db.VarChar(1024)
-  neworder          neworder? @relation(fields: [order_id], references: [id], map: "fk_order")
-
-  @@index([order_id], map: "fk_order")
+enum personal_tasks_status {
+  PENDING     @map("قيد الانتظار")
+  IN_PROGRESS @map("قيد التنفيذ")
+  COMPLETED   @map("مكتملة")
 }
