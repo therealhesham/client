@@ -93,8 +93,8 @@ export async function POST(req: Request) {
 
         return new Response(JSON.stringify({ success: true, message: 'تم إرسال رمز التحقق بنجاح' }), { status: 200 });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error sending OTP:', error);
-        return new Response(JSON.stringify({ error: 'خطأ في الخادم: ' + (error?.message || String(error)) }), { status: 500 });
+        return new Response(JSON.stringify({ error: 'خطأ في الخادم' }), { status: 500 });
     }
 }
