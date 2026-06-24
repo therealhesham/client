@@ -94,8 +94,7 @@ export async function GET(
     const homemaidId = parseInt(id, 10);
 
     const homemaid = await prisma.homemaid.findUnique({
-      where: { id: homemaidId },
-      include: { Client: true },
+      where: { id: homemaidId }
     });
 
     if (!homemaid) {
