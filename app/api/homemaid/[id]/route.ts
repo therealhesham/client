@@ -235,8 +235,7 @@ export async function PUT(
         SewingLevel: sewingLevel,
         childcareLevel,
         Education,
-      },
-      include: { Client: true },
+      }
     });
 
     const enriched = await enrichHomemaid(updatedHomemaid, homemaidId);
