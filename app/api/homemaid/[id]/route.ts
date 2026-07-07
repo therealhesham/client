@@ -128,7 +128,11 @@ export async function GET(
     );
   } catch (error) {
     console.error('Error fetching homemaid:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal server error', 
+      details: error instanceof Error ? error.message : String(error),
+      stack: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
+    }, { status: 500 });
   }
 }
 
