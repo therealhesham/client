@@ -111,10 +111,10 @@ export async function GET(
 
     const [nextCount, prevCount] = await Promise.all([
       prisma.homemaid.count({
-        where: { ...whereBase, id: { gt: homemaidId } },
+        where: { ...whereBase, id: { ...whereBase.id, gt: homemaidId } },
       }),
       prisma.homemaid.count({
-        where: { ...whereBase, id: { lt: homemaidId } },
+        where: { ...whereBase, id: { ...whereBase.id, lt: homemaidId } },
       }),
     ]);
 
@@ -129,8 +129,6 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching homemaid:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -243,7 +241,5 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating homemaid:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
