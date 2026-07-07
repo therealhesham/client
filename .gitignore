@@ -41,3 +41,5 @@ yarn-error.log*
 next-env.d.ts
 patch_db.js
 test-counts.js
+default.sql
+map-models.js

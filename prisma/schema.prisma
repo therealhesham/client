@@ -443,6 +443,7 @@ model accountsystemlogs {
 
   @@index([actionClientId], map: "idx_actionClientId")
   @@index([actionUserId], map: "idx_actionUserId")
+  @@map("AccountSystemLogs")
 }
 
 model attachments {
@@ -499,6 +500,7 @@ model automaticemployee {
   fullImage         String?  @db.VarChar(500)
   createdAt         DateTime @default(now())
   updatedAt         DateTime
+  @@map("AutomaticEmployee")
 }
 
 model cancelledorders {
@@ -539,6 +541,7 @@ model cash {
   transaction_type String?   @db.VarChar(100)
   Month            String?   @db.VarChar(100)
   Year             String?   @db.VarChar(100)
+  @@map("Cash")
 }
 
 model cashlogs {
@@ -569,6 +572,7 @@ model checkin {
   CheckDate       DateTime?
   isActive        Boolean?  @default(true)
   DailyCost       Decimal?
+  @@map("CheckIn")
 }
 
 model client {
@@ -603,6 +607,7 @@ model clientaccountentry {
   updatedAt    DateTime
   isEditable   Boolean?
   displayOrder Int?     @default(0)
+  @@map("ClientAccountEntry")
 }
 
 model clientaccountstatement {
@@ -621,6 +626,7 @@ model clientaccountstatement {
   commissionPercentage Decimal? @default(0.000000000000000000000000000000)
   masandTransferAmount Decimal? @default(0.000000000000000000000000000000)
   attachment           String?  @db.VarChar(500)
+  @@map("ClientAccountStatement")
 }
 
 model complaint {
@@ -639,6 +645,7 @@ model complaint {
   @@index([assignedToId], map: "fk_complaint_assigned_to")
   @@index([createdById], map: "fk_complaint_created_by")
   @@index([status], map: "idx_complaint_status")
+  @@map("Complaint")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -667,6 +674,7 @@ model deliverydetails {
   createdAt      DateTime? @default(now())
   updatedAt      DateTime?
   completionDate DateTime? @default(now())
+  @@map("DeliveryDetails")
 }
 
 model employee {
@@ -684,6 +692,7 @@ model employee {
   notes       String?   @db.VarChar(1000)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime
+  @@map("Employee")
 }
 
 model employeecash {
@@ -699,6 +708,7 @@ model employeecash {
   createdAt        DateTime @default(now())
   updatedAt        DateTime
   isTemporary      Boolean  @default(false)
+  @@map("EmployeeCash")
 }
 
 model employeecashdetail {
@@ -716,6 +726,7 @@ model employeecashdetail {
   attachment  String?  @db.VarChar(255)
   createdAt   DateTime @default(now())
   updatedAt   DateTime
+  @@map("EmployeeCashDetail")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -762,6 +773,7 @@ model femalworker {
   externalmusanedcontract String
   visaordernumber         String
   notes                   String
+  @@map("FemalWorker")
 }
 
 model foreignofficefinancial {
@@ -787,6 +799,7 @@ model housedworkernotes {
   createdAt      DateTime? @default(now()) @db.DateTime(0)
   updatedAt      DateTime? @default(now()) @db.DateTime(0)
   employee       String?   @db.VarChar(100)
+  @@map("HousedWorkerNotes")
 }
 
 model incomestatement {
@@ -797,6 +810,7 @@ model incomestatement {
   notes          String?  @db.VarChar(255)
   createdAt      DateTime @default(now()) @db.DateTime(0)
   updatedAt      DateTime @default(now()) @db.DateTime(0)
+  @@map("IncomeStatement")
 }
 
 model inhouselocation {
@@ -876,6 +890,7 @@ model maleworker {
   externalmusanedcontract String
   visaordernumber         String
   notes                   String
+  @@map("MaleWorker")
 }
 
 model musanadfinancialrecord {
@@ -907,6 +922,7 @@ model musanadfinancialrecord {
   @@index([orderId], map: "idx_orderId")
   @@index([status], map: "idx_status")
   @@index([transferDate], map: "idx_transferDate")
+  @@map("MusanadFinancialRecord")
 }
 
 model notificationread {
@@ -918,6 +934,7 @@ model notificationread {
   @@unique([notificationId, userId], map: "NotificationRead_notificationId_userId_key")
   @@index([notificationId], map: "idx_notificationId")
   @@index([userId], map: "idx_userId")
+  @@map("NotificationRead")
 }
 
 model officeslarule {
@@ -930,6 +947,7 @@ model officeslarule {
 
   @@index([officeName], map: "idx_officeName")
   @@index([stage], map: "idx_stage")
+  @@map("OfficeSlaRule")
 }
 
 model personal_tasks {
@@ -978,6 +996,7 @@ model role {
   createdAt   DateTime? @default(now()) @db.DateTime(0)
   updatedAt   DateTime? @default(now()) @db.DateTime(0)
   order       Int?
+  @@map("Role")
 }
 
 model role_permissions {
@@ -1004,6 +1023,7 @@ model session {
   updatedAt         DateTime?           @default(now()) @db.DateTime(0)
   time              String?             @db.Text
   externalhomedmaid externalhomedmaid[]
+  @@map("Session")
 }
 
 model sessions {
@@ -1057,6 +1077,7 @@ model taxdeclaration {
 
   @@index([status], map: "idx_status")
   @@index([year, month], map: "idx_year_month")
+  @@map("TaxDeclaration")
 }
 
 model taxpurchasedetail {
@@ -1068,6 +1089,7 @@ model taxpurchasedetail {
   taxpurchaserecord taxpurchaserecord[]
 
   @@index([displayOrder], map: "TaxPurchaseDetail_displayOrder_idx")
+  @@map("TaxPurchaseDetail")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -1100,6 +1122,7 @@ model taxpurchaserecord {
   @@index([supplierId], map: "TaxPurchaseRecord_supplierId_idx")
   @@index([date], map: "idx_date")
   @@index([taxDeclarationId], map: "idx_taxDeclarationId")
+  @@map("TaxPurchaseRecord")
 }
 
 model taxsalesdetail {
@@ -1111,6 +1134,7 @@ model taxsalesdetail {
   taxsalesrecord taxsalesrecord[]
 
   @@index([displayOrder], map: "TaxSalesDetail_displayOrder_idx")
+  @@map("TaxSalesDetail")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -1140,6 +1164,7 @@ model taxsalesrecord {
   @@index([customerId], map: "idx_customerId")
   @@index([date], map: "idx_date")
   @@index([taxDeclarationId], map: "idx_taxDeclarationId")
+  @@map("TaxSalesRecord")
 }
 
 model taxsupplier {
@@ -1151,6 +1176,7 @@ model taxsupplier {
   taxpurchaserecord taxpurchaserecord[]
 
   @@index([displayOrder], map: "TaxSupplier_displayOrder_idx")
+  @@map("TaxSupplier")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -1166,6 +1192,7 @@ model taxvatrecord {
   updatedAt        DateTime @default(now()) @db.DateTime(0)
 
   @@index([taxDeclarationId], map: "idx_taxDeclarationId")
+  @@map("TaxVATRecord")
 }
 
 model template {
@@ -1177,6 +1204,7 @@ model template {
   updatedAt     DateTime? @default(now()) @db.DateTime(0)
   dynamicFields String?   @db.Text
   defaultValues String?   @db.Text
+  @@map("Template")
 }
 
 model transfer {
@@ -1203,6 +1231,7 @@ model transfer {
   accomaditionnumber        String?
   marketeername             String?
   notes                     String?
+  @@map("Transfer")
 }
 
 model transfersponsorships {
@@ -1242,6 +1271,7 @@ model user {
   createdAt   DateTime @default(now()) @db.DateTime(0)
   updatedAt   DateTime @default(now()) @db.DateTime(0)
   email       String?
+  @@map("User")
 }
 
 model weeklystatus {
@@ -1252,6 +1282,7 @@ model weeklystatus {
   createdAt   DateTime? @default(now()) @db.DateTime(0)
   updatedAt   DateTime? @default(now()) @db.DateTime(0)
   employee    String?   @db.VarChar(255)
+  @@map("weeklyStatus")
 }
 
 enum personal_tasks_priority {
