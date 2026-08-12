@@ -787,8 +787,13 @@ export default function MyOrdersPage() {
       setOrders(fetchedOrders);
       setClientInfo(data.clientinfo);
 
-      // البحث عن أول طلب غير مقيم لإظهار نافذة التقييم
-      const unratedOrder = fetchedOrders.find(o => !(o.isRated === true || !!o.Rating));
+      // البحث عن أول طلب مكتمل (مستلم/مسلم) وغير مقيم لإظهار نافذة التقييم
+      const unratedOrder = fetchedOrders.find(o => {
+        const status = o.clientBookingStatus || o.bookingstatus;
+        const isCompleted = status === 'received' || status === 'delivered';
+        const isNotRated = !(o.isRated === true || !!o.Rating);
+        return isCompleted && isNotRated;
+      });
       if (unratedOrder) {
         // نستخدم sessionStorage حتى لا تظهر النافذة كلما قام العميل بتحديث الصفحة في نفس الجلسة
         const hasSeenPopup = sessionStorage.getItem(`has_seen_rating_${unratedOrder.id}`);

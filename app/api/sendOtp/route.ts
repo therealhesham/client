@@ -77,21 +77,57 @@ export async function POST(req: Request) {
         securityRecord.lastRequestTime = now;
         globalAny.securityStore.set(phone, securityRecord);
 
-        // Generate 4-digit OTP
-        const otp = Math.floor(1000 + Math.random() * 9000).toString();
-        
-        // Save in global store (5 mins expiry) with attempts counter
-        globalAny.otpStore.set(phone, { otp, expires: Date.now() + 5 * 60 * 1000, attempts: 0 });
+        // Prepare credentials for MSEGAT
+        const apiKey = process.env.MSEGAT_API_KEY || process.env.SMS_PASS;
+        const userName = process.env.MSEGAT_USERNAME || process.env.SMS_USER;
+        const userSender = process.env.MSEGAT_SENDER_NAME || process.env.SMS_SENDER;
 
-        // Send SMS
-        const message = `رمز التحقق الخاص بك لتتبع الطلب هو: ${otp}`;
-        const smsResult = await sendSMS(phone, message);
-
-        if (!smsResult.success) {
-            return new Response(JSON.stringify({ error: 'فشل إرسال رمز التحقق، يرجى المحاولة لاحقاً' }), { status: 500 });
+        if (!apiKey || !userName || !userSender) {
+            return new Response(JSON.stringify({ error: 'بيانات الاعتماد لخدمة الرسائل غير مكتملة' }), { status: 500 });
         }
 
-        return new Response(JSON.stringify({ success: true, message: 'تم إرسال رمز التحقق بنجاح' }), { status: 200 });
+        // Clean phone number (MSEGAT requires international format without zeros)
+        let cleanPhone = phone.trim().replace(/[\s\-\+\(\)]/g, '');
+        if (cleanPhone.startsWith('00966')) {
+            cleanPhone = cleanPhone.substring(2);
+        } else if (cleanPhone.startsWith('05')) {
+            cleanPhone = '966' + cleanPhone.substring(1);
+        } else if (cleanPhone.startsWith('5')) {
+            cleanPhone = '966' + cleanPhone;
+        } else if (!cleanPhone.startsWith('966')) {
+            cleanPhone = '966' + cleanPhone;
+        }
+
+        const baseUrl = process.env.MSEGAT_API_URL || 'https://www.msegat.com/gw/';
+        const apiUrl = baseUrl.endsWith('/') ? `${baseUrl}sendOTPCode.php` : `${baseUrl}/sendOTPCode.php`;
+
+        // Send OTP via MSEGAT
+        const msegatRes = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                apiKey: apiKey,
+                lang: 'Ar',
+                userName: userName,
+                userSender: userSender,
+                number: cleanPhone
+            })
+        });
+
+        const msegatData = await msegatRes.json();
+
+        // MSEGAT returns code: "1" on success
+        if (msegatData.code === "1" || String(msegatData.code) === "1") {
+            // Save MSEGAT id in global store (5 mins expiry) with attempts counter
+            globalAny.otpStore.set(phone, { id: msegatData.id, expires: Date.now() + 5 * 60 * 1000, attempts: 0 });
+            return new Response(JSON.stringify({ success: true, message: 'تم إرسال رمز التحقق بنجاح' }), { status: 200 });
+        } else {
+            console.error('MSEGAT Send Error:', msegatData);
+            return new Response(JSON.stringify({ error: 'فشل إرسال رمز التحقق من مزود الخدمة' }), { status: 500 });
+        }
 
     } catch (error) {
         console.error('Error sending OTP:', error);

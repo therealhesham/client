@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
         const record = globalAny.otpStore?.get(phone);
 
-        if (!record) {
+        if (!record || !record.id) {
             return NextResponse.json({ error: 'لم يتم العثور على رمز تحقق، يرجى طلب رمز جديد' }, { status: 400 });
         }
 
@@ -29,7 +29,48 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'رمز التحقق منتهي الصلاحية' }, { status: 400 });
         }
 
-        if (record.otp === otp) {
+        const apiKey = process.env.MSEGAT_API_KEY || process.env.SMS_PASS;
+        const userName = process.env.MSEGAT_USERNAME || process.env.SMS_USER;
+        const userSender = process.env.MSEGAT_SENDER_NAME || process.env.SMS_SENDER;
+
+        if (!apiKey || !userName || !userSender) {
+            return NextResponse.json({ error: 'بيانات الاعتماد لخدمة الرسائل غير مكتملة' }, { status: 500 });
+        }
+
+        let isOtpValid = false;
+        
+        const baseUrl = process.env.MSEGAT_API_URL || 'https://www.msegat.com/gw/';
+        const apiUrl = baseUrl.endsWith('/') ? `${baseUrl}verifyOTPCode.php` : `${baseUrl}/verifyOTPCode.php`;
+
+        try {
+            const msegatRes = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    apiKey: apiKey,
+                    code: otp,
+                    id: record.id,
+                    lang: 'Ar',
+                    userName: userName,
+                    userSender: userSender
+                })
+            });
+
+            const msegatData = await msegatRes.json();
+            if (msegatData.code === "1" || String(msegatData.code) === "1") {
+                isOtpValid = true;
+            } else {
+                console.error('MSEGAT Verify Error:', msegatData);
+            }
+        } catch (err) {
+            console.error('MSEGAT Verify Network Error:', err);
+            return NextResponse.json({ error: 'خطأ في الاتصال بمزود الخدمة' }, { status: 500 });
+        }
+
+        if (isOtpValid) {
             globalAny.otpStore.delete(phone);
             if (securityRecord) {
                 globalAny.securityStore.delete(phone); // Reset all counters upon success
