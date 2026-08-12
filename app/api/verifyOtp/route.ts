@@ -38,12 +38,9 @@ export async function POST(req: Request) {
         }
 
         let isOtpValid = false;
-        
-        const baseUrl = process.env.MSEGAT_API_URL || 'https://www.msegat.com/gw/';
-        const apiUrl = baseUrl.endsWith('/') ? `${baseUrl}verifyOTPCode.php` : `${baseUrl}/verifyOTPCode.php`;
 
         try {
-            const msegatRes = await fetch(apiUrl, {
+            const msegatRes = await fetch('https://www.msegat.com/gw/verifyOTPCode.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -96,13 +96,8 @@ export async function POST(req: Request) {
             cleanPhone = '966' + cleanPhone;
         } else if (!cleanPhone.startsWith('966')) {
             cleanPhone = '966' + cleanPhone;
-        }
-
-        const baseUrl = process.env.MSEGAT_API_URL || 'https://www.msegat.com/gw/';
-        const apiUrl = baseUrl.endsWith('/') ? `${baseUrl}sendOTPCode.php` : `${baseUrl}/sendOTPCode.php`;
-
         // Send OTP via MSEGAT
-        const msegatRes = await fetch(apiUrl, {
+        const msegatRes = await fetch('https://www.msegat.com/gw/sendOTPCode.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
