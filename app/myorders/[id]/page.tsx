@@ -294,16 +294,10 @@ const OrderStepper = ({ status, order, customTimeline }) => {
 
   if (isCancelled) {
     const isRejected = status === 'rejected';
-    const reason = isRejected ? order?.ReasonOfRejection : order?.ReasonOfCancellation;
     return (
       <div className="w-full py-6 px-4 bg-red-50 rounded-xl border border-red-100 flex flex-col items-center justify-center gap-2 text-red-600 text-center">
         <XCircle size={32} />
         <span className="font-bold">{isRejected ? 'تم رفض هذا الطلب' : 'تم إلغاء هذا الطلب'}</span>
-        {reason && (
-          <span className="text-sm text-red-500 font-medium">
-            السبب: {reason}
-          </span>
-        )}
       </div>
     );
   }
@@ -960,7 +954,7 @@ export default function MyOrdersPage() {
                       {['cancelled', 'rejected'].includes(order.clientBookingStatus || order.bookingstatus) ? (
                         <div className="px-4 py-1.5 rounded-full text-xs font-bold border border-red-200 bg-red-50 text-red-600 flex items-center gap-2 max-w-[200px] sm:max-w-xs md:max-w-md">
                           <XCircle size={14} className="shrink-0" />
-                          <span className="truncate">السبب: {((order.clientBookingStatus || order.bookingstatus) === 'rejected' ? order.ReasonOfRejection : order.ReasonOfCancellation) || 'غير محدد'}</span>
+                          <span className="truncate">{(order.clientBookingStatus || order.bookingstatus) === 'rejected' ? 'طلب مرفوض' : 'طلب ملغي'}</span>
                         </div>
                       ) : ['pending_arrival', 'ticket_booked', 'destinations_set'].includes(order.clientBookingStatus || order.bookingstatus) ? (
                         <div className="px-4 py-1.5 rounded-full text-xs font-bold border border-blue-200 bg-blue-50 text-blue-600 flex items-center gap-2">

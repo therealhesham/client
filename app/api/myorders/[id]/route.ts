@@ -162,6 +162,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 ...(existing || {}),
                 id: key,
                 bookingstatus: status,
+                clientBookingStatus: status,
                 HomeMaid: homeMaid,
                 arrivals: record.neworder?.arrivals ?? existing?.arrivals ?? [],
                 client: {
