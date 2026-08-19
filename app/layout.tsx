@@ -37,9 +37,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-RJNZTDM263');
+              window.gtag = function gtag(){window.dataLayer.push(arguments);}
+              window.gtag('js', new Date());
+              window.gtag('config', 'G-RJNZTDM263');
             `,
           }}
         />
