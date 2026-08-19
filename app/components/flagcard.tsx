@@ -1,17 +1,43 @@
+"use client";
+import React from 'react';
 //@ts-nocheck
 //@ts-ignore
 import { count } from 'console';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
-const FlagCard = ({ country, flag, price, onClick,englishCountry }) => {
+interface NationalityData {
+    countryArabic: string;
+    countryEnglish: string;
+    flagUrl: string;
+    price: number | string;
+    oldPrice?: number | string | null;
+}
+
+interface FlagCardProps {
+    country: string;
+    flag: string;
+    price: number | string;
+    oldPrice?: number | string | null;
+    englishCountry: string;
+}
+
+const FlagCard = ({ country, flag, price, oldPrice, englishCountry }: FlagCardProps) => {
     const router =useRouter()
     return (
         <motion.div
             className="bg-white rounded-lg h-[150px] w-[300px] shadow-md p-4 flex  justify-between cursor-pointer hover:shadow-lg transition-shadow duration-300"
             whileHover={{ scale: 1.10 }}
             whileTap={{ scale: 0.95 }}
-            onClick={()=>router.push("/candidates?country="+englishCountry)}
+            onClick={()=>{
+                if (typeof window !== 'undefined' && (window as any).gtag) {
+                    (window as any).gtag('event', 'filter_nationality_click', {
+                        nationality: country,
+                        source: 'home_page_cards'
+                    });
+                }
+                router.push("/candidates?country="+englishCountry);
+            }}
         >
             <div className="flex items-center space-x-4">
                 <img
@@ -21,7 +47,10 @@ const FlagCard = ({ country, flag, price, onClick,englishCountry }) => {
                 />
                 <div className="text-right">
                     <h3 className="text-lg font-semibold text-gray-800">{country}</h3>
-                    <p className="text-gray-600">ريال {price}</p>
+                    {oldPrice && (
+                        <p className="text-red-500 text-sm line-through decoration-red-500">ريال {oldPrice}</p>
+                    )}
+                    <p className="text-gray-600 font-bold">ريال {price}</p>
                 </div>
             </div>
             <motion.button
@@ -41,29 +70,46 @@ const FlagCard = ({ country, flag, price, onClick,englishCountry }) => {
 };
 
 const FlagGrid = () => {
-    const flags = [
-        { country: 'الفلبين', englishCountry: 'Philippines', flag: '/philippines-flag.png', price: '14500' },
-        { country: 'باكستان', englishCountry: 'Pakistan', flag: '/pakistan-flag.png', price: '7000' },
-        { country: 'بنغلاديش', englishCountry: 'Bangladesh', flag: '/bangladesh-flag.png', price: '7750' },
-        { country: 'أوغندا', englishCountry: 'Uganda', flag: '/uganda-flag.png', price: '5700' },
-        { country: 'كينيا', englishCountry: 'Kenya', flag: '/kenya-flag.png', price: '6700' },
-        { country: 'إثيوبيا', englishCountry: 'Ethiopia', flag: '/ethiopia-flag.png', price: '4550' },];
+    const [flags, setFlags] = React.useState<NationalityData[]>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchFlags = async () => {
+            try {
+                const res = await fetch('/api/nationality-cards');
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    setFlags(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch flags:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchFlags();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="container mx-auto lg:w-[1000px] p-4 flex justify-center py-10">
+                <div className="text-gray-500">جاري التحميل...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto lg:w-[1000px] p-4">
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">استعرض العاملات حسب الجنسية</h2>
-            {/* <div className="flex flex-wrap justify-center gap-4"> */}
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center ">
-
-                {flags.map((flag, index) => (
+                {flags.map((flag: NationalityData, index: number) => (
                     <FlagCard
                         key={index}
-                        country={flag.country}
-                        englishCountry={flag.englishCountry}
-                        flag={flag.flag}
+                        country={flag.countryArabic}
+                        englishCountry={flag.countryEnglish}
+                        flag={flag.flagUrl}
                         price={flag.price}
-                        // onClick={() => alert(`${flag.country} selected!`)}
+                        oldPrice={flag.oldPrice}
                     />
                 ))}
             </div>

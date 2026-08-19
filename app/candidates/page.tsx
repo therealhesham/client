@@ -491,6 +491,14 @@ export default function CandidatesPage() {
                       const isSelected = nationalityFilter === flag.nationality;
                       setNationalityFilter(isSelected ? "" : flag.nationality);
 
+                      // تتبع حدث الضغط على الفلتر (فقط عند التحديد وليس الإلغاء)
+                      if (!isSelected && typeof window !== 'undefined' && (window as any).gtag) {
+                        (window as any).gtag('event', 'filter_nationality_click', {
+                            nationality: flag.displayName || flag.nationality,
+                            source: 'candidates_page_tabs'
+                        });
+                      }
+
                       // تحديث الرابط
                       const newParams = new URLSearchParams(searchParams.toString());
                       if (isSelected) {

@@ -236,6 +236,16 @@ export default function Profile() {
     setIsModalOpen(true);
     setFormError(null);
     setIsSuccessModalOpen(false);
+
+    // تتبع حدث الضغط على زر الحجز
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'click_book_maid', {
+        maid_id: homemaid?.id,
+        maid_name: homemaid?.Name,
+        maid_nationality: homemaid?.Nationalitycopy,
+        maid_price: homemaid?.Salary,
+      });
+    }
   };
 
   const handleModalClose = () => {
@@ -302,6 +312,16 @@ export default function Profile() {
       if (response.status === 201) {
         handleModalClose();
         setIsSuccessModalOpen(true);
+
+        // تتبع حدث إرسال الطلب بنجاح
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', 'submit_booking_request', {
+            maid_id: homemaid?.id,
+            maid_name: homemaid?.Name,
+            maid_nationality: homemaid?.Nationalitycopy,
+            client_residence: formData.residence,
+          });
+        }
       }
     } catch (err) {
       setFormError('فشل في إرسال طلب الحجز. حاول مرة أخرى.');
