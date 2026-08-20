@@ -12,7 +12,7 @@ import NavigationBar from "../components/navigation";
 import axios from "axios";
 import localFont from "next/font/local";
 import TextType from '../components/TextType';
-import { GlobeAltIcon, StarIcon, UserIcon } from '@heroicons/react/24/outline';
+import { GlobeAltIcon, StarIcon, UserIcon, BriefcaseIcon } from '@heroicons/react/24/outline';
 import { FaPeace, FaStarAndCrescent } from "react-icons/fa";
 const myFont = localFont({
   src: "../fonts/ReadexPro-Bold.ttf",
@@ -188,7 +188,7 @@ export default function CandidatesPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"nationality" | "religion" | "age">("nationality");
+  const [activeTab, setActiveTab] = useState<"nationality" | "religion" | "age" | "experience">("nationality");
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -212,7 +212,7 @@ export default function CandidatesPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [filteredCount, setFilteredCount] = useState(0);
   const [currentPeriod, setCurrentPeriod] = useState<"morning" | "evening">("morning");
-  const hasFilters = nationalityFilter || religionFilter || ageFilter;
+  const hasFilters = nationalityFilter || religionFilter || ageFilter || experienceLevel;
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -294,7 +294,7 @@ export default function CandidatesPage() {
 
   useEffect(() => {
     fetchCandidates();
-  }, [search, nationalityFilter, ageFilter, page, religionFilter]);
+  }, [search, nationalityFilter, ageFilter, page, religionFilter, experienceLevel]);
 
   useEffect(() => {
     // التحديث الفوري
@@ -440,6 +440,7 @@ export default function CandidatesPage() {
                   <FaStarAndCrescent style={{ opacity: 0.5 }} className="w-6 h-6 text-[#003749]" />
               },
               { key: "age", label: "حسب العمر", icon: <UserIcon className="w-6 h-6 text-[#003749]" /> },
+              { key: "experience", label: "حسب الخبرة", icon: <BriefcaseIcon className="w-6 h-6 text-[#003749]" /> },
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -574,9 +575,41 @@ export default function CandidatesPage() {
 
             )}
 
+            {activeTab === "experience" && (
+              <div className="flex flex-wrap justify-center gap-6">
+                {[
+                  { value: "novice", label: "لم يسبق لها العمل" },
+                  { value: "has_experience", label: "سبق لها العمل" }
+                ].map((exp) => (
+                  <motion.button
+                    key={exp.value}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      const isSelected = experienceLevel === exp.value;
+                      setExperienceLevel(isSelected ? null : exp.value);
+                      
+                      if (!isSelected && typeof window !== 'undefined' && (window as any).gtag) {
+                        (window as any).gtag('event', 'filter_experience_click', {
+                          experience: exp.label,
+                          source: 'candidates_page_tabs'
+                        });
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-lg font-medium transition-all duration-300 shadow-sm ${
+                      experienceLevel === exp.value
+                        ? "bg-[#ECC383] text-white shadow-md"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {exp.label}
+                  </motion.button>
+                ))}
+              </div>
+            )}
+
             {/* نص + زر: النص على اليمين، الزر على اليسار */}
-            {/* نص + زر: النص على اليمين، الزر على اليسار */}
-            {(nationalityFilter || religionFilter || ageFilter) && (
+            {(nationalityFilter || religionFilter || ageFilter || experienceLevel) && (
               <div className="flex justify-between items-center mt-6 text-sm md:text-base px-2">
 
                 {/* النص */}
@@ -606,6 +639,14 @@ export default function CandidatesPage() {
                         </span>
                       </>
                     )}
+                    {experienceLevel && (
+                      <>
+                        {(nationalityFilter || religionFilter || ageFilter) && "، "}
+                        <span className="text-[#ECC383]">
+                          {experienceLevel === "novice" ? "لم يسبق لها العمل" : "سبق لها العمل"}
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
 
@@ -617,6 +658,7 @@ export default function CandidatesPage() {
                     setNationalityFilter("");
                     setReligionFilter("");
                     setAgeFilter("");
+                    setExperienceLevel(null);
                     router.push("/candidates");
                   }}
                   className="bg-[#ECC383] hover:bg-[#d4b16f] text-white cursor-pointer text-xs md:text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-[#ECC383]/50 min-w-24"

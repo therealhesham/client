@@ -115,6 +115,7 @@ export async function GET(req: NextRequest) {
     else if (experienceLevel === "intermediate") filters.Experience = { contains: "متوسطة" };
     else if (experienceLevel === "experienced") filters.Experience = { contains: "جيدة" };
     else if (experienceLevel === "expert") filters.Experience = { contains: "ممتازة" };
+    else if (experienceLevel === "has_experience") filters.Experience = { not: { contains: "بدون خبرة" } };
   }
 
   const langMapping: Record<string, string> = {
