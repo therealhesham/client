@@ -72,7 +72,29 @@ export async function GET(req: NextRequest) {
       contains: Passportnumber.toLowerCase(),
     };
   if (Nationality) {
-    filters.Nationalitycopy = { contains: Nationality };
+    const searchTerms = [Nationality];
+    if (Nationality === "Bangladesh" || Nationality === "بنغلاديش" || Nationality === "بنغلادش") {
+      searchTerms.push("Bangladesh", "بنغلاديش", "بنغلادش");
+    } else if (Nationality === "Philippines" || Nationality === "الفلبين") {
+      searchTerms.push("Philippines", "الفلبين");
+    } else if (Nationality === "Burundi" || Nationality === "بوروندي") {
+      searchTerms.push("Burundi", "بوروندي");
+    } else if (Nationality === "Ethiopia" || Nationality === "إثيوبيا") {
+      searchTerms.push("Ethiopia", "إثيوبيا");
+    } else if (Nationality === "Uganda" || Nationality === "أوغندا") {
+      searchTerms.push("Uganda", "أوغندا");
+    } else if (Nationality === "Pakistan" || Nationality === "باكستان") {
+      searchTerms.push("Pakistan", "باكستان");
+    } else if (Nationality === "Kenya" || Nationality === "كينيا") {
+      searchTerms.push("Kenya", "كينيا");
+    } else if (Nationality === "India" || Nationality === "الهند") {
+      searchTerms.push("India", "الهند");
+    }
+
+    const uniqueTerms = Array.from(new Set(searchTerms));
+
+    // If there is already an OR filter, we need to wrap them in an AND, but here there is no other OR filter used before this point.
+    filters.OR = uniqueTerms.map(term => ({ Nationalitycopy: { contains: term } }));
   }
 
   if (Religion) {
