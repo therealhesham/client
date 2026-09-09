@@ -20,26 +20,29 @@ export async function POST(req: Request) {
             email,
         } = await req.json();
 
-        if (!phone_number || !fullName || !homemaidId || !email) {
+        if (!phone_number || !fullName || !homemaidId) {
             return new Response(JSON.stringify({ error: 'البيانات ناقصة' }), { status: 400 });
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(String(email).trim())) {
-            return new Response(JSON.stringify({ error: 'البريد الإلكتروني غير صحيح' }), { status: 400 });
-        }
-
         const normalizedPhone = normalizePhone(String(phone_number));
-        const normalizedEmail = String(email).trim().toLowerCase();
+        let normalizedEmail: string | null = null;
 
-        const existingEmailClient = await prisma.client.findUnique({
-            where: { email: normalizedEmail },
-        });
-        if (existingEmailClient && existingEmailClient.phonenumber !== normalizedPhone) {
-            return new Response(
-                JSON.stringify({ error: 'البريد الإلكتروني مستخدم لعميل آخر' }),
-                { status: 409 }
-            );
+        if (email && String(email).trim()) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(String(email).trim())) {
+                return new Response(JSON.stringify({ error: 'البريد الإلكتروني غير صحيح' }), { status: 400 });
+            }
+            normalizedEmail = String(email).trim().toLowerCase();
+
+            const existingEmailClient = await prisma.client.findUnique({
+                where: { email: normalizedEmail },
+            });
+            if (existingEmailClient && existingEmailClient.phonenumber !== normalizedPhone) {
+                return new Response(
+                    JSON.stringify({ error: 'البريد الإلكتروني مستخدم لعميل آخر' }),
+                    { status: 409 }
+                );
+            }
         }
 
         const client = await prisma.client.upsert({
@@ -47,13 +50,13 @@ export async function POST(req: Request) {
             update: {
                 fullname: fullName,
                 city: residence,
-                email: normalizedEmail,
+                ...(normalizedEmail ? { email: normalizedEmail } : {}),
             },
             create: {
                 phonenumber: normalizedPhone,
                 fullname: fullName,
                 city: residence,
-                email: normalizedEmail,
+                ...(normalizedEmail ? { email: normalizedEmail } : {}),
             },
         });
 

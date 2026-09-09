@@ -413,7 +413,7 @@ export default function CandidatesPage() {
                 "عن طريق الجنسية 🌍 ",
                 "عن طريق الديانة 🕋",
                 "عن طريق العمر 👤",
-                "او يمكنك استخدام البحث المتقدم لخيارات اكثر تحديدا "
+                "عن طريق الخبرة 💼"
               ]}
               typingSpeed={90}
               deletingSpeed={30}
@@ -610,21 +610,21 @@ export default function CandidatesPage() {
 
             {/* نص + زر: النص على اليمين، الزر على اليسار */}
             {(nationalityFilter || religionFilter || ageFilter || experienceLevel) && (
-              <div className="flex justify-between items-center mt-6 text-sm md:text-base px-2">
+              <div className="flex justify-between items-center mt-6 px-2 gap-4">
 
                 {/* النص */}
-                <div className="text-right text-gray-700 leading-relaxed max-w-lg">
-                  <p className="font-medium">
-                    <span>أنت تبحث عن عاملة</span>{" "}
+                <div className="text-right text-gray-800 leading-relaxed max-w-xl">
+                  <p className="font-semibold text-base md:text-lg lg:text-xl">
+                    <span className="text-[#013749]">أنت تبحث عن عاملة</span>{" "}
                     {nationalityFilter && (
-                      <span className="text-[#ECC383]">
+                      <span className="text-[#C49E6A] font-bold">
                         من جنسية {flags.find(f => f.nationality === nationalityFilter)?.displayName || nationalityFilter}
                       </span>
                     )}
                     {religionFilter && (
                       <>
                         {nationalityFilter && "، "}
-                        <span className="text-[#ECC383]">
+                        <span className="text-[#C49E6A] font-bold">
                           {religionFilter === "Islam - الإسلام" ? "مسلمة" : "غير مسلمة"}
                         </span>
                       </>
@@ -632,7 +632,7 @@ export default function CandidatesPage() {
                     {ageFilter && (
                       <>
                         {(nationalityFilter || religionFilter) && "، "}
-                        <span className="text-[#ECC383]">
+                        <span className="text-[#C49E6A] font-bold">
                           {ageFilter === "20" && "عمرها بين 20 و29 سنة"}
                           {ageFilter === "30" && "عمرها بين 30 و39 سنة"}
                           {ageFilter === "40" && "عمرها 40 سنة فأكثر"}
@@ -642,7 +642,7 @@ export default function CandidatesPage() {
                     {experienceLevel && (
                       <>
                         {(nationalityFilter || religionFilter || ageFilter) && "، "}
-                        <span className="text-[#ECC383]">
+                        <span className="text-[#C49E6A] font-bold">
                           {experienceLevel === "novice" ? "لم يسبق لها العمل" : "سبق لها العمل"}
                         </span>
                       </>
@@ -667,7 +667,8 @@ export default function CandidatesPage() {
                 </motion.button>
               </div>
             )}
-            <div className="border-t border-black -200 mt-6"></div>
+            {/* زر البحث المتقدم (مخفي حالياً) */}
+            {/* <div className="border-t border-black -200 mt-6"></div>
             <div className="text-right mt-4">
               <button
                 onClick={() => setIsAdvancedModalOpen(true)}
@@ -678,7 +679,7 @@ export default function CandidatesPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </button>
-            </div>
+            </div> */}
 
 
             {/* Modal البحث المتقدم */}
@@ -1172,6 +1173,16 @@ export default function CandidatesPage() {
                     {hasFilters && (
                       <a
                         href={generateWhatsAppLink()}
+                        onClick={() => {
+                          if (typeof window !== 'undefined' && (window as any).gtag) {
+                            (window as any).gtag('event', 'click_candidates_whatsapp_consult', {
+                              nationality_filter: nationalityFilter || 'all',
+                              religion_filter: religionFilter || 'all',
+                              age_filter: ageFilter || 'all',
+                              experience_filter: experienceLevel || 'all',
+                            });
+                          }
+                        }}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-6 inline-block bg-[#25D366] text-white font-medium py-3 px-6 rounded-none hover:bg-[#128C7E] transition-colors duration-200 shadow-md hover:shadow-lg min-w-[240px] text-center"

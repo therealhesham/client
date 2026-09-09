@@ -87,75 +87,90 @@ export default function FeaturedCandidates() {
   }
 
   return (
-    <section className={`py-4 px-4 md:px-8 bg-transparent ${myFont.className}`} dir="rtl">
+    <section className={`py-4 px-2 sm:px-4 md:px-8 bg-transparent ${myFont.className}`} dir="rtl">
       <div className="container mx-auto max-w-7xl">
-        <div className="relative pl-24 md:pl-32 overflow-hidden">
+        <div className="relative pl-0 md:pl-32 overflow-hidden">
           <Swiper
             modules={[Autoplay, Pagination, Navigation]}
-            spaceBetween={30}
-            slidesPerView={1}
+            spaceBetween={14}
+            slidesPerView={1.15}
             breakpoints={{
-              640: { slidesPerView: 1 },
-              768: { slidesPerView: 2 },
-              1024: { slidesPerView: 3 },
+              480: { slidesPerView: 1.35, spaceBetween: 16 },
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 24 },
             }}
-            autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
             pagination={{ clickable: true, dynamicBullets: true }}
-            className="pb-12 px-2 !overflow-visible"
+            className="pb-10 md:pb-12 px-1 md:px-2 !overflow-visible"
           >
             {candidates.map((candidate) => (
-              <SwiperSlide key={candidate.id} className="pt-4 pb-8">
-                <motion.div
-                  whileHover={{ y: -10 }}
-                  className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group hover:shadow-xl hover:border-[#ECC383]/50 transition-all duration-300 flex flex-col h-full"
+              <SwiperSlide key={candidate.id} className="pt-2 pb-6">
+                <Link 
+                  href={`/cv/${candidate.id}`}
+                  className="block h-full group outline-none"
                 >
-                  {/* Image Section */}
-                  <div className="relative h-80 w-full bg-gray-100 overflow-hidden">
-                    <img
-                      src={candidate.Picture?.url || 'https://via.placeholder.com/400x500?text=No+Image'}
-                      alt={candidate.Name}
-                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="bg-white rounded-2xl md:rounded-3xl shadow-md md:shadow-lg border border-gray-100 overflow-hidden group-hover:shadow-xl group-hover:border-[#ECC383]/50 transition-all duration-300 flex flex-col h-full cursor-pointer"
+                  >
+                    {/* Image Section */}
+                    <div className="relative aspect-[3/4] sm:h-80 w-full bg-gray-100 overflow-hidden">
+                      <img
+                        src={candidate.Picture?.url || 'https://via.placeholder.com/400x500?text=No+Image'}
+                        alt={candidate.Name}
+                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
+                        }}
+                      />
 
-                  {/* Bottom Info Bar */}
-                  <div className="p-3 bg-white flex justify-between items-center border-t border-gray-50 flex-grow">
-                    <div className="flex flex-col">
-                      <h3 className="text-[15px] font-bold text-[#003749] truncate max-w-[200px]">
-                        {candidate.Name || 'عاملة منزلية'}
-                      </h3>
-                      <div className="flex items-center text-[11px] font-semibold text-gray-500 mt-1 gap-1.5">
-                        {getFlagUrl(candidate.Nationalitycopy) && (
-                          <img src={getFlagUrl(candidate.Nationalitycopy)!} alt={candidate.Nationalitycopy} className="w-4 h-3 rounded-sm object-cover shadow-sm" />
-                        )}
-                        <span>{candidate.Nationalitycopy || 'غير محدد'}</span>
-                        <span className="text-gray-300">•</span>
-                        <span className="text-[#ECC383] bg-[#ECC383]/10 px-1.5 py-0.5 rounded">{getAge(candidate.age)} سنة</span>
-                      </div>
+                      {/* Nationality Tag badge on top of image */}
+                      {candidate.Nationalitycopy && (
+                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-white/60">
+                          {getFlagUrl(candidate.Nationalitycopy) && (
+                            <img src={getFlagUrl(candidate.Nationalitycopy)!} alt={candidate.Nationalitycopy} className="w-4 h-3 rounded-sm object-cover shadow-sm" />
+                          )}
+                          <span className="text-[11px] font-bold text-[#003749]">{candidate.Nationalitycopy}</span>
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
 
-                    <Link 
-                      href={`/cv/${candidate.id}`}
-                      className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#f8f9fa] hover:bg-[#ECC383] text-[#003749] rounded-full transition-colors duration-300 group/btn shadow-sm"
-                    >
-                      <svg className="w-5 h-5 transform group-hover/btn:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                      </svg>
-                    </Link>
-                  </div>
-                </motion.div>
+                    {/* Bottom Info Bar */}
+                    <div className="p-3.5 bg-white flex justify-between items-center border-t border-gray-50 flex-grow">
+                      <div className="flex flex-col min-w-0 pr-1">
+                        <h3 className="text-sm md:text-[15px] font-bold text-[#003749] truncate">
+                          {candidate.Name || 'عاملة منزلية'}
+                        </h3>
+                        <div className="flex items-center text-xs font-semibold text-gray-500 mt-1 gap-1.5">
+                          <span className="text-[#003749] bg-[#ECC383]/30 px-2 py-0.5 rounded-full text-[11px] font-bold">
+                            {getAge(candidate.age)} سنة
+                          </span>
+                          <span className="text-gray-300">•</span>
+                          <span className="text-gray-400 text-[11px]">CV-{candidate.id}</span>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 flex items-center justify-center bg-[#003749]/5 group-hover:bg-[#ECC383] text-[#003749] rounded-full transition-colors duration-300 shadow-sm"
+                      >
+                        <svg className="w-4 h-4 md:w-5 md:h-5 transform group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>
           
-          {/* View All Overlay (Fixed on the left) */}
+          {/* View All Overlay (Desktop only on the left) */}
           <Link 
             href="/candidates" 
-            className="absolute top-4 bottom-12 left-0 w-24 md:w-32 z-10 flex flex-col items-center justify-center text-[#003749] hover:text-[#ECC383] transition-colors gap-3 pl-2 group/viewall cursor-pointer"
+            className="hidden md:flex absolute top-2 bottom-12 left-0 w-32 z-10 flex-col items-center justify-center text-[#003749] hover:text-[#ECC383] transition-colors gap-3 pl-2 group/viewall cursor-pointer"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent backdrop-blur-[3px] transition-all duration-300 group-hover/viewall:from-white group-hover/viewall:via-white/90"></div>
             
@@ -165,6 +180,19 @@ export default function FeaturedCandidates() {
               </svg>
               <span className="font-bold text-base md:text-lg whitespace-nowrap">عرض الكل</span>
             </div>
+          </Link>
+        </div>
+
+        {/* Mobile View All Button */}
+        <div className="mt-1 px-1 flex justify-center md:hidden">
+          <Link
+            href="/candidates"
+            className="flex items-center justify-center gap-2 w-full py-3 px-5 rounded-2xl bg-[#003749] text-white font-bold text-sm shadow-md active:scale-95 transition-all"
+          >
+            <span>تصفح جميع السير الذاتية</span>
+            <svg className="w-4 h-4 transform rotate-180 text-[#ECC383]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
           </Link>
         </div>
       </div>

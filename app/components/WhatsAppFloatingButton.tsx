@@ -1,84 +1,73 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppFloatingButton() {
+  const pathname = usePathname();
+  const isCvPage = pathname?.startsWith('/cv/');
   const [currentPeriod, setCurrentPeriod] = useState<"morning" | "evening">("morning");
-  
-  // تحديد الفترة الحالية
-  const determineCurrentPeriod = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    
-    // الفترة الصباحية: 9 صباحاً - 2 ظهراً
-    if (hour >= 9 && hour < 14) {
-      return "morning";
-    } 
-    // الفترة المسائية: 2 ظهراً - 10 مساءً
-    else {
-      return "evening";
-    }
-  };
-
-  // دالة لحساب الرابط بناءً على الفترة الحالية
-  const getWhatsAppLink = (period: "morning" | "evening") => {
-    const baseMessage = period === "morning" 
-    ? "مرحباً، احتاج للمساعدة" 
-    : "مساء الخير، احتاج للمساعدة";
-      
-    const phoneNumber = period === "morning" 
-      ? "966555230531" 
-      : "966555770723";
-      
-    return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(baseMessage)}`;
-  };
-
-  // تحديث الفترة الحالية
-  const updatePeriod = () => {
-    const newPeriod = determineCurrentPeriod();
-    setCurrentPeriod(newPeriod);
-  };
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // تحديث فوري
-    updatePeriod();
-    
-    // تحديث كل دقيقة
-    const interval = setInterval(updatePeriod, 60000);
-    
+    setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+
+    const determineCurrentPeriod = () => {
+      const hour = new Date().getHours();
+      return (hour >= 9 && hour < 14) ? "morning" : "evening";
+    };
+
+    setCurrentPeriod(determineCurrentPeriod());
+    const interval = setInterval(() => {
+      setCurrentPeriod(determineCurrentPeriod());
+    }, 60000);
+
     return () => clearInterval(interval);
   }, []);
 
-  // توليد الرابط الحالي
-  const currentLink = getWhatsAppLink(currentPeriod);
+  const phoneNumber = currentPeriod === "morning" ? "966555230531" : "966555770723";
+  const baseMessage = currentPeriod === "morning" ? "مرحباً، احتاج للمساعدة" : "مساء الخير، احتاج للمساعدة";
   const isMorning = currentPeriod === "morning";
 
+  // الرابط القياسي للواتساب
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(baseMessage)}`;
+
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className={`fixed ${isCvPage ? 'bottom-24 lg:bottom-6' : 'bottom-6'} right-6 z-50`}>
       <a 
-        href={currentLink}
-        target="_blank"
+        href={whatsappUrl}
+        onClick={() => {
+          if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'click_floating_whatsapp', {
+              period: currentPeriod,
+              phone_number: phoneNumber,
+              page_path: pathname,
+            });
+          }
+        }}
+        target={isMobile ? "_self" : "_blank"}
         rel="noopener noreferrer"
-        className="relative group block outline-none border-none focus:outline-none focus:ring-0"
+        className="relative block outline-none border-none cursor-pointer"
+        aria-label="تواصل عبر واتساب"
       >
         {/* الأيقونة الأساسية */}
-        <div className={`bg-[#25D366] w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110 ${isMorning ? 'animate-pulse' : ''}`}>
+        <div className={`bg-[#25D366] w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 active:scale-95 ${isMorning ? 'animate-pulse' : ''}`}>
           <img 
             src="/whatsapp-svgrepo-com.svg" 
             alt="واتساب" 
-            className="w-8 h-8 object-contain"
+            className="w-8 h-8 object-contain pointer-events-none"
           />
         </div>
         
         {/* مؤشر الفترة */}
-        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white">
+        <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white pointer-events-none">
           <div className={`w-full h-full rounded-full ${isMorning ? 'bg-yellow-400' : 'bg-purple-500'}`} />
         </div>
         
-      {/* النص عند المرور */}
-<div className="absolute bottom-full mb-2 right-0 transform translate-x-[-10%] bg-black text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-  لديك استفسار ؟ نسعد بخدمتك
-</div>
+        {/* النص يظهر فقط في أجهزة الكمبيوتر التي تدعم الماوس hover لمنع حظر اللمس في الجوال */}
+        <div className="hidden md:block absolute bottom-full mb-2 right-0 transform translate-x-[-10%] bg-black text-white text-xs rounded py-1 px-2 opacity-0 hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none select-none">
+          لديك استفسار ؟ نسعد بخدمتك
+        </div>
       </a>
     </div>
   );

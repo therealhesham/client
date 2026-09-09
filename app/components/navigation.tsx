@@ -69,7 +69,7 @@ export default function NavigationBar() {
         <header className={`bg-white shadow-md fixed w-full z-50 ${myFont.className}`} dir='rtl'>
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 {/* Logo */}
-                <div className="text-2xl font-bold">
+                <Link href="/" className="text-2xl font-bold block cursor-pointer transition-opacity hover:opacity-90 active:scale-95">
                     <Image
                         src="/banner.png"
                         alt="روائس للاستقدام"
@@ -77,7 +77,7 @@ export default function NavigationBar() {
                         height={40}
                         className="w-[180px] sm:w-[220px]"
                     />
-                </div>
+                </Link>
 
                 {/* Burger Menu Button for Mobile */}
                 <button
