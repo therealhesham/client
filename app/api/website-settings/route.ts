@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import HomeClient from './HomeClient';
+import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
-
-export const dynamic = 'force-dynamic';
 
 const DEFAULT_STATS = {
   showSection: true,
@@ -36,7 +34,7 @@ const DEFAULT_STATS = {
   ]
 };
 
-async function getWebsiteSettings() {
+export async function GET() {
   try {
     const rows: any = await prisma.$queryRawUnsafe(
       `SELECT settingKey, settingValue FROM website_settings WHERE settingKey IN ('hero_banner_image', 'hero_banner_show_border', 'website_stats')`
@@ -64,20 +62,9 @@ async function getWebsiteSettings() {
       });
     }
 
-    return { bannerUrl, showBorder, stats: websiteStats };
+    return NextResponse.json({ heroBannerUrl: bannerUrl, showBorder, stats: websiteStats }, { status: 200 });
   } catch (error) {
-    console.error('Error in SSR getWebsiteSettings:', error);
-    return { bannerUrl: '/banner.png', showBorder: true, stats: DEFAULT_STATS };
+    console.error('API Error in website-settings:', error);
+    return NextResponse.json({ heroBannerUrl: '/banner.png', showBorder: true, stats: DEFAULT_STATS }, { status: 200 });
   }
-}
-
-export default async function Page() {
-  const settings = await getWebsiteSettings();
-  return (
-    <HomeClient 
-      initialBanner={settings.bannerUrl} 
-      initialBorder={settings.showBorder} 
-      initialStats={settings.stats} 
-    />
-  );
 }
