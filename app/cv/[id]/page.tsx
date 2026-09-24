@@ -73,17 +73,26 @@ interface Homemaid {
   ExperienceYears: string | null;
   Experience: string | null;
   experienceType: string | null;
-  ArabicLanguageLeveL: string | null;
-  EnglishLanguageLevel: string | null;
+  ArabicLanguageLevel?: string | null;
+  ArabicLanguageLeveL?: string | null;
+  EnglishLanguageLevel?: string | null;
   Salary: string | null;
-  laundryLevel: string | null;
-  ironingLevel: string | null;
-  cleaningLevel: string | null;
-  cookingLevel: string | null;
-  sewingLevel: string | null;
-  childcareLevel: string | null;
+  LaundryLevel?: string | null;
+  laundryLevel?: string | null;
+  washingLevel?: string | null;
+  IroningLevel?: string | null;
+  ironingLevel?: string | null;
+  CleaningLevel?: string | null;
+  cleaningLevel?: string | null;
+  CookingLevel?: string | null;
+  cookingLevel?: string | null;
+  SewingLevel?: string | null;
+  sewingLevel?: string | null;
+  BabySitterLevel?: string | null;
+  childcareLevel?: string | null;
   Education: string | null;
-  OldPeopleCare: boolean | null;
+  OldPeopleCare?: boolean | number | null;
+  elderlycareLevel?: string | null;
   PassportStart: string | null;
   PassportEnd: string | null;
   phone: string | null;
@@ -117,7 +126,14 @@ const InfoItem = ({ icon: Icon, label, value }: { icon: any, label: string, valu
 
 // بطاقة المهارات
 const SkillBadge = ({ icon: Icon, label, level }: { icon: any, label: string, level: string | null }) => {
-  const isHigh = level?.includes('ممتاز') || level?.includes('جيد') || level === 'نعم';
+  const isHigh = Boolean(
+    level && (
+      level.includes('ممتاز') ||
+      level.includes('جيد') ||
+      level === 'نعم' ||
+      /expert|advanced|intermediate|good/i.test(level)
+    )
+  );
 
   return (
     <div className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ${isHigh ? 'bg-[#003749]/5 border border-[#003749]/10' : 'bg-gray-50 border border-gray-100'}`}>
@@ -583,7 +599,7 @@ export default function Profile() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <SkillBadge icon={Briefcase} label="سنوات الخبرة" level={homemaid.ExperienceYears} />
                   <SkillBadge icon={MapPin} label="أماكن الخبرة" level={homemaid.Experience} />
-                  <SkillBadge icon={Languages} label="العربية" level={homemaid.ArabicLanguageLeveL} />
+                  <SkillBadge icon={Languages} label="العربية" level={homemaid.ArabicLanguageLevel || homemaid.ArabicLanguageLeveL} />
                   <SkillBadge icon={Languages} label="الإنجليزية" level={homemaid.EnglishLanguageLevel} />
                 </div>
               </div>
@@ -591,12 +607,12 @@ export default function Profile() {
               <div>
                 <h3 className="text-sm font-bold text-gray-400 mb-3 text-right">المهارات العملية</h3>
                 <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                  <SkillBadge icon={Utensils} label="الطبخ" level={homemaid.cookingLevel} />
-                  <SkillBadge icon={Sparkles} label="التنظيف" level={homemaid.cleaningLevel} />
-                  <SkillBadge icon={Shirt} label="الغسيل" level={homemaid.washingLevel} />
-                  <SkillBadge icon={Shirt} label="الكوي" level={homemaid.ironingLevel} />
-                  <SkillBadge icon={Baby} label="الأطفال" level={homemaid.childcareLevel} />
-                  <SkillBadge icon={User} label="كبار السن" level={homemaid.elderlycareLevel} />
+                  <SkillBadge icon={Utensils} label="الطبخ" level={homemaid.CookingLevel || homemaid.cookingLevel} />
+                  <SkillBadge icon={Sparkles} label="التنظيف" level={homemaid.CleaningLevel || homemaid.cleaningLevel} />
+                  <SkillBadge icon={Shirt} label="الغسيل" level={homemaid.LaundryLevel || homemaid.washingLevel || homemaid.laundryLevel} />
+                  <SkillBadge icon={Shirt} label="الكوي" level={homemaid.IroningLevel || homemaid.ironingLevel} />
+                  <SkillBadge icon={Baby} label="الأطفال" level={homemaid.BabySitterLevel || homemaid.childcareLevel} />
+                  <SkillBadge icon={User} label="كبار السن" level={homemaid.elderlycareLevel || (homemaid.OldPeopleCare === 1 || homemaid.OldPeopleCare === true ? 'نعم' : null)} />
                 </div>
               </div>
             </div>
