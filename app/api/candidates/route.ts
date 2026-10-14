@@ -72,23 +72,30 @@ export async function GET(req: NextRequest) {
       contains: Passportnumber.toLowerCase(),
     };
   if (Nationality) {
-    const searchTerms = [Nationality];
-    if (Nationality === "Bangladesh" || Nationality === "بنغلاديش" || Nationality === "بنغلادش") {
+    const rawNat = Nationality.trim();
+    const lowerNat = rawNat.toLowerCase();
+    const searchTerms = [rawNat];
+
+    if (lowerNat === "bangladesh" || rawNat.includes("بنغلاد")) {
       searchTerms.push("Bangladesh", "بنغلاديش", "بنغلادش");
-    } else if (Nationality === "Philippines" || Nationality === "الفلبين") {
+    } else if (lowerNat === "philippines" || rawNat.includes("فلبين")) {
       searchTerms.push("Philippines", "الفلبين");
-    } else if (Nationality === "Burundi" || Nationality === "بوروندي") {
+    } else if (lowerNat === "burundi" || rawNat.includes("بوروندي")) {
       searchTerms.push("Burundi", "بوروندي");
-    } else if (Nationality === "Ethiopia" || Nationality === "إثيوبيا") {
-      searchTerms.push("Ethiopia", "إثيوبيا");
-    } else if (Nationality === "Uganda" || Nationality === "أوغندا") {
-      searchTerms.push("Uganda", "أوغندا");
-    } else if (Nationality === "Pakistan" || Nationality === "باكستان") {
+    } else if (lowerNat === "ethiopia" || rawNat.includes("ثيوبيا")) { // إثيوبيا / اثيوبيا / أثيوبيا
+      searchTerms.push("Ethiopia", "إثيوبيا", "اثيوبيا", "أثيوبيا");
+    } else if (lowerNat === "uganda" || rawNat.includes("وغندا")) { // أوغندا / اوغندا
+      searchTerms.push("Uganda", "أوغندا", "اوغندا");
+    } else if (lowerNat === "pakistan" || rawNat.includes("باكستان")) {
       searchTerms.push("Pakistan", "باكستان");
-    } else if (Nationality === "Kenya" || Nationality === "كينيا") {
+    } else if (lowerNat === "kenya" || rawNat.includes("كينيا")) {
       searchTerms.push("Kenya", "كينيا");
-    } else if (Nationality === "India" || Nationality === "الهند") {
+    } else if (lowerNat === "india" || rawNat.includes("هند")) {
       searchTerms.push("India", "الهند");
+    } else if (lowerNat === "sri lanka" || rawNat.includes("سريلانكا") || rawNat.includes("سيريلانكا")) {
+      searchTerms.push("Sri Lanka", "سريلانكا", "سيريلانكا");
+    } else if (lowerNat === "indonesia" || rawNat.includes("ندونيسيا")) {
+      searchTerms.push("Indonesia", "إندونيسيا", "اندونيسيا");
     }
 
     const uniqueTerms = Array.from(new Set(searchTerms));
@@ -202,9 +209,30 @@ export async function GET(req: NextRequest) {
       .map((o) => o.HomemaidId)
       .filter((id): id is number => id !== null);
 
-    const baseWhere = {
+    // استبعاد العاملات التابعات لدول تم إخفاء علمها (isActive = 0 في NationalityCard)
+    const notConditions: any[] = [];
+    try {
+      const inactiveCards = await prisma.$queryRawUnsafe<Array<{ countryArabic: string; countryEnglish: string }>>(
+        `SELECT countryArabic, countryEnglish FROM NationalityCard WHERE isActive = 0`
+      );
+      if (Array.isArray(inactiveCards) && inactiveCards.length > 0) {
+        for (const card of inactiveCards) {
+          if (card.countryEnglish && card.countryEnglish.trim()) {
+            notConditions.push({ Nationalitycopy: { contains: card.countryEnglish.trim() } });
+          }
+          if (card.countryArabic && card.countryArabic.trim()) {
+            notConditions.push({ Nationalitycopy: { contains: card.countryArabic.trim() } });
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching inactive nationality cards:", err);
+    }
+
+    const baseWhere: any = {
       isApproved: true,
-      id: { notIn: blockedIds }
+      id: { notIn: blockedIds },
+      ...(notConditions.length > 0 ? { NOT: notConditions } : {})
     };
 
     // أولًا: احسب العدد الكلي لجميع العاملات (قبل الفلترة)

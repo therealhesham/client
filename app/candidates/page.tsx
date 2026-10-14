@@ -2,7 +2,7 @@
 //@ts-ignore
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { HomeIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -36,17 +36,20 @@ const saudiRiyalFont = localFont({
 interface Candidate {
   id: number;
   Name: string;
-  age: number;
+  age?: number | string | null;
   Nationalitycopy: string;
   Passportnumber: string;
   experience?: string;
   skills?: string[];
   image?: string;
   Experience?: string;
-  Picture?: { url: string };
+  Picture?: { url: string } | string;
+  Religion?: string | null;
+  dateofbirth?: string | Date | null;
+  profession?: { name: string } | null;
 }
 
-const flags = [
+const DEFAULT_FLAGS = [
   { nationality: "Philippines", displayName: "الفلبين", flagUrl: "https://flagcdn.com/w1280/ph.png" },
   { nationality: "Burundi", displayName: "بوروندي", flagUrl: "https://flagcdn.com/w1280/bi.png" },
   { nationality: "Ethiopia", displayName: "إثيوبيا", flagUrl: "https://flagcdn.com/w1280/et.png" },
@@ -56,9 +59,67 @@ const flags = [
   { nationality: "Kenya", displayName: "كينيا", flagUrl: "https://flagcdn.com/w1280/ke.png" },
 ];
 
-// Images are now only from Digital Ocean
+function getCandidateAge(candidate: Candidate): number | null {
+  if (candidate.age) {
+    const num = Number(candidate.age);
+    if (!isNaN(num)) {
+      if (num >= 18 && num <= 75) return num;
+      if (num > 1900 && num < 2100) return new Date().getFullYear() - num;
+    }
+  }
+  if (candidate.dateofbirth) {
+    const birthDate = new Date(candidate.dateofbirth);
+    if (!isNaN(birthDate.getTime())) {
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (age >= 18 && age <= 75) return age;
+    }
+  }
+  return null;
+}
 
+function getCandidateReligion(religion?: string | null): string | null {
+  if (!religion) return null;
+  const lower = religion.toLowerCase();
+  if (lower.includes("islam") || lower.includes("إسلام") || lower.includes("مسلم")) {
+    return "مسلمة";
+  }
+  return "غير مسلمة";
+}
 
+const countryFlags = [
+  { keys: ["philippines", "الفلبين", "فلبين"], name: "الفلبين", flagUrl: "https://flagcdn.com/w80/ph.png" },
+  { keys: ["burundi", "بوروندي"], name: "بوروندي", flagUrl: "https://flagcdn.com/w80/bi.png" },
+  { keys: ["ethiopia", "إثيوبيا", "اثيوبيا"], name: "إثيوبيا", flagUrl: "https://flagcdn.com/w80/et.png" },
+  { keys: ["uganda", "أوغندا", "اوغندا"], name: "أوغندا", flagUrl: "https://flagcdn.com/w80/ug.png" },
+  { keys: ["pakistan", "باكستان"], name: "باكستان", flagUrl: "https://flagcdn.com/w80/pk.png" },
+  { keys: ["bangladesh", "بنغلاديش", "بنغلادش"], name: "بنغلاديش", flagUrl: "https://flagcdn.com/w80/bd.png" },
+  { keys: ["kenya", "كينيا"], name: "كينيا", flagUrl: "https://flagcdn.com/w80/ke.png" },
+  { keys: ["india", "الهند", "هند"], name: "الهند", flagUrl: "https://flagcdn.com/w80/in.png" },
+  { keys: ["sri lanka", "سريلانكا", "سيريلانكا"], name: "سريلانكا", flagUrl: "https://flagcdn.com/w80/lk.png" },
+  { keys: ["indonesia", "إندونيسيا", "اندونيسيا"], name: "إندونيسيا", flagUrl: "https://flagcdn.com/w80/id.png" },
+  { keys: ["vietnam", "فيتنام"], name: "فيتنام", flagUrl: "https://flagcdn.com/w80/vn.png" },
+  { keys: ["nepal", "نيبال"], name: "نيبال", flagUrl: "https://flagcdn.com/w80/np.png" },
+  { keys: ["sierra leone", "سيراليون"], name: "سيراليون", flagUrl: "https://flagcdn.com/w80/sl.png" },
+  { keys: ["madagascar", "مدغشقر"], name: "مدغشقر", flagUrl: "https://flagcdn.com/w80/mg.png" },
+  { keys: ["ghana", "غانا"], name: "غانا", flagUrl: "https://flagcdn.com/w80/gh.png" },
+  { keys: ["eritrea", "إريتريا", "اريتريا"], name: "إريتريا", flagUrl: "https://flagcdn.com/w80/er.png" },
+];
+
+function getCountryInfo(nationality: string) {
+  if (!nationality) return null;
+  const lower = nationality.toLowerCase();
+  const match = countryFlags.find(f => f.keys.some(k => lower.includes(k.toLowerCase())));
+  if (match) {
+    return { flagUrl: match.flagUrl, name: match.name };
+  }
+  const arabicPart = nationality.match(/[\u0600-\u06FF]+/g)?.join(' ');
+  return { flagUrl: null, name: arabicPart || nationality.replace(/^[-\s]+|[-\s]+$/g, '') };
+}
 
 function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate; nationalityFilter: string }) {
   const role = candidate.Nationalitycopy === "Philippines" ? "مدبرة منزل" : "مربية أطفال";
@@ -84,7 +145,9 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
     })
     .filter(Boolean) as string[];
 
-  // Images are now only from Digital Ocean - no need for Airtable fetch
+  const age = getCandidateAge(candidate);
+  const religion = getCandidateReligion(candidate.Religion);
+  const country = getCountryInfo(candidate.Nationalitycopy);
 
   return (
     <motion.div
@@ -99,7 +162,7 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
       {/* القسم العلوي: الصورة */}
       <div className="relative w-full h-86 bg-gray-100">
         <img
-          src={candidate?.Picture?.url ? candidate?.Picture?.url : candidate?.Picture}
+          src={candidate?.Picture?.url ? candidate?.Picture?.url : (typeof candidate?.Picture === "string" ? candidate.Picture : "")}
           alt={`صورة ${candidate.Name}`}
           className="w-full h-full object-cover object-center"
           loading="lazy"
@@ -110,11 +173,9 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
 
       {/* القسم السفلي: البيانات */}
       <div className="flex-1 p-5 flex flex-col justify-between text-right space-y-3">
-        {/* رقم العاملة */
-
-        }
+        {/* رقم العاملة */}
         <div>
-          <span className="text-xs font-semibold text-[#c39e6a] bg-[#c39e6a]/10 px-2 py-1 rounded-full">
+          <span className="text-xs font-semibold text-[#c39e6a] bg-[#c39e6a]/10 px-2.5 py-1 rounded-full">
             #{candidate.id}
           </span>
         </div>
@@ -122,10 +183,37 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
         {/* الاسم الكامل */}
         <h3 className="text-lg font-bold text-[#013749] leading-tight">{candidate.Name}</h3>
 
-        {/* الوظيفة + الجنسية */}
-        <div className="space-y-1">
-          <p className={`${myFontJanna.className} text-sm text-[#ECC383] font-medium`}>{candidate?.profession?.name}</p>
-          <p className="text-sm text-gray-600">من {location}</p>
+        {/* الوظيفة */}
+        <p className={`${myFontJanna.className} text-sm text-[#ECC383] font-medium`}>
+          {candidate?.profession?.name}
+        </p>
+
+        {/* البيانات الأساسية: الجنسية، العمر، الديانة في صف منظم */}
+        <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
+          <span className="inline-flex items-center gap-1.5 text-xs bg-slate-50 text-slate-700 border border-slate-200/70 px-2.5 py-1 rounded-lg font-medium">
+            {country?.flagUrl ? (
+              <img
+                src={country.flagUrl}
+                alt={country.name || location}
+                className="w-4 h-3 rounded-xs object-cover shadow-xs border border-gray-200 shrink-0"
+              />
+            ) : (
+              <GlobeAltIcon className="w-3.5 h-3.5 text-[#c39e6a]" />
+            )}
+            <span>{country?.name || location}</span>
+          </span>
+          {age && (
+            <span className="inline-flex items-center gap-1.5 text-xs bg-slate-50 text-slate-700 border border-slate-200/70 px-2.5 py-1 rounded-lg font-medium">
+              <UserIcon className="w-3.5 h-3.5 text-[#c39e6a]" />
+              <span>{age} سنة</span>
+            </span>
+          )}
+          {religion && (
+            <span className="inline-flex items-center gap-1.5 text-xs bg-slate-50 text-slate-700 border border-slate-200/70 px-2.5 py-1 rounded-lg font-medium">
+              <FaStarAndCrescent className="w-3 h-3 text-[#c39e6a]" />
+              <span>{religion}</span>
+            </span>
+          )}
         </div>
 
         {/* الخبرة */}
@@ -181,6 +269,33 @@ export default function CandidatesPage() {
 
   const [search, setSearch] = useState("");
   const [nationalityFilter, setNationalityFilter] = useState("");
+  const [flags, setFlags] = useState<Array<{ nationality: string; displayName: string; flagUrl: string }>>([]);
+  const [flagsLoading, setFlagsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchActiveFlags = async () => {
+      try {
+        const res = await fetch('/api/nationality-cards');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((card: any) => ({
+            nationality: card.countryEnglish,
+            displayName: card.countryArabic,
+            flagUrl: card.flagUrl,
+          }));
+          setFlags(mapped);
+        } else {
+          setFlags(DEFAULT_FLAGS);
+        }
+      } catch (err) {
+        console.error("Failed to fetch active nationality flags:", err);
+        setFlags(DEFAULT_FLAGS);
+      } finally {
+        setFlagsLoading(false);
+      }
+    };
+    fetchActiveFlags();
+  }, []);
   const [ageFilter, setAgeFilter] = useState("");
   const [religionFilter, setReligionFilter] = useState("");
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -214,18 +329,36 @@ export default function CandidatesPage() {
   const [currentPeriod, setCurrentPeriod] = useState<"morning" | "evening">("morning");
   const hasFilters = nationalityFilter || religionFilter || ageFilter || experienceLevel;
 
+  const pageSize = 12;
+  const totalPages = Math.max(1, Math.ceil(filteredCount / pageSize));
+
   const router = useRouter();
   const searchParams = useSearchParams();
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const candidatesSectionRef = useRef<HTMLElement>(null);
+  const isFirstMount = useRef(true);
 
-  const fetchCandidates = async () => {
+  const fetchCandidates = async (pageOverride?: number) => {
+    // إلغاء أي طلب سابق قيد التنفيذ لمنع تضارب وسباق الشبكة (Race Condition)
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setLoading(true);
     setError(null);
 
     try {
       const queryParams = new URLSearchParams();
       if (search) queryParams.append("Name", search);
-      if (nationalityFilter) queryParams.append("Nationality", nationalityFilter);
-      if (advancedNationality && advancedNationality !== "جميع الجنسيات") queryParams.append("Nationality", advancedNationality);
+
+      // توحيد فلتر الجنسية بدقة لمنع التكرار أو التضارب
+      const activeNationality = nationalityFilter || (advancedNationality && advancedNationality !== "جميع الجنسيات" ? advancedNationality : "");
+      if (activeNationality) {
+        queryParams.append("Nationality", activeNationality);
+      }
+
       if (ageFilter) queryParams.append("age", ageFilter);
       if (minAge) queryParams.append("minAge", minAge);
       if (maxAge) queryParams.append("maxAge", maxAge);
@@ -242,25 +375,33 @@ export default function CandidatesPage() {
       Object.entries(skillRatings).forEach(([skill, level]) => {
         queryParams.append(`skill_${skill}`, level);
       });
-      queryParams.append("page", page.toString());
 
-      const response = await fetch(`/api/candidates?${queryParams.toString()}`);
+      const currentPage = pageOverride !== undefined ? pageOverride : page;
+      queryParams.append("page", currentPage.toString());
+
+      const response = await fetch(`/api/candidates?${queryParams.toString()}`, {
+        signal: controller.signal
+      });
       const data = await response.json();
-      console.log(data)
       if (response.ok) {
-        setCandidates(data.homemaids);
-        setTotalCount(data.totalCount);
-        setFilteredCount(data.filteredCount); // مثلاً: 47 ← العدد الحقيقي بعد الفلتر
-
+        setCandidates(data.homemaids || []);
+        setTotalCount(data.totalCount || 0);
+        setFilteredCount(data.filteredCount || 0);
       } else {
         setError(data.error || "Failed to fetch candidates");
         setCandidates([]);
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        // تم إلغاء الطلب بنجاح بواسطة استعلام أحدث
+        return;
+      }
       setError("An error occurred while fetching candidates");
       setCandidates([]);
     } finally {
-      setLoading(false);
+      if (abortControllerRef.current === controller) {
+        setLoading(false);
+      }
     }
   };
   // تحديد الفترة الزمنية الحالية (صباحية أو مسائية)
@@ -285,16 +426,26 @@ export default function CandidatesPage() {
 
   useEffect(() => {
     const country = searchParams.get("country");
-    if (country && nationalities.includes(country)) {
+    if (country) {
       setNationalityFilter(country);
     } else {
       setNationalityFilter("");
     }
+    setPage(1);
   }, [searchParams]);
 
   useEffect(() => {
     fetchCandidates();
   }, [search, nationalityFilter, ageFilter, page, religionFilter, experienceLevel]);
+
+  // التمرير التلقائي للأعلى عند تغيير الصفحة
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    candidatesSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [page]);
 
   useEffect(() => {
     // التحديث الفوري
@@ -350,7 +501,7 @@ export default function CandidatesPage() {
     let message = "مرحباً، لقد كنت أحاول العثور على عاملة";
 
     if (nationalityFilter) {
-      const nationality = flags.find(f => f.nationality === nationalityFilter)?.displayName || nationalityFilter;
+      const nationality = (flags.length > 0 ? flags : DEFAULT_FLAGS).find(f => f.nationality === nationalityFilter)?.displayName || nationalityFilter;
       message += ` من جنسية ${nationality}`;
     }
 
@@ -483,46 +634,56 @@ export default function CandidatesPage() {
             {/* محتوى التبويبات كما هو */}
             {activeTab === "nationality" && (
               <div className="flex flex-wrap justify-center gap-4">
-                {flags.map((flag, index) => (
-                  <motion.button
-                    key={flag.nationality}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      const isSelected = nationalityFilter === flag.nationality;
-                      setNationalityFilter(isSelected ? "" : flag.nationality);
+                {flagsLoading && flags.length === 0 ? (
+                  <div className="py-6 flex items-center justify-center text-gray-400 text-sm">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#ECC383] ml-2"></div>
+                    <span>جاري تحميل الجنسيات...</span>
+                  </div>
+                ) : (
+                  flags.map((flag, index) => (
+                    <motion.button
+                      key={flag.nationality}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        const isSelected = nationalityFilter === flag.nationality;
+                        const newCountry = isSelected ? "" : flag.nationality;
+                        setNationalityFilter(newCountry);
+                        setAdvancedNationality("");
+                        setPage(1);
 
-                      // تتبع حدث الضغط على الفلتر (فقط عند التحديد وليس الإلغاء)
-                      if (!isSelected && typeof window !== 'undefined' && (window as any).gtag) {
-                        (window as any).gtag('event', 'filter_nationality_click', {
-                            nationality: flag.displayName || flag.nationality,
-                            source: 'candidates_page_tabs'
-                        });
-                      }
+                        // تتبع حدث الضغط على الفلتر (فقط عند التحديد وليس الإلغاء)
+                        if (!isSelected && typeof window !== 'undefined' && (window as any).gtag) {
+                          (window as any).gtag('event', 'filter_nationality_click', {
+                              nationality: flag.displayName || flag.nationality,
+                              source: 'candidates_page_tabs'
+                          });
+                        }
 
-                      // تحديث الرابط
-                      const newParams = new URLSearchParams(searchParams.toString());
-                      if (isSelected) {
-                        newParams.delete("country");
-                      } else {
-                        newParams.set("country", flag.nationality);
-                      }
-                      router.push(`/candidates?${newParams.toString()}`);
-                    }}
-                    className={`p-2 border-2 rounded-lg ${nationalityFilter === flag.nationality
-                      ? "border-[#ECC383] shadow-md"
-                      : "border-transparent hover:border-gray-300"
-                      } transition-all duration-300`}
-                    aria-label={`اختر ${flag.nationality}`}
-                  >
-                    <img
-                      src={flag.flagUrl.trim()}
-                      alt={`علم ${flag.nationality}`}
-                      className="w-16 h-12 object-cover rounded-md"
-                    />
-                    <p className="text-xs mt-1 text-gray-700 font-medium">{flag.displayName}</p>
-                  </motion.button>
-                ))}
+                        // تحديث الرابط
+                        const newParams = new URLSearchParams(searchParams.toString());
+                        if (isSelected) {
+                          newParams.delete("country");
+                        } else {
+                          newParams.set("country", flag.nationality);
+                        }
+                        router.push(`/candidates?${newParams.toString()}`);
+                      }}
+                      className={`p-2 border-2 rounded-lg ${nationalityFilter === flag.nationality
+                        ? "border-[#ECC383] shadow-md"
+                        : "border-transparent hover:border-gray-300"
+                        } transition-all duration-300`}
+                      aria-label={`اختر ${flag.nationality}`}
+                    >
+                      <img
+                        src={flag.flagUrl ? flag.flagUrl.trim() : ''}
+                        alt={`علم ${flag.nationality}`}
+                        className="w-16 h-12 object-cover rounded-md"
+                      />
+                      <p className="text-xs mt-1 text-gray-700 font-medium">{flag.displayName}</p>
+                    </motion.button>
+                  ))
+                )}
               </div>
             )}
 
@@ -536,6 +697,7 @@ export default function CandidatesPage() {
                     onClick={() => {
                       const isSelected = religionFilter === religion.value;
                       setReligionFilter(isSelected ? "" : religion.value);
+                      setPage(1);
                     }}
                     className={`px-6 py-3 rounded-full text-lg font-medium transition-all duration-300 shadow-sm ${religionFilter === religion.value ||
                       (religion.value === "Non-Muslim" && religionFilter && !religionFilter.includes("Islam"))
@@ -559,6 +721,7 @@ export default function CandidatesPage() {
                     onClick={() => {
                       const isSelected = ageFilter === age;
                       setAgeFilter(isSelected ? "" : age);
+                      setPage(1);
                     }}
                     className={`w-20 h-20 rounded-full text-xl font-bold transition-all duration-300 shadow-md flex flex-col items-center justify-center ${ageFilter === age
                       ? "bg-[#ECC383] text-white"
@@ -588,6 +751,7 @@ export default function CandidatesPage() {
                     onClick={() => {
                       const isSelected = experienceLevel === exp.value;
                       setExperienceLevel(isSelected ? null : exp.value);
+                      setPage(1);
                       
                       if (!isSelected && typeof window !== 'undefined' && (window as any).gtag) {
                         (window as any).gtag('event', 'filter_experience_click', {
@@ -618,7 +782,7 @@ export default function CandidatesPage() {
                     <span className="text-[#013749]">أنت تبحث عن عاملة</span>{" "}
                     {nationalityFilter && (
                       <span className="text-[#C49E6A] font-bold">
-                        من جنسية {flags.find(f => f.nationality === nationalityFilter)?.displayName || nationalityFilter}
+                        من جنسية {(flags.length > 0 ? flags : DEFAULT_FLAGS).find(f => f.nationality === nationalityFilter)?.displayName || nationalityFilter}
                       </span>
                     )}
                     {religionFilter && (
@@ -656,9 +820,11 @@ export default function CandidatesPage() {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     setNationalityFilter("");
+                    setAdvancedNationality("");
                     setReligionFilter("");
                     setAgeFilter("");
                     setExperienceLevel(null);
+                    setPage(1);
                     router.push("/candidates");
                   }}
                   className="bg-[#ECC383] hover:bg-[#d4b16f] text-white cursor-pointer text-xs md:text-sm font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-[#ECC383]/50 min-w-24"
@@ -743,14 +909,12 @@ export default function CandidatesPage() {
                           اختر الجنسية المفضلة
                         </label>
                         <select value={advancedNationality} onChange={(e) => setAdvancedNationality(e.target.value)} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-[#ECC383] focus:border-[#ECC383] outline-none transition">
-                          <option>جميع الجنسيات</option>
-                          <option>الفلبين</option>
-                          <option>إثيوبيا</option>
-                          <option>باكستان</option>
-                          <option>بنغلاديش</option>
-                          <option>كينيا</option>
-                          <option>أوغندا</option>
-                          <option>بوروندي</option>
+                          <option value="">جميع الجنسيات</option>
+                          {(flags.length > 0 ? flags : DEFAULT_FLAGS).map((flag) => (
+                            <option key={flag.nationality} value={flag.displayName}>
+                              {flag.displayName}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
@@ -1065,7 +1229,11 @@ export default function CandidatesPage() {
                     </button>
                     <button
                       onClick={() => {
-                        fetchCandidates();
+                        setPage(1);
+                        if (advancedNationality && advancedNationality !== "جميع الجنسيات") {
+                          setNationalityFilter(advancedNationality);
+                        }
+                        fetchCandidates(1);
                         setIsAdvancedModalOpen(false);
                       }}
                       className="px-6 py-3 bg-[#ECC383] text-white rounded-xl font-medium hover:bg-[#012f3f] transition-shadow shadow-md hover:shadow-lg"
@@ -1082,7 +1250,7 @@ export default function CandidatesPage() {
       </section>
 
 
-      <section className="py-4 px-4 sm:px-6 lg:px-8">
+      <section ref={candidatesSectionRef} className="py-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
 
           {/* الإطار الخارجي - ذهبي خفيف */}
@@ -1142,10 +1310,52 @@ export default function CandidatesPage() {
             {/* المحتوى: الشبكة */}
             <div className="p-8">
               {loading ? (
-                <div className="flex justify-center py-16">
-                  <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 border-4 border-[#ECC383]/30 border-t-[#ECC383] rounded-full animate-spin"></div>
-                  </div>
+                /* بطاقات التحميل الهيكلية (Skeleton Loading) */
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[...Array(6)].map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white shadow-md rounded-2xl overflow-hidden border border-gray-100 flex flex-col h-[660px] max-w-md mx-auto w-full animate-pulse"
+                      dir="rtl"
+                    >
+                      {/* هيكل الصورة */}
+                      <div className="w-full h-86 bg-gray-200" />
+
+                      {/* هيكل المحتوى */}
+                      <div className="flex-1 p-5 flex flex-col justify-between space-y-4">
+                        {/* رقم العاملة */}
+                        <div>
+                          <div className="h-6 w-16 bg-gray-200 rounded-full" />
+                        </div>
+
+                        {/* الاسم */}
+                        <div className="h-6 w-3/4 bg-gray-200 rounded-md" />
+
+                        {/* الوظيفة */}
+                        <div className="h-4 w-1/3 bg-gray-200 rounded" />
+
+                        {/* بطاقات البيانات الأساسية (الجنسية، العمر، الديانة) */}
+                        <div className="flex gap-2">
+                          <div className="h-6 w-20 bg-gray-200 rounded-lg" />
+                          <div className="h-6 w-16 bg-gray-200 rounded-lg" />
+                          <div className="h-6 w-16 bg-gray-200 rounded-lg" />
+                        </div>
+
+                        {/* الخبرة */}
+                        <div className="h-4 w-2/3 bg-gray-200 rounded" />
+
+                        {/* المهارات */}
+                        <div className="flex gap-2">
+                          <div className="h-6 w-20 bg-gray-200 rounded-full" />
+                          <div className="h-6 w-16 bg-gray-200 rounded-full" />
+                          <div className="h-6 w-20 bg-gray-200 rounded-full" />
+                        </div>
+
+                        {/* زر عرض الملف */}
+                        <div className="h-11 w-full bg-gray-200 rounded-lg mt-2" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : error ? (
                 <motion.p
@@ -1230,36 +1440,36 @@ export default function CandidatesPage() {
                       ))}
                     </motion.div>
 
-                    {/* أزرار التنقل */}
+                    {/* أزرار التنقل (Pagination) */}
                     <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-16">
                       <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        whileHover={page > 1 ? { scale: 1.05 } : {}}
+                        whileTap={page > 1 ? { scale: 0.95 } : {}}
                         onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={page === 1}
-                        className={`px-8 py-3 rounded-full font-medium text-sm tracking-wide ${page === 1
+                        disabled={page <= 1}
+                        className={`px-8 py-3 rounded-full font-medium text-sm tracking-wide ${page <= 1
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-[#013749] text-white hover:bg-[#012f3f]"
+                          : "bg-[#013749] text-white hover:bg-[#012f3f] cursor-pointer"
                           } transition-all duration-200 shadow-sm`}
                       >
                         → السابق
                       </motion.button>
 
-                      <div className="text-sm text-gray-500 font-medium px-5 py-2 bg-white border border-gray-200 rounded-full min-w-24 text-center">
-                        الصفحة {page}
+                      <div className="text-sm text-gray-600 font-medium px-5 py-2 bg-white border border-gray-200 rounded-full min-w-32 text-center shadow-xs">
+                        الصفحة <span className="font-bold text-[#013749]">{page}</span> من <span className="font-bold text-[#013749]">{totalPages}</span>
                       </div>
 
                       <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setPage((prev) => prev + 1)}
-                        disabled={candidates.length < 10}
-                        className={`px-8 py-3 rounded-full font-medium text-sm tracking-wide ${candidates.length < 10
+                        whileHover={page < totalPages ? { scale: 1.05 } : {}}
+                        whileTap={page < totalPages ? { scale: 0.95 } : {}}
+                        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={page >= totalPages}
+                        className={`px-8 py-3 rounded-full font-medium text-sm tracking-wide ${page >= totalPages
                           ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                          : "bg-[#013749] text-white hover:bg-[#012f3f]"
+                          : "bg-[#013749] text-white hover:bg-[#012f3f] cursor-pointer"
                           } transition-all duration-200 shadow-sm`}
                       >
-                        التالي  ←
+                        التالي ←
                       </motion.button>
                     </div>
                   </>

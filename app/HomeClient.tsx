@@ -317,7 +317,7 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
         <NavigationBar />
       </div>
       {/* Hero Section */}
-      <main className="pt-20 px-20 relative min-h-screen overflow-hidden bg-white">
+      <main className="pt-16 md:pt-20 px-4 sm:px-8 md:px-12 lg:px-20 relative min-h-screen overflow-hidden bg-white">
         {/* الخلفية: نقاط ذهبية ديناميكية */}
         <div className="absolute inset-0 z-0">
           <Particles
@@ -340,7 +340,7 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
             initial="hidden"
             animate="visible"
             variants={heroVariants}
-            className="container mx-auto px-4 py-16"
+            className="container mx-auto px-0 sm:px-4 py-8 md:py-16"
             dir="rtl"
           >
             {/* القسم العلوي: نص + صورة */}
@@ -389,7 +389,7 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
                 </div>
 
                 {/* خط فاصل زخرفي */}
-                <div className="w-80 h-1 bg-[#ECC383] rounded-full mt-4"></div>
+                <div className="w-48 sm:w-80 h-1 bg-[#ECC383] rounded-full mt-4"></div>
               </div>
 
               {/* الصورة - على اليسار في وضع RTL */}

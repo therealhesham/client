@@ -27,19 +27,33 @@ interface Candidate {
 }
 
 const flags = [
-  { nationality: "Philippines", displayName: "الفلبين", flagUrl: "https://flagcdn.com/w1280/ph.png" },
-  { nationality: "Burundi", displayName: "بوروندي", flagUrl: "https://flagcdn.com/w1280/bi.png" },
-  { nationality: "Ethiopia", displayName: "إثيوبيا", flagUrl: "https://flagcdn.com/w1280/et.png" },
-  { nationality: "Uganda", displayName: "أوغندا", flagUrl: "https://flagcdn.com/w1280/ug.png" },
-  { nationality: "Pakistan", displayName: "باكستان", flagUrl: "https://flagcdn.com/w1280/pk.png" },
-  { nationality: "Bangladesh", displayName: "بنغلاديش", flagUrl: "https://flagcdn.com/w1280/bd.png" },
-  { nationality: "Kenya", displayName: "كينيا", flagUrl: "https://flagcdn.com/w1280/ke.png" },
+  { keys: ["philippines", "الفلبين", "فلبين"], name: "الفلبين", flagUrl: "https://flagcdn.com/w80/ph.png" },
+  { keys: ["burundi", "بوروندي"], name: "بوروندي", flagUrl: "https://flagcdn.com/w80/bi.png" },
+  { keys: ["ethiopia", "إثيوبيا", "اثيوبيا"], name: "إثيوبيا", flagUrl: "https://flagcdn.com/w80/et.png" },
+  { keys: ["uganda", "أوغندا", "اوغندا"], name: "أوغندا", flagUrl: "https://flagcdn.com/w80/ug.png" },
+  { keys: ["pakistan", "باكستان"], name: "باكستان", flagUrl: "https://flagcdn.com/w80/pk.png" },
+  { keys: ["bangladesh", "بنغلاديش", "بنغلادش"], name: "بنغلاديش", flagUrl: "https://flagcdn.com/w80/bd.png" },
+  { keys: ["kenya", "كينيا"], name: "كينيا", flagUrl: "https://flagcdn.com/w80/ke.png" },
+  { keys: ["india", "الهند", "هند"], name: "الهند", flagUrl: "https://flagcdn.com/w80/in.png" },
+  { keys: ["sri lanka", "سريلانكا", "سيريلانكا"], name: "سريلانكا", flagUrl: "https://flagcdn.com/w80/lk.png" },
+  { keys: ["indonesia", "إندونيسيا", "اندونيسيا"], name: "إندونيسيا", flagUrl: "https://flagcdn.com/w80/id.png" },
+  { keys: ["vietnam", "فيتنام"], name: "فيتنام", flagUrl: "https://flagcdn.com/w80/vn.png" },
+  { keys: ["nepal", "نيبال"], name: "نيبال", flagUrl: "https://flagcdn.com/w80/np.png" },
+  { keys: ["sierra leone", "سيراليون"], name: "سيراليون", flagUrl: "https://flagcdn.com/w80/sl.png" },
+  { keys: ["madagascar", "مدغشقر"], name: "مدغشقر", flagUrl: "https://flagcdn.com/w80/mg.png" },
+  { keys: ["ghana", "غانا"], name: "غانا", flagUrl: "https://flagcdn.com/w80/gh.png" },
+  { keys: ["eritrea", "إريتريا", "اريتريا"], name: "إريتريا", flagUrl: "https://flagcdn.com/w80/er.png" },
 ];
 
-const getFlagUrl = (nationality: string) => {
+const getCountryInfo = (nationality: string) => {
   if (!nationality) return null;
-  const match = flags.find(f => f.nationality.toLowerCase() === nationality.toLowerCase() || f.displayName === nationality);
-  return match ? match.flagUrl : null;
+  const lower = nationality.toLowerCase();
+  const match = flags.find(f => f.keys.some(k => lower.includes(k.toLowerCase())));
+  if (match) {
+    return { flagUrl: match.flagUrl, name: match.name };
+  }
+  const arabicPart = nationality.match(/[\u0600-\u06FF]+/g)?.join(' ');
+  return { flagUrl: null, name: arabicPart || nationality.replace(/^[-\s]+|[-\s]+$/g, '') };
 };
 
 const getAge = (age: any) => {
@@ -87,13 +101,13 @@ export default function FeaturedCandidates() {
   }
 
   return (
-    <section className={`py-4 px-2 sm:px-4 md:px-8 bg-transparent ${myFont.className}`} dir="rtl">
+    <section className={`py-4 px-0 sm:px-4 md:px-8 bg-transparent ${myFont.className}`} dir="rtl">
       <div className="container mx-auto max-w-7xl">
         <div className="relative pl-0 md:pl-32 overflow-hidden">
           <Swiper
             modules={[Autoplay, Pagination, Navigation]}
             spaceBetween={14}
-            slidesPerView={1.15}
+            slidesPerView={1.2}
             breakpoints={{
               480: { slidesPerView: 1.35, spaceBetween: 16 },
               640: { slidesPerView: 2, spaceBetween: 20 },
@@ -103,68 +117,76 @@ export default function FeaturedCandidates() {
             pagination={{ clickable: true, dynamicBullets: true }}
             className="pb-10 md:pb-12 px-1 md:px-2 !overflow-visible"
           >
-            {candidates.map((candidate) => (
-              <SwiperSlide key={candidate.id} className="pt-2 pb-6">
-                <Link 
-                  href={`/cv/${candidate.id}`}
-                  className="block h-full group outline-none"
-                >
-                  <motion.div
-                    whileHover={{ y: -6 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="bg-white rounded-2xl md:rounded-3xl shadow-md md:shadow-lg border border-gray-100 overflow-hidden group-hover:shadow-xl group-hover:border-[#ECC383]/50 transition-all duration-300 flex flex-col h-full cursor-pointer"
+            {candidates.map((candidate) => {
+              const country = getCountryInfo(candidate.Nationalitycopy);
+              return (
+                <SwiperSlide key={candidate.id} className="pt-2 pb-6">
+                  <Link 
+                    href={`/cv/${candidate.id}`}
+                    className="block h-full group outline-none"
                   >
-                    {/* Image Section */}
-                    <div className="relative aspect-[3/4] sm:h-80 w-full bg-gray-100 overflow-hidden">
-                      <img
-                        src={candidate.Picture?.url || 'https://via.placeholder.com/400x500?text=No+Image'}
-                        alt={candidate.Name}
-                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
-                        }}
-                      />
+                    <motion.div
+                      whileHover={{ y: -6 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="bg-white rounded-2xl md:rounded-3xl shadow-md md:shadow-lg border border-gray-100 overflow-hidden group-hover:shadow-xl group-hover:border-[#ECC383]/50 transition-all duration-300 flex flex-col h-full cursor-pointer"
+                    >
+                      {/* Image Section */}
+                      <div className="relative aspect-[3/4] sm:h-80 w-full bg-gray-100 overflow-hidden">
+                        <img
+                          src={candidate.Picture?.url || 'https://via.placeholder.com/400x500?text=No+Image'}
+                          alt={candidate.Name}
+                          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
+                          }}
+                        />
 
-                      {/* Nationality Tag badge on top of image */}
-                      {candidate.Nationalitycopy && (
-                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm border border-white/60">
-                          {getFlagUrl(candidate.Nationalitycopy) && (
-                            <img src={getFlagUrl(candidate.Nationalitycopy)!} alt={candidate.Nationalitycopy} className="w-4 h-3 rounded-sm object-cover shadow-sm" />
-                          )}
-                          <span className="text-[11px] font-bold text-[#003749]">{candidate.Nationalitycopy}</span>
-                        </div>
-                      )}
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-
-                    {/* Bottom Info Bar */}
-                    <div className="p-3.5 bg-white flex justify-between items-center border-t border-gray-50 flex-grow">
-                      <div className="flex flex-col min-w-0 pr-1">
-                        <h3 className="text-sm md:text-[15px] font-bold text-[#003749] truncate">
-                          {candidate.Name || 'عاملة منزلية'}
-                        </h3>
-                        <div className="flex items-center text-xs font-semibold text-gray-500 mt-1 gap-1.5">
-                          <span className="text-[#003749] bg-[#ECC383]/30 px-2 py-0.5 rounded-full text-[11px] font-bold">
-                            {getAge(candidate.age)} سنة
-                          </span>
-                          <span className="text-gray-300">•</span>
-                          <span className="text-gray-400 text-[11px]">CV-{candidate.id}</span>
-                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </div>
 
-                      <div 
-                        className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 flex items-center justify-center bg-[#003749]/5 group-hover:bg-[#ECC383] text-[#003749] rounded-full transition-colors duration-300 shadow-sm"
-                      >
-                        <svg className="w-4 h-4 md:w-5 md:h-5 transform group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
+                      {/* Bottom Info Bar */}
+                      <div className="p-3.5 bg-white flex justify-between items-center border-t border-gray-50 flex-grow">
+                        <div className="flex flex-col min-w-0 pr-1">
+                          <h3 className="text-sm md:text-[15px] font-bold text-[#003749] truncate">
+                            {candidate.Name || 'عاملة منزلية'}
+                          </h3>
+                          <div className="flex items-center text-xs font-semibold text-gray-500 mt-1 gap-1.5">
+                            <span className="text-[#003749] bg-[#ECC383]/30 px-2 py-0.5 rounded-full text-[11px] font-bold shrink-0">
+                              {getAge(candidate.age)} سنة
+                            </span>
+                            {country?.name && (
+                              <>
+                                <span className="text-gray-300">•</span>
+                                <div className="inline-flex items-center gap-1 min-w-0">
+                                  {country.flagUrl && (
+                                    <img
+                                      src={country.flagUrl}
+                                      alt={country.name}
+                                      className="w-4 h-3 sm:w-5 sm:h-3.5 rounded-xs object-cover shadow-xs border border-gray-200 shrink-0"
+                                    />
+                                  )}
+                                  <span className="text-gray-600 text-[11px] font-medium truncate">
+                                    {country.name}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <div 
+                          className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 flex items-center justify-center bg-[#003749]/5 group-hover:bg-[#ECC383] text-[#003749] rounded-full transition-colors duration-300 shadow-sm"
+                        >
+                          <svg className="w-4 h-4 md:w-5 md:h-5 transform group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                          </svg>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                </Link>
-              </SwiperSlide>
-            ))}
+                    </motion.div>
+                  </Link>
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
           
           {/* View All Overlay (Desktop only on the left) */}

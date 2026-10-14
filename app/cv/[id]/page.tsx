@@ -113,13 +113,15 @@ interface Homemaid {
 // بطاقة المعلومات الرئيسية
 // ملاحظة: بوجود dir="rtl" في الصفحة، الـ Flex سيضع الأيقونة يمين والنص يسار تلقائياً
 const InfoItem = ({ icon: Icon, label, value }: { icon: any, label: string, value: string | number | null }) => (
-  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#C49E6A]/30 transition-all duration-300">
-    <div className="p-2 bg-white rounded-lg shadow-sm text-[#003749]">
-      <Icon size={18} strokeWidth={2} />
+  <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 p-2 sm:p-2.5 md:p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#C49E6A]/30 transition-all duration-300 min-w-0 overflow-hidden">
+    <div className="p-1.5 sm:p-2 bg-white rounded-lg shadow-sm text-[#003749] shrink-0">
+      <Icon size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2} />
     </div>
-    <div className="flex flex-col text-right"> {/* تأكيد المحاذاة لليمين */}
-      <span className="text-xs text-gray-400 font-medium mb-0.5">{label}</span>
-      <span className="text-sm font-bold text-gray-800">{value ?? '-'}</span>
+    <div className="flex flex-col text-right min-w-0 flex-1 overflow-hidden">
+      <span className="text-[10px] sm:text-xs text-gray-400 font-medium mb-0.5 truncate block">{label}</span>
+      <span className="text-[11px] sm:text-xs md:text-sm font-bold text-gray-800 break-words [overflow-wrap:anywhere] leading-tight block">
+        <bdi dir="auto">{value ?? '-'}</bdi>
+      </span>
     </div>
   </div>
 );
@@ -136,11 +138,11 @@ const SkillBadge = ({ icon: Icon, label, level }: { icon: any, label: string, le
   );
 
   return (
-    <div className={`flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ${isHigh ? 'bg-[#003749]/5 border border-[#003749]/10' : 'bg-gray-50 border border-gray-100'}`}>
-      <Icon className={`mb-2 ${isHigh ? 'text-[#C49E6A]' : 'text-gray-400'}`} size={24} />
-      <span className="text-xs font-bold text-gray-700 mb-1">{label}</span>
-      <span className={`text-[10px] px-2 py-0.5 rounded-full ${isHigh ? 'bg-[#003749] text-white' : 'bg-gray-200 text-gray-500'}`}>
-        {level ?? 'غير محدد'}
+    <div className={`flex flex-col items-center justify-center px-1 py-2 sm:p-2.5 md:p-3 rounded-2xl transition-all duration-300 min-w-0 ${isHigh ? 'bg-[#003749]/5 border border-[#003749]/10' : 'bg-gray-50 border border-gray-100'}`}>
+      <Icon className={`mb-1 sm:mb-2 w-5 h-5 sm:w-6 sm:h-6 ${isHigh ? 'text-[#C49E6A]' : 'text-gray-400'}`} size={20} />
+      <span className="text-[11px] sm:text-xs font-bold text-gray-700 mb-1 text-center truncate w-full">{label}</span>
+      <span className={`text-[8.5px] xs:text-[9px] sm:text-[10px] px-1.5 sm:px-2.5 py-0.5 rounded-full whitespace-nowrap font-medium ${isHigh ? 'bg-[#003749] text-white' : 'bg-gray-200 text-gray-500'}`}>
+        <bdi dir="auto">{level ?? 'غير محدد'}</bdi>
       </span>
     </div>
   );
@@ -517,15 +519,15 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="container mx-auto px-4 pt-24 md:pt-32 max-w-6xl"
+        className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 lg:pt-30 pb-8"
       >
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-5 gap-3">
 
           {/* العنوان والنص التعريفي (الآن يظهر على اليمين بسبب RTL) */}
           <div className="text-center md:text-right order-2 md:order-1">
-            <h1 className="text-3xl md:text-4xl font-bold text-[#003749] mb-1">السيرة الذاتية</h1>
-            <p className="text-[#C49E6A] text-sm font-medium opacity-80">استعرض تفاصيل العاملة والمهارات</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#003749] mb-1">السيرة الذاتية</h1>
+            <p className="text-[#C49E6A] text-xs md:text-sm font-medium opacity-80">استعرض تفاصيل العاملة والمهارات</p>
           </div>
 
           {/* أزرار التنقل في الشاشات الكبيرة */}
@@ -554,21 +556,21 @@ export default function Profile() {
 
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
           {/* العمود الأيسر (المحتوى النصي) */}
-          <div className="lg:col-span-8 flex flex-col gap-6 order-2">
+          <div className="lg:col-span-8 flex flex-col gap-5 order-2">
 
             {/* Card 1: Basic Info */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-50 p-6 md:p-8">
-              <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
-                <div className="p-2.5 bg-[#003749]/5 rounded-xl text-[#003749]">
-                  <User size={24} />
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-50 p-3.5 sm:p-5 md:p-6">
+              <div className="flex items-center gap-2.5 sm:gap-3 mb-3.5 sm:mb-4 border-b border-gray-100 pb-3">
+                <div className="p-2 sm:p-2.5 bg-[#003749]/5 rounded-xl text-[#003749]">
+                  <User size={20} className="sm:w-[22px] sm:h-[22px]" />
                 </div>
-                <h2 className="text-xl font-bold text-[#003749]">البيانات الأساسية</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-[#003749]">البيانات الأساسية</h2>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-3.5">
                 <InfoItem icon={User} label="الاسم" value={homemaid.Name} />
                 <InfoItem icon={MapPin} label="الجنسية" value={homemaid.Nationalitycopy} />
                 <InfoItem icon={Star} label="العمر" value={calculateAge(homemaid.dateofbirth)} />
@@ -586,17 +588,17 @@ export default function Profile() {
             </div>
 
             {/* Card 2: Skills & Experience */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-50 p-6 md:p-8">
-              <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
-                <div className="p-2.5 bg-[#C49E6A]/10 rounded-xl text-[#C49E6A]">
-                  <Star size={24} />
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-50 p-3.5 sm:p-5 md:p-6">
+              <div className="flex items-center gap-2.5 sm:gap-3 mb-3.5 sm:mb-4 border-b border-gray-100 pb-3">
+                <div className="p-2 sm:p-2.5 bg-[#C49E6A]/10 rounded-xl text-[#C49E6A]">
+                  <Star size={20} className="sm:w-[22px] sm:h-[22px]" />
                 </div>
-                <h2 className="text-xl font-bold text-[#003749]">المهارات والخبرات</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-[#003749]">المهارات والخبرات</h2>
               </div>
 
-              <div className="mb-6">
-                <h3 className="text-sm font-bold text-gray-400 mb-3 text-right">الخبرة واللغة</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="mb-4">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-400 mb-2 sm:mb-2.5 text-right">الخبرة واللغة</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-2.5 md:gap-3">
                   <SkillBadge icon={Briefcase} label="سنوات الخبرة" level={homemaid.ExperienceYears} />
                   <SkillBadge icon={MapPin} label="أماكن الخبرة" level={homemaid.Experience} />
                   <SkillBadge icon={Languages} label="العربية" level={homemaid.ArabicLanguageLevel || homemaid.ArabicLanguageLeveL} />
@@ -605,8 +607,8 @@ export default function Profile() {
               </div>
 
               <div>
-                <h3 className="text-sm font-bold text-gray-400 mb-3 text-right">المهارات العملية</h3>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-400 mb-2 sm:mb-2.5 text-right">المهارات العملية</h3>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-1 sm:gap-2 md:gap-2.5">
                   <SkillBadge icon={Utensils} label="الطبخ" level={homemaid.CookingLevel || homemaid.cookingLevel} />
                   <SkillBadge icon={Sparkles} label="التنظيف" level={homemaid.CleaningLevel || homemaid.cleaningLevel} />
                   <SkillBadge icon={Shirt} label="الغسيل" level={homemaid.LaundryLevel || homemaid.washingLevel || homemaid.laundryLevel} />
@@ -619,51 +621,51 @@ export default function Profile() {
           </div>
 
           {/* العمود الأيمن (الصور والأكشن) */}
-          <div className="lg:col-span-4 flex flex-col gap-6 order-1">
+          <div className="lg:col-span-4 flex flex-col gap-5 order-1">
 
             {/* Image Gallery */}
             <div className="bg-white p-3 rounded-[2rem] shadow-lg shadow-gray-100/50 overflow-hidden relative group">
               {/* Image Toggle Tabs (الصورة الشخصية / الزي الكامل) */}
               {homemaid.FullPicture && (
-                <div className="flex bg-gray-100/90 p-1 rounded-2xl mb-3 gap-1 border border-gray-200/60">
+                <div className="flex bg-gray-100/90 p-1 rounded-2xl mb-2.5 gap-1 border border-gray-200/60">
                   <button
                     type="button"
                     onClick={() => setActiveImageTab('portrait')}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
+                    className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
                       activeImageTab === 'portrait'
                         ? 'bg-[#003749] text-[#ECC383] shadow-sm'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
                     }`}
                   >
-                    <User size={15} />
+                    <User size={14} />
                     <span>الصورة الشخصية</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setActiveImageTab('full')}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
+                    className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 ${
                       activeImageTab === 'full'
                         ? 'bg-[#003749] text-[#ECC383] shadow-sm'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/50'
                     }`}
                   >
-                    <Sparkles size={15} />
+                    <Sparkles size={14} />
                     <span>الزي الكامل</span>
                   </button>
                 </div>
               )}
 
-              <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden bg-gray-100">
+              <div className="relative h-[310px] xl:h-[340px] rounded-[1.5rem] overflow-hidden bg-gray-100">
                 {/* Quick Share Button on Image */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleOpenShareModal('image_button');
                   }}
-                  className="absolute top-4 right-4 p-2.5 rounded-full bg-white/90 backdrop-blur-md text-[#003749] shadow-md hover:bg-[#003749] hover:text-white transition-all duration-300 z-10 cursor-pointer"
+                  className="absolute top-3.5 right-3.5 p-2 rounded-full bg-white/90 backdrop-blur-md text-[#003749] shadow-md hover:bg-[#003749] hover:text-white transition-all duration-300 z-10 cursor-pointer"
                   title="مشاركة الملف الشخصي"
                 >
-                  <Share2 size={18} />
+                  <Share2 size={16} />
                 </button>
 
                 {activeImageTab === 'full' && homemaid.FullPicture ? (
@@ -688,7 +690,7 @@ export default function Profile() {
                 )}
 
                 {!loading && (
-                  <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md shadow-sm
+                  <div className={`absolute top-3.5 left-3.5 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md shadow-sm
                       ${isButtonDisabled ? 'bg-gray-900/60 text-white' : 'bg-green-500/80 text-white'}`}>
                     {isButtonDisabled ? 'محجوزة' : 'متاحة للتعاقد'}
                   </div>
@@ -697,23 +699,23 @@ export default function Profile() {
             </div>
 
             {/* Desktop Sticky Action Box */}
-            <div className="hidden lg:block sticky top-28 bg-[#003749] rounded-3xl p-6 text-white shadow-xl shadow-[#003749]/20 overflow-hidden relative text-right">
+            <div className="hidden lg:block sticky top-28 bg-[#003749] rounded-3xl p-5 text-white shadow-xl shadow-[#003749]/20 overflow-hidden relative text-right">
               <div className="absolute top-0 left-0 w-32 h-32 bg-[#C49E6A]/10 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2"></div>
 
-              <h3 className="text-xl font-bold mb-2 relative z-10">هل تناسبك هذه العاملة؟</h3>
-              <p className="text-[#C49E6A] text-sm mb-6 relative z-10 opacity-90">قم بحجزها الآن قبل فوات الأوان، الإجراءات سهلة وسريعة.</p>
+              <h3 className="text-lg font-bold mb-1.5 relative z-10">هل تناسبك هذه العاملة؟</h3>
+              <p className="text-[#C49E6A] text-xs mb-3.5 relative z-10 opacity-90">قم بحجزها الآن قبل فوات الأوان، الإجراءات سهلة وسريعة.</p>
 
               <button
                 onClick={handleBookClick}
                 disabled={isButtonDisabled}
-                className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer
+                className={`w-full py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 cursor-pointer
                    ${isButtonDisabled
                     ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                     : 'bg-[#C49E6A] text-[#003749] hover:shadow-[#C49E6A]/40'}`}
               >
                 {isButtonDisabled ? 'غير متاحة حالياً' : (
                   <>
-                    <Sparkles size={20} />
+                    <Sparkles size={18} />
                     حجز العاملة
                   </>
                 )}
@@ -721,9 +723,9 @@ export default function Profile() {
 
               <button
                 onClick={() => handleOpenShareModal('desktop_box')}
-                className="w-full mt-3 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 bg-white/10 text-white hover:bg-white/20 border border-white/15 transition-all duration-300 cursor-pointer"
+                className="w-full mt-2.5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 bg-white/10 text-white hover:bg-white/20 border border-white/15 transition-all duration-300 cursor-pointer"
               >
-                <Share2 size={16} className="text-[#ECC383]" />
+                <Share2 size={15} className="text-[#ECC383]" />
                 مشاركة السيرة الذاتية
               </button>
             </div>

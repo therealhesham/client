@@ -26,7 +26,7 @@ const FlagCard = ({ country, flag, price, oldPrice, englishCountry }: FlagCardPr
     const router =useRouter()
     return (
         <motion.div
-            className="bg-white rounded-lg h-[150px] w-[300px] shadow-md p-4 flex  justify-between cursor-pointer hover:shadow-lg transition-shadow duration-300"
+            className="bg-white rounded-lg h-[150px] w-full max-w-[300px] sm:w-[300px] shadow-md p-4 flex justify-between cursor-pointer hover:shadow-lg transition-shadow duration-300"
             whileHover={{ scale: 1.10 }}
             whileTap={{ scale: 0.95 }}
             onClick={()=>{
@@ -98,10 +98,16 @@ const FlagGrid = () => {
         );
     }
 
+    const getContainerMaxWidth = (count: number) => {
+        if (count <= 2) return 'max-w-[660px]';
+        if (count === 4) return 'max-w-[660px]'; // صفين كل صف بطاقتين (2x2)
+        return 'max-w-[1000px]'; // 3 في الصف مع توسيط أي بطاقات متبقية في المنتصف تلقائياً
+    };
+
     return (
-        <div className="container mx-auto lg:w-[1000px] p-4">
+        <div className={`container mx-auto ${getContainerMaxWidth(flags.length)} p-4 transition-all duration-300`}>
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">استعرض العاملات حسب الجنسية</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 place-items-center ">
+            <div className="flex flex-wrap justify-center gap-6">
                 {flags.map((flag: NationalityData, index: number) => (
                     <FlagCard
                         key={index}
