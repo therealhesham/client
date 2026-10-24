@@ -13,7 +13,7 @@ import axios from "axios";
 import localFont from "next/font/local";
 import TextType from '../components/TextType';
 import { GlobeAltIcon, StarIcon, UserIcon, BriefcaseIcon } from '@heroicons/react/24/outline';
-import { FaPeace, FaStarAndCrescent } from "react-icons/fa";
+import { FaStarAndCrescent, FaStar } from "react-icons/fa";
 const myFont = localFont({
   src: "../fonts/ReadexPro-Bold.ttf",
   weight: "400",
@@ -82,13 +82,23 @@ function getCandidateAge(candidate: Candidate): number | null {
   return null;
 }
 
-function getCandidateReligion(religion?: string | null): string | null {
+function getCandidateReligion(religion?: string | null): { label: string; isMuslim: boolean } | null {
   if (!religion) return null;
-  const lower = religion.toLowerCase();
-  if (lower.includes("islam") || lower.includes("إسلام") || lower.includes("مسلم")) {
-    return "مسلمة";
+  const lower = religion.toLowerCase().trim();
+  // التحقق أولاً من "غير مسلم" لأن كلمة "غير مسلم" تحتوي بداخلها على كلمة "مسلم"
+  if (
+    lower.includes("غير") ||
+    lower.includes("non") ||
+    lower.includes("not") ||
+    lower.includes("christian") ||
+    lower.includes("مسيح")
+  ) {
+    return { label: "غير مسلمة", isMuslim: false };
   }
-  return "غير مسلمة";
+  if (lower.includes("islam") || lower.includes("إسلام") || lower.includes("مسلم")) {
+    return { label: "مسلمة", isMuslim: true };
+  }
+  return { label: "غير مسلمة", isMuslim: false };
 }
 
 const countryFlags = [
@@ -210,8 +220,12 @@ function CandidateCard({ candidate, nationalityFilter }: { candidate: Candidate;
           )}
           {religion && (
             <span className="inline-flex items-center gap-1.5 text-xs bg-slate-50 text-slate-700 border border-slate-200/70 px-2.5 py-1 rounded-lg font-medium">
-              <FaStarAndCrescent className="w-3 h-3 text-[#c39e6a]" />
-              <span>{religion}</span>
+              {religion.isMuslim ? (
+                <FaStarAndCrescent className="w-3 h-3 text-[#c39e6a]" />
+              ) : (
+                <FaStar className="w-3 h-3 text-[#c39e6a]" />
+              )}
+              <span>{religion.label}</span>
             </span>
           )}
         </div>
