@@ -45,13 +45,13 @@ async function getWebsiteSettings() {
     let bannerUrl = '/banner.png';
     let showBorder = true;
     let websiteStats = DEFAULT_STATS;
-    let customBanners: string[] | null = null;
+    let customBanners: string[] = [];
     let autoSlide = true;
     let slideInterval = 4000;
     let slideIntervals: number[] = [];
 
     if (Array.isArray(rows)) {
-      rows.forEach((r: any) => {
+      for (const r of rows) {
         if (r.settingKey === 'hero_banner_image' && r.settingValue) {
           bannerUrl = r.settingValue;
         }
@@ -92,11 +92,11 @@ async function getWebsiteSettings() {
             console.error('Error parsing website_stats JSON:', pErr);
           }
         }
-      });
+      }
     }
 
     let allBanners: string[] = [];
-    if (customBanners && customBanners.length > 0) {
+    if (customBanners.length > 0) {
       allBanners = customBanners;
     } else {
       try {
