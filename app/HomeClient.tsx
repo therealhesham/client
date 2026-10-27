@@ -134,9 +134,20 @@ export default function HomeClient({
     if (initialStats) setStatsData(initialStats);
   }, [initialBanner, initialBanners, initialBorder, initialAutoSlide, initialInterval, initialIntervals, initialStats]);
 
+  // Preload all banner images immediately to prevent loading delays
+  useEffect(() => {
+    if (!heroBanners || heroBanners.length === 0) return;
+    heroBanners.forEach((url) => {
+      if (url && typeof window !== 'undefined') {
+        const img = new Image();
+        img.src = url;
+      }
+    });
+  }, [heroBanners]);
+
   // Auto-rotate effect with per-slide interval support
   useEffect(() => {
-    if (!autoSlide || heroBanners.length <= 1) return;
+    if (!autoSlide || heroBanners.length <= 1 || isHovered) return;
 
     const currentDuration = (slideIntervals && slideIntervals[currentSlide] !== undefined && slideIntervals[currentSlide] >= 500)
       ? slideIntervals[currentSlide]
@@ -445,46 +456,62 @@ export default function HomeClient({
 
               {/* الصورة - على اليسار في وضع RTL مع ميزة السلايدر التلقائي المتحرك */}
               <div className="lg:w-1/2 order-1 lg:order-2">
-                <div className="relative w-full max-w-md mx-auto">
+                <div 
+                  className="relative w-full max-w-md mx-auto"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
                   <div
-                    className={`relative w-full overflow-hidden rounded-3xl transition-all duration-300 bg-white flex items-center justify-center ${
+                    className={`relative w-full overflow-hidden rounded-3xl transition-all duration-300 bg-white ${
                       showBannerBorder ? 'shadow-2xl border-4 border-[#ECC383]/40' : ''
                     }`}
-                    style={{ aspectRatio: '2005 / 638' }}
+                    style={{ aspectRatio: '2005 / 638', minHeight: '120px' }}
                   >
-                    {autoSlide ? (
-                      <AnimatePresence mode="wait">
-                        <motion.img
-                          key={currentSlide + (heroBanners[currentSlide] || "/banner.png")}
-                          src={heroBanners[currentSlide] || "/banner.png"}
+                    {autoSlide && heroBanners.length > 1 ? (
+                      heroBanners.map((bannerUrl, idx) => {
+                        const isActive = idx === currentSlide;
+                        return (
+                          <div
+                            key={idx}
+                            className={`absolute inset-0 w-full h-full flex items-center justify-center transition-all duration-700 ease-in-out ${
+                              isActive
+                                ? 'opacity-100 scale-100 z-10 pointer-events-auto'
+                                : 'opacity-0 scale-[1.02] z-0 pointer-events-none'
+                            }`}
+                            aria-hidden={!isActive}
+                          >
+                            <img
+                              src={bannerUrl || "/banner.png"}
+                              alt="روائس للاستقدام - تجربة استقدام مميزة"
+                              loading={idx === 0 ? "eager" : "lazy"}
+                              decoding="async"
+                              className="w-full h-full object-contain mx-auto block select-none pointer-events-none"
+                              onError={(e) => {
+                                e.currentTarget.src = "/banner.png";
+                              }}
+                            />
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                        <img
+                          src={(heroBanners && heroBanners[0]) || heroBanner || "/banner.png"}
                           alt="روائس للاستقدام - تجربة استقدام مميزة"
-                          initial={{ opacity: 0, scale: 0.97 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 1.02 }}
-                          transition={{ duration: Math.min(0.6, Math.max(0.15, (((slideIntervals && slideIntervals[currentSlide]) || slideInterval || 4000) / 1000) * 0.35)), ease: "easeInOut" }}
-                          className="w-full h-full object-contain mx-auto block"
+                          loading="eager"
+                          decoding="async"
+                          className="w-full h-full object-contain mx-auto block select-none"
                           onError={(e) => {
                             e.currentTarget.src = "/banner.png";
                           }}
                         />
-                      </AnimatePresence>
-                    ) : (
-                      <img
-                        src={heroBanner || "/banner.png"}
-                        alt="روائس للاستقدام - تجربة استقدام مميزة"
-                        className="w-full h-full object-contain mx-auto block"
-                        onError={(e) => {
-                          e.currentTarget.src = "/banner.png";
-                        }}
-                      />
+                      </div>
                     )}
-
-
                   </div>
 
                   {/* نقاط المؤشرات السفلية (Indicators/Dots) في وضع السلايدر المتحرك فقط */}
                   {autoSlide && heroBanners.length > 1 && (
-                    <div className="flex justify-center items-center gap-2 mt-3 z-10" dir="rtl">
+                    <div className="flex justify-center items-center gap-2 mt-4 z-10 min-h-[16px]" dir="rtl">
                       {heroBanners.map((_, idx) => (
                         <button
                           key={idx}
