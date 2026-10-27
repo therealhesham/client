@@ -2,7 +2,7 @@
 //@ts-ignore
 
 'use client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import DualCarousel from './components/carousel';
 import FlagGrid from './components/flagcard';
@@ -49,7 +49,23 @@ const STAT_ICONS: Record<string, any> = {
   heart: Heart
 };
 
-export default function HomeClient({ initialBanner = "/banner.png", initialBorder = true, initialStats = null }: { initialBanner?: string; initialBorder?: boolean; initialStats?: any }) {
+export default function HomeClient({ 
+  initialBanner = "/banner.png", 
+  initialBanners = ["/banner.png"],
+  initialBorder = true, 
+  initialAutoSlide = true,
+  initialInterval = 4000,
+  initialIntervals = [],
+  initialStats = null 
+}: { 
+  initialBanner?: string; 
+  initialBanners?: string[];
+  initialBorder?: boolean; 
+  initialAutoSlide?: boolean;
+  initialInterval?: number;
+  initialIntervals?: number[];
+  initialStats?: any 
+}) {
   const heroVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -95,14 +111,43 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
   };
 
   const [heroBanner, setHeroBanner] = useState(initialBanner);
+  const [heroBanners, setHeroBanners] = useState<string[]>(
+    initialBanners && initialBanners.length > 0 ? initialBanners : [initialBanner || "/banner.png"]
+  );
   const [showBannerBorder, setShowBannerBorder] = useState(initialBorder);
+  const [autoSlide, setAutoSlide] = useState(initialAutoSlide);
+  const [slideInterval, setSlideInterval] = useState(initialInterval || 4000);
+  const [slideIntervals, setSlideIntervals] = useState<number[]>(initialIntervals || []);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const [statsData, setStatsData] = useState<any>(initialStats || DEFAULT_STATS);
 
   useEffect(() => {
     if (initialBanner) setHeroBanner(initialBanner);
+    if (initialBanners && Array.isArray(initialBanners) && initialBanners.length > 0) {
+      setHeroBanners(initialBanners);
+    }
     if (initialBorder !== undefined) setShowBannerBorder(initialBorder);
+    if (initialAutoSlide !== undefined) setAutoSlide(initialAutoSlide);
+    if (initialInterval !== undefined) setSlideInterval(initialInterval);
+    if (initialIntervals && Array.isArray(initialIntervals)) setSlideIntervals(initialIntervals);
     if (initialStats) setStatsData(initialStats);
-  }, [initialBanner, initialBorder, initialStats]);
+  }, [initialBanner, initialBanners, initialBorder, initialAutoSlide, initialInterval, initialIntervals, initialStats]);
+
+  // Auto-rotate effect with per-slide interval support
+  useEffect(() => {
+    if (!autoSlide || heroBanners.length <= 1) return;
+
+    const currentDuration = (slideIntervals && slideIntervals[currentSlide] !== undefined && slideIntervals[currentSlide] >= 500)
+      ? slideIntervals[currentSlide]
+      : (slideInterval || 4000);
+
+    const timer = setTimeout(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
+    }, currentDuration);
+
+    return () => clearTimeout(timer);
+  }, [autoSlide, heroBanners.length, isHovered, currentSlide, slideInterval, slideIntervals]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -110,7 +155,13 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
         const res = await axios.get('/api/website-settings');
         if (res.data) {
           if (res.data.heroBannerUrl) setHeroBanner(res.data.heroBannerUrl);
+          if (res.data.heroBannerUrls && Array.isArray(res.data.heroBannerUrls) && res.data.heroBannerUrls.length > 0) {
+            setHeroBanners(res.data.heroBannerUrls);
+          }
           if (res.data.showBorder !== undefined) setShowBannerBorder(res.data.showBorder);
+          if (res.data.autoSlide !== undefined) setAutoSlide(res.data.autoSlide);
+          if (res.data.slideInterval !== undefined) setSlideInterval(res.data.slideInterval);
+          if (res.data.slideIntervals && Array.isArray(res.data.slideIntervals)) setSlideIntervals(res.data.slideIntervals);
           if (res.data.stats) setStatsData(res.data.stats);
         }
       } catch (e) {
@@ -392,31 +443,74 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
                 <div className="w-48 sm:w-80 h-1 bg-[#ECC383] rounded-full mt-4"></div>
               </div>
 
-              {/* الصورة - على اليسار في وضع RTL */}
+              {/* الصورة - على اليسار في وضع RTL مع ميزة السلايدر التلقائي المتحرك */}
               <div className="lg:w-1/2 order-1 lg:order-2">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
-                  className="relative"
-                >
-                  <img
-                    src={heroBanner || "/banner.png"}
-                    alt="روائس للاستقدام - تجربة استقدام مميزة"
-                    className={`w-full max-w-md mx-auto rounded-3xl object-cover ${
+                <div className="relative w-full max-w-md mx-auto">
+                  <div
+                    className={`relative w-full overflow-hidden rounded-3xl transition-all duration-300 bg-white flex items-center justify-center ${
                       showBannerBorder ? 'shadow-2xl border-4 border-[#ECC383]/40' : ''
                     }`}
-                    onError={(e) => {
-                      e.currentTarget.src = "/banner.png";
-                    }}
-                  />
-                </motion.div>
+                    style={{ aspectRatio: '2005 / 638' }}
+                  >
+                    {autoSlide ? (
+                      <AnimatePresence mode="wait">
+                        <motion.img
+                          key={currentSlide + (heroBanners[currentSlide] || "/banner.png")}
+                          src={heroBanners[currentSlide] || "/banner.png"}
+                          alt="روائس للاستقدام - تجربة استقدام مميزة"
+                          initial={{ opacity: 0, scale: 0.97 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 1.02 }}
+                          transition={{ duration: Math.min(0.6, Math.max(0.15, (((slideIntervals && slideIntervals[currentSlide]) || slideInterval || 4000) / 1000) * 0.35)), ease: "easeInOut" }}
+                          className="w-full h-full object-contain mx-auto block"
+                          onError={(e) => {
+                            e.currentTarget.src = "/banner.png";
+                          }}
+                        />
+                      </AnimatePresence>
+                    ) : (
+                      <img
+                        src={heroBanner || "/banner.png"}
+                        alt="روائس للاستقدام - تجربة استقدام مميزة"
+                        className="w-full h-full object-contain mx-auto block"
+                        onError={(e) => {
+                          e.currentTarget.src = "/banner.png";
+                        }}
+                      />
+                    )}
+
+
+                  </div>
+
+                  {/* نقاط المؤشرات السفلية (Indicators/Dots) في وضع السلايدر المتحرك فقط */}
+                  {autoSlide && heroBanners.length > 1 && (
+                    <div className="flex justify-center items-center gap-2 mt-3 z-10" dir="rtl">
+                      {heroBanners.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setCurrentSlide(idx)}
+                          className={`transition-all duration-300 rounded-full h-2 cursor-pointer ${
+                            idx === currentSlide
+                              ? 'w-7 bg-[#003749]'
+                              : 'w-2 bg-[#ECC383]/60 hover:bg-[#ECC383]'
+                          }`}
+                          aria-label={`الشريحة ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="mt-8 relative z-10">
               <FeaturedCandidates />
+            </div>
+
+            {/* قسم استعراض العاملات حسب الجنسية */}
+            <div className={`gap-6 mt-16 ${myFont.className}`}>
+              <FlagGrid />
             </div>
 
             {/* قسم الإحصائيات والأرقام */}
@@ -426,7 +520,7 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: 0.3 }}
-                className="py-16 px-4 mt-16"
+                className="py-16 px-4 mt-8"
               >
                 <h3 className="text-3xl font-bold text-[#003749] mb-12 text-center bg-gradient-to-r from-[#003749] to-[#025669] bg-clip-text text-transparent">
                   {statsData?.sectionTitle || "إحصائياتنا"}
@@ -476,12 +570,12 @@ export default function HomeClient({ initialBanner = "/banner.png", initialBorde
                 </div>
               </motion.div>
             )}
+
+
           </motion.section>
         </div>
       </main>
-      <div className={`gap-6  bg-white ${myFont.className}`}>
-        <FlagGrid />
-      </div>
+
 
       <div className={`relative w-full bg-cover bg-center bg-white  ${sectionFonts.className}`}  >
         <div className="grid lg:grid-cols-3 md:grid-cols-2    gap-6 p-6 max-w-6xl mx-auto h-full   ">
