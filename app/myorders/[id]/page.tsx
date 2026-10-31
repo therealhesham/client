@@ -772,7 +772,10 @@ export default function MyOrdersPage() {
       
       // التوجيه لصفحة الدخول إذا لم تكن الجلسة صالحة (الرد 401 Unauthorized)
       if (myOrders.status === 401) {
-          window.location.href = '/login';
+          localStorage.removeItem('phone_number');
+          localStorage.removeItem('item');
+          localStorage.removeItem('email');
+          window.location.href = '/login?expired=1';
           return;
       }
       

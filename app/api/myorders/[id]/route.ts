@@ -21,8 +21,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             const secret = process.env.JWT_SECRET || 'default_secret_fallback';
             const decoded = jwt.verify(token, secret) as { phone: string };
             
-            // التأكد أن الرقم المطلوب في الرابط يطابق الرقم المسجل في الجلسة
-            if (decoded.phone !== id) {
+            // التأكد أن الرقم المطلوب في الرابط يطابق الرقم المسجل في الجلسة (مع مراعاة الصفر في البداية)
+            const cleanDecoded = String(decoded.phone || '').replace(/^0+/, '');
+            const cleanId = String(id || '').replace(/^0+/, '');
+            if (cleanDecoded !== cleanId) {
                 return NextResponse.json({ error: 'ليس لديك صلاحية لعرض هذه الطلبات' }, { status: 401 });
             }
         } catch (err) {

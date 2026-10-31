@@ -73,16 +73,16 @@ export async function POST(req: Request) {
                 globalAny.securityStore.delete(phone); // Reset all counters upon success
             }
             
-            // إنشاء توكن الجلسة
+            // إنشاء توكن الجلسة (30 يوماً)
             const secret = process.env.JWT_SECRET || 'default_secret_fallback';
-            const token = jwt.sign({ phone }, secret, { expiresIn: '7d' });
+            const token = jwt.sign({ phone }, secret, { expiresIn: '30d' });
             
             const response = NextResponse.json({ success: true }, { status: 200 });
             response.cookies.set('auth_token', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60, // 7 days
+                sameSite: 'lax',
+                maxAge: 30 * 24 * 60 * 60, // 30 days
                 path: '/',
             });
             

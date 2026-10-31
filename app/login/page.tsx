@@ -76,6 +76,15 @@ export default function LoginPage() {
     const router = useRouter();
 
     useEffect(() => {
+        // إذا تم التوجيه بسبب انتهاء الجلسة أو طلب تسجيل دخول جديد
+        if (typeof window !== 'undefined' && window.location.search.includes('expired')) {
+            localStorage.removeItem('phone_number');
+            localStorage.removeItem('item');
+            localStorage.removeItem('email');
+            setError('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً');
+            return;
+        }
+
         const storedPhone = localStorage.getItem('phone_number');
         if (storedPhone) {
             router.replace('/myorders/' + storedPhone);
